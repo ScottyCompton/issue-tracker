@@ -1,4 +1,7 @@
 @import "tailwindcss";
+@plugin "daisyui" {
+  themes: light --default, dark --prefersdark, cupcake, aqua, winter, retro;
+}
 
 :root {
   --foreground-rgb: 0, 0, 0;
@@ -13,9 +16,14 @@
     --background-end-rgb: 0, 0, 0;
   }
 }
-
+/* 
 body {
-  color: #000;
   padding: 1rem;
 
+} */
+
+@layer base {
+  h1 {
+    @apply font-extrabold text-2xl mb-3;
+  }
 }

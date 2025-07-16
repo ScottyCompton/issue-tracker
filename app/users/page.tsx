@@ -1,23 +1,26 @@
-import React from 'react'
+import React, { Suspense } from 'react'
+import UserTable from './components/UserTable'
+import Link from 'next/link'
+import Loading from '../loading'
 
-interface User {
-    id: number
-    name: string
+interface Props {
+  searchParams: Promise<{
+    sortBy: string
+    sortOrder: string
+  }>
 }
 
-const UsersPage = async () => {
-    const res  = await fetch('https://jsonplaceholder.typicode.com/users', 
-      { next: {revalidate: 10}})
-    const users: User[] = await res.json()
+const UsersPage = async ({ searchParams }: Props) => {
+  const { sortOrder, sortBy } = await searchParams;
+
   return (
-    <>
-    <h1>Users</h1>
-    <ul>
-        {users.map((user) => (
-            <li key={user.id}>{user.name}</li>
-        ))}
-    </ul>
-    </>
+    <main>
+      <h1>Users</h1>
+      <Link href="/users/new" className='btn'>New User</Link>
+      <Suspense fallback={<Loading />}>
+        <UserTable sortOrder={sortOrder} sortBy={sortBy} />
+      </Suspense>
+    </main>
   )
 }
 
