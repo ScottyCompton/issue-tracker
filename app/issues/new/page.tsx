@@ -1,5 +1,5 @@
 'use client'
-import { TextField, Button, Skeleton, Flex, Text, Callout } from '@radix-ui/themes'
+import { TextField, Button, Skeleton, Flex, Text, Callout, Spinner } from '@radix-ui/themes'
 import dynamic from 'next/dynamic'
 import "easymde/dist/easymde.min.css";
 import { useCallback, useState } from 'react';
@@ -41,23 +41,21 @@ const NewIssue:React.FC = () => {
         resolver: zodResolver(createIssueSchema)
     });
     const router = useRouter()
-    const [desc, setDesc] = useState('')
-    const [error, setError] = useState('')
+    const [apiError, setApiError] = useState('')
+    const [isSubmitting, setIsSubmitting] = useState(false)
 
 
     const onSubmit:SubmitHandler<IssueForm> = async (data) => {
         try {
+            setIsSubmitting(true)
            await axios.post('/api/issues', data)
            router.push('/issues') 
-        } catch (error) {
-            setError('An unexpected error occurred.')
+        } catch (apiError) {
+            setIsSubmitting(false)
+            setApiError('An unexpected error occurred.')
         }
 
     }
-
-    const onChange = useCallback((value: string) => {
-        setDesc(value);
-      }, []);
 
     const handleCancelClick = () => {
         router.push('/issues')
@@ -65,13 +63,13 @@ const NewIssue:React.FC = () => {
 
     return (
         <div className='max-w-xl'>
-        {error && 	
+        {apiError && 	
             <Callout.Root color="red" className='mb-5'>
                 <Callout.Icon>
                     <BsExclamationTriangle />
                 </Callout.Icon>
                 <Callout.Text>
-                    {error}
+                    {apiError}
                 </Callout.Text>
             </Callout.Root>}
         <form className='max-w-xl space-y-3' onSubmit={handleSubmit(onSubmit)}>
@@ -81,12 +79,15 @@ const NewIssue:React.FC = () => {
             <Controller 
                 name="description"
                 control={control}
-                render={({field}) => <SimpleMDE id={field.name} placeholder='Description' value={desc} onChange={onChange} />}
-                />
-        <ErrorMessage>{errors.description?.message}</ErrorMessage>
+                render={({field}) => 
+                <>
+                    <SimpleMDE id={field.name} placeholder='Description' value={field.value} onChange={field.onChange} />
+                    <ErrorMessage>{errors.description?.message}</ErrorMessage>
+                </>}
+                />        
         </div>
          <div className='text-right space-x-3'>
-            <Button className='px-5 mr-5'>Create Issue</Button> &nbsp;
+            <Button type="submit" disabled={isSubmitting} className='px-5 mr-5'>Create Issue {isSubmitting && <Spinner />}</Button> &nbsp;
             <Button onClick={handleCancelClick}>Cancel</Button>
          </div>    
          </form>
