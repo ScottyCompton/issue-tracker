@@ -1,11 +1,12 @@
 'use client'
-import { TextField, Button, Skeleton, Flex, Text } from '@radix-ui/themes'
+import { TextField, Button, Skeleton, Flex, Text, Callout } from '@radix-ui/themes'
 import dynamic from 'next/dynamic'
 import "easymde/dist/easymde.min.css";
 import { useCallback, useState } from 'react';
 import { useForm, SubmitHandler, Controller } from "react-hook-form"
 import axios from "axios"
 import { useRouter } from 'next/navigation';
+import { BsExclamationTriangle } from 'react-icons/bs';
 
 // Dynamically import SimpleMDE to avoid SSR issues
 const SimpleMDE = dynamic(() => import("react-simplemde-editor"), {
@@ -39,9 +40,17 @@ const NewIssue:React.FC = () => {
     const { register, control, handleSubmit,  formState: { errors } } = useForm<IssueForm>();
     const router = useRouter()
     const [desc, setDesc] = useState('')
+    const [error, setError] = useState('')
+
+
     const onSubmit:SubmitHandler<IssueForm> = async (data) => {
-       await axios.post('/api/issues', data)
-       router.push('/issues')
+        try {
+           await axios.post('/api/issues', data)
+           router.push('/issues') 
+        } catch (error) {
+            setError('An unexpected error occurred.')
+        }
+
     }
 
     const onChange = useCallback((value: string) => {
@@ -53,6 +62,16 @@ const NewIssue:React.FC = () => {
     }
 
     return (
+        <div className='max-w-xl'>
+        {error && 	
+            <Callout.Root color="red" className='mb-5'>
+                <Callout.Icon>
+                    <BsExclamationTriangle />
+                </Callout.Icon>
+                <Callout.Text>
+                    {error}
+                </Callout.Text>
+            </Callout.Root>}
         <form className='max-w-xl space-y-3' onSubmit={handleSubmit(onSubmit)}>
         <TextField.Root placeholder='Title' {...register("title")} />
         <div>
@@ -61,14 +80,13 @@ const NewIssue:React.FC = () => {
                 control={control}
                 render={({field}) => <SimpleMDE id={field.name} placeholder='Description' value={desc} onChange={onChange} />}
                 />
-                
-                
          </div>
          <div className='text-right space-x-3'>
             <Button className='px-5 mr-5'>Create Issue</Button> &nbsp;
             <Button onClick={handleCancelClick}>Cancel</Button>
          </div>    
          </form>
+         </div>
   )
 }
 
