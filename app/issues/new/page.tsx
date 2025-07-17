@@ -10,6 +10,7 @@ import { BsExclamationTriangle } from 'react-icons/bs';
 import { zodResolver } from '@hookform/resolvers/zod'
 import { createIssueSchema } from '@/app/schemas/validationSchemas';
 import { z } from 'zod'
+import ErrorMessage from '@/app/components/ErrorMessage';
 
 // Dynamically import SimpleMDE to avoid SSR issues
 const SimpleMDE = dynamic(() => import("react-simplemde-editor"), {
@@ -75,14 +76,14 @@ const NewIssue:React.FC = () => {
             </Callout.Root>}
         <form className='max-w-xl space-y-3' onSubmit={handleSubmit(onSubmit)}>
         <TextField.Root placeholder='Title' {...register("title")} />
-        {errors.title && <Text color="red" as="p">{errors.title.message}</Text>}
+        <ErrorMessage>{errors.title?.message}</ErrorMessage>
         <div>
             <Controller 
                 name="description"
                 control={control}
                 render={({field}) => <SimpleMDE id={field.name} placeholder='Description' value={desc} onChange={onChange} />}
                 />
-            {errors.description && <Text color="red" as="p">Description is required</Text>}
+        <ErrorMessage>{errors.description?.message}</ErrorMessage>
         </div>
          <div className='text-right space-x-3'>
             <Button className='px-5 mr-5'>Create Issue</Button> &nbsp;
