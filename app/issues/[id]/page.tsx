@@ -1,15 +1,20 @@
 import prisma from '@/prisma/client'
+import { notFound } from 'next/navigation'
 import React from 'react'
 
+
 interface Props {
-    params: {
+    params: Promise<{
         id: string
-    }
+    }>
 }
 
+
 const IssueDetailsPage = async ({params}: Props) => {
+    const {id} = await params
+
     const issue = await prisma.issue.findUnique({
-        where: {id: parseInt(params.id)}
+        where: {id: parseInt(id)}
     })
 
   return (
