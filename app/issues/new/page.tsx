@@ -2,7 +2,7 @@
 import { TextField, Button, Skeleton, Flex, Text, Callout, Spinner } from '@radix-ui/themes'
 import dynamic from 'next/dynamic'
 import "easymde/dist/easymde.min.css";
-import { useCallback, useState } from 'react';
+import { Suspense, useState } from 'react';
 import { useForm, SubmitHandler, Controller } from "react-hook-form"
 import axios from "axios"
 import { useRouter } from 'next/navigation';
@@ -11,6 +11,31 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { createIssueSchema } from '@/app/schemas/validationSchemas';
 import { z } from 'zod'
 import ErrorMessage from '@/app/components/ErrorMessage';
+
+// Create a promise that resolves when SimpleMDE is loaded
+let simpleMDELoadedPromise: Promise<void> | null = null
+
+const getSimpleMDELoadedPromise = () => {
+    if (!simpleMDELoadedPromise) {
+        simpleMDELoadedPromise = import("react-simplemde-editor").then(() => {})
+    }
+    return simpleMDELoadedPromise
+}
+
+// Component that waits for SimpleMDE to load
+const TextFieldWithLoading = ({ ...props }: any) => {
+    const [isLoaded, setIsLoaded] = useState(false)
+    
+    useState(() => {
+        getSimpleMDELoadedPromise().then(() => setIsLoaded(true))
+    })
+    
+    if (!isLoaded) {
+        return <Skeleton minHeight="40px" className="w-full" />
+    }
+    
+    return <TextField.Root {...props} />
+}
 
 // Dynamically import SimpleMDE to avoid SSR issues
 const SimpleMDE = dynamic(() => import("react-simplemde-editor"), {
@@ -44,7 +69,6 @@ const NewIssue:React.FC = () => {
     const [apiError, setApiError] = useState('')
     const [isSubmitting, setIsSubmitting] = useState(false)
 
-
     const onSubmit:SubmitHandler<IssueForm> = async (data) => {
         try {
             setIsSubmitting(true)
@@ -54,7 +78,6 @@ const NewIssue:React.FC = () => {
             setIsSubmitting(false)
             setApiError('An unexpected error occurred.')
         }
-
     }
 
     const handleCancelClick = () => {
@@ -73,8 +96,10 @@ const NewIssue:React.FC = () => {
                 </Callout.Text>
             </Callout.Root>}
         <form className='max-w-xl space-y-3' onSubmit={handleSubmit(onSubmit)}>
-        <TextField.Root placeholder='Title' {...register("title")} />
+        
+        <TextFieldWithLoading placeholder='Title' {...register("title")} />
         <ErrorMessage>{errors.title?.message}</ErrorMessage>
+        
         <div>
             <Controller 
                 name="description"
