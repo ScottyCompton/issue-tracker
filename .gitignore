@@ -38,3 +38,5 @@ next-env.d.ts
 /app/generated/prisma
 .react-email/
 /app/generated/prisma
+
+Application Data/
