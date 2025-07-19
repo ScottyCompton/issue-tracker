@@ -7,7 +7,7 @@ interface Props {
 
 const ErrorPage:React.FC<Props> = ({ error, reset }: Props) => {
     console.log('Error',error);
-    reset();
+
   return (
     <>
         <div>An unexpected error has occurred</div>
