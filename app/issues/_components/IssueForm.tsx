@@ -76,10 +76,14 @@ const IssueForm:React.FC<Props> = ({issue}: Props) => {
 
     const onSubmit:SubmitHandler<IssueFormData> = async (data) => {
         try {
-            setIsSubmitting(true)
-           await axios.post('/api/issues', data)
-           router.push('/issues') 
-        } catch (apiError) {
+           setIsSubmitting(true)
+           if(issue) {
+            await axios.patch(`/api/issues/${issue.id}`, data)
+           } else {
+            await axios.post('/api/issues', data)
+        }
+        router.push('/issues') 
+    } catch (apiError) {
             setIsSubmitting(false)
             setApiError('An unexpected error occurred.')
         }
@@ -118,7 +122,7 @@ const IssueForm:React.FC<Props> = ({issue}: Props) => {
                 />        
         </div>
          <div className='text-right space-x-3'>
-            <Button type="submit" disabled={isSubmitting} className='px-5 mr-5'>Create Issue {isSubmitting && <Spinner />}</Button> &nbsp;
+            <Button type="submit" disabled={isSubmitting} className='px-5 mr-5'>{issue ? 'Update' : 'Create'} Issue {isSubmitting && <Spinner />}</Button> &nbsp;
             <Button onClick={handleCancelClick}>Cancel</Button>
          </div>    
          </form>
