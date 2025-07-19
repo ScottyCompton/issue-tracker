@@ -13,5 +13,5 @@ const IssuesPage:React.FC = async () => {
     </div>
   )
 }
-
+export const dynamic = 'force-dynamic';
 export default IssuesPage

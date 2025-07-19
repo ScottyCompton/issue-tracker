@@ -82,7 +82,8 @@ const IssueForm:React.FC<Props> = ({issue}: Props) => {
            } else {
             await axios.post('/api/issues', data)
         }
-        router.push('/issues') 
+        router.push('/issues')
+        router.refresh()
     } catch (apiError) {
             setIsSubmitting(false)
             setApiError('An unexpected error occurred.')
