@@ -1,7 +1,6 @@
 @import "tailwindcss";
-@plugin "daisyui" {
-  themes: light --default, dark --prefersdark, cupcake, aqua, winter, retro;
-}
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
 
 :root {
   --foreground-rgb: 0, 0, 0;
