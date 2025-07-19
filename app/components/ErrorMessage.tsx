@@ -1,11 +1,10 @@
-import React from 'react'
 import { Text } from '@radix-ui/themes'
 
-interface ErrorMessageProps {
+interface Props {
   children?: string
 }
 
-const ErrorMessage: React.FC<ErrorMessageProps> = ({ children }: ErrorMessageProps) => {
+const ErrorMessage: React.FC<Props> = ({ children }: Props) => {
   if (!children) return null
   return (
     <Text color="red" as="p">{children}</Text>

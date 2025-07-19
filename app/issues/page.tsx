@@ -3,7 +3,7 @@ import delay from 'delay'
 import IssuesToolbar from './components/IssuesToolbar'
 import IssuesList from './components/IssuesList'
 
-const IssuesPage = async () => {
+const IssuesPage:React.FC = async () => {
     await delay(1000)
 
   return (

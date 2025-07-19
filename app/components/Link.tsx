@@ -1,5 +1,5 @@
 'use client'
-import { Link as RadixLink } from '@radix-ui/themes'
+import { Link as RadixLink } from '@radix-ui/themes';
 import { useRouter } from 'next/navigation';
 
 interface Props {
@@ -7,7 +7,7 @@ interface Props {
     children: string
 }
 
-const Link = ({href, children}: Props) => {
+const Link:React.FC<Props> = ({href, children}: Props) => {
   const router = useRouter()
 
   const handleClick = () => {

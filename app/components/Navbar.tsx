@@ -6,7 +6,7 @@ import { BsBugFill } from "react-icons/bs";
 import { usePathname } from 'next/navigation';
 import classNames from 'classnames';
 
-const Navbar = () => {
+const Navbar:React.FC = () => {
     const currentPath = usePathname()
     const links = [
         {label: 'Dashboard', href: '/'},

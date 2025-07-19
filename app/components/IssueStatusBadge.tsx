@@ -3,7 +3,7 @@ import { Status } from '../generated/prisma'
 import { Badge } from '@radix-ui/themes'
 
 
-interface IssueStatusBadgeProps {
+interface Props {
     status: Status
 }
 
@@ -13,7 +13,7 @@ const statusMap:Record<Status, {label: string, color: 'red' | 'violet' | 'green'
     CLOSED: {label: 'Closed', color: 'green'}
 }
 
-const IssueStatusBadge:React.FC<IssueStatusBadgeProps> = ({status}: IssueStatusBadgeProps) => {
+const IssueStatusBadge:React.FC<Props> = ({status}: Props) => {
   return (
     <Badge color={statusMap[status].color}>{statusMap[status].label}</Badge>
   )

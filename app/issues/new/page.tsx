@@ -2,7 +2,7 @@
 import { TextField, Button, Skeleton, Flex, Text, Callout, Spinner } from '@radix-ui/themes'
 import dynamic from 'next/dynamic'
 import "easymde/dist/easymde.min.css";
-import { Suspense, useState } from 'react';
+import { useState } from 'react';
 import { useForm, SubmitHandler, Controller } from "react-hook-form"
 import axios from "axios"
 import { useRouter } from 'next/navigation';
