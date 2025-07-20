@@ -13,51 +13,8 @@ import { z } from 'zod'
 import ErrorMessage from '@/app/components/ErrorMessage';
 import { Issue } from '@/app/generated/prisma';
 
-// Create a promise that resolves when SimpleMDE is loaded
-let simpleMDELoadedPromise: Promise<void> | null = null
-
-const getSimpleMDELoadedPromise = () => {
-    if (!simpleMDELoadedPromise) {
-        simpleMDELoadedPromise = import("react-simplemde-editor").then(() => {})
-    }
-    return simpleMDELoadedPromise
-}
-
-// Component that waits for SimpleMDE to load
-const TextFieldWithLoading = ({ ...props }: any) => {
-    const [isLoaded, setIsLoaded] = useState(false)
-    
-    useEffect(() => {
-        getSimpleMDELoadedPromise().then(() => setIsLoaded(true))
-    }, [])
-    
-    if (!isLoaded) {
-        return <Skeleton minHeight="40px" className="w-full" />
-    }
-    
-    return <TextField.Root {...props} />
-}
-
-// Dynamically import SimpleMDE to avoid SSR issues
 const SimpleMDE = dynamic(() => import("react-simplemde-editor"), {
   ssr: false,
-  loading: () => 	
-    <Flex direction="column" gap="3">
-    <Text>
-        <Skeleton minHeight="200px">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque
-            felis tellus, efficitur id convallis a, viverra eget libero. Nam magna
-            erat, fringilla sed commodo sed, aliquet nec magna.
-        </Skeleton>
-    </Text>
-    <Text>
-        <Skeleton minHeight="200px">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque
-            felis tellus, efficitur id convallis a, viverra eget libero. Nam magna
-            erat, fringilla sed commodo sed, aliquet nec magna.
-        </Skeleton>
-    </Text>    
-    </Flex>
 })
 
 type IssueFormData = z.infer<typeof issueSchema>
@@ -95,7 +52,7 @@ const IssueForm:React.FC<Props> = ({issue}: Props) => {
     }
 
     return (
-        <div className='max-w-xl'>
+        <div className='max-w-5xl'>
         {apiError && 	
             <Callout.Root color="red" className='mb-5'>
                 <Callout.Icon>
@@ -107,7 +64,7 @@ const IssueForm:React.FC<Props> = ({issue}: Props) => {
             </Callout.Root>}
         <form className='max-w-xl space-y-3' onSubmit={handleSubmit(onSubmit)}>
         
-        <TextFieldWithLoading placeholder='Title' defaultValue={issue?.title} {...register("title")} />
+        <TextField.Root placeholder='Title' defaultValue={issue?.title} {...register("title")} />
         <ErrorMessage>{errors.title?.message}</ErrorMessage>
         
         <div>
@@ -117,7 +74,7 @@ const IssueForm:React.FC<Props> = ({issue}: Props) => {
                 defaultValue={issue?.description || ''}
                 render={({field}) => 
                 <>
-                    <SimpleMDE id={field.name} placeholder='Description' value={field.value} onChange={field.onChange} />
+                    <SimpleMDE placeholder='Description' {...field} />
                     <ErrorMessage>{errors.description?.message}</ErrorMessage>
                 </>}
                 />        

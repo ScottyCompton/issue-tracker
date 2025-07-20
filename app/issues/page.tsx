@@ -4,7 +4,6 @@ import IssuesToolbar from './_components/IssuesToolbar'
 import IssuesList from './_components/IssuesList'
 
 const IssuesPage:React.FC = async () => {
-    await delay(1000)
 
   return (
     <div>
