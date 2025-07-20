@@ -1,17 +1,17 @@
 'use client'
-import { TextField, Button, Skeleton, Flex, Text, Callout, Spinner } from '@radix-ui/themes'
-import dynamic from 'next/dynamic'
-import "easymde/dist/easymde.min.css";
-import { Suspense, useState, useEffect } from 'react';
-import { useForm, SubmitHandler, Controller } from "react-hook-form"
-import axios from "axios"
-import { useRouter } from 'next/navigation';
-import { BsExclamationTriangle } from 'react-icons/bs';
-import { zodResolver } from '@hookform/resolvers/zod'
-import { issueSchema } from '@/app/schemas/validationSchemas';
-import { z } from 'zod'
 import ErrorMessage from '@/app/components/ErrorMessage';
 import { Issue } from '@/app/generated/prisma';
+import { issueSchema } from '@/app/schemas/validationSchemas';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Button, Callout, Spinner, TextField } from '@radix-ui/themes';
+import axios from "axios";
+import "easymde/dist/easymde.min.css";
+import dynamic from 'next/dynamic';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+import { Controller, SubmitHandler, useForm } from "react-hook-form";
+import { BsExclamationTriangle } from 'react-icons/bs';
+import { z } from 'zod';
 
 const SimpleMDE = dynamic(() => import("react-simplemde-editor"), {
   ssr: false,
@@ -39,7 +39,7 @@ const IssueForm:React.FC<Props> = ({issue}: Props) => {
            } else {
             await axios.post('/api/issues', data)
         }
-        router.push('/issues')
+        router.push('/issues/list')
         router.refresh()
     } catch (apiError) {
             setIsSubmitting(false)
@@ -48,7 +48,7 @@ const IssueForm:React.FC<Props> = ({issue}: Props) => {
     }
 
     const handleCancelClick = () => {
-        router.push('/issues')
+        router.push('/issues/list')
     }
 
     return (

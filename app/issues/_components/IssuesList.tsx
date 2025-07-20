@@ -25,7 +25,7 @@ const IssuesList:React.FC = async () => {
                         {issues.map((issue) => (
                             <Table.Row key={issue.id}>
                                 <Table.Cell>
-                                    <Link href={`/issues/${issue.id}`}>
+                                    <Link href={`/issues/edit/${issue.id}`}>
                                         {issue.title}
                                     </Link>
                                     <div className="block md:hidden">

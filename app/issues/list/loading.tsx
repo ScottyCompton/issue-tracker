@@ -1,5 +1,5 @@
 import { Skeleton, Table } from '@radix-ui/themes'
-import IssuesToolbar from './_components/IssuesToolbar'
+import IssuesToolbar from '../_components/IssuesToolbar'
 
 const IssuesLoadingSkeleton:React.FC = () => {
   const issues = [1,2,3,4,5]
