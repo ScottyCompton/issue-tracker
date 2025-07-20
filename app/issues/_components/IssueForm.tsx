@@ -52,7 +52,7 @@ const IssueForm:React.FC<Props> = ({issue}: Props) => {
     }
 
     return (
-        <div className='max-w-5xl'>
+        <div className='max-w-full'>
         {apiError && 	
             <Callout.Root color="red" className='mb-5'>
                 <Callout.Icon>
@@ -62,7 +62,7 @@ const IssueForm:React.FC<Props> = ({issue}: Props) => {
                     {apiError}
                 </Callout.Text>
             </Callout.Root>}
-        <form className='max-w-xl space-y-3' onSubmit={handleSubmit(onSubmit)}>
+        <form className='space-y-3' onSubmit={handleSubmit(onSubmit)}>
         
         <TextField.Root placeholder='Title' defaultValue={issue?.title} {...register("title")} />
         <ErrorMessage>{errors.title?.message}</ErrorMessage>
