@@ -8,7 +8,7 @@ interface Props {
 
 const EditIssueButton:React.FC<Props> = ({issueId}: Props) => {
   return (
-    <Button><Pencil2Icon /><Link href={`/issues/${issueId}/edit`}>Edit Issue</Link></Button>
+    <Button><Pencil2Icon /><Link href={`/issues/edit/${issueId}`}>Edit Issue</Link></Button>
   )
 }
 
