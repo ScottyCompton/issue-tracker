@@ -37,7 +37,7 @@ const Navbar:React.FC = () => {
             })}
         </ul>
         <Box>
-        {status === 'authenticated' && <Link href="/api/auth/signout">Sign Out</Link>}
+        {status === 'authenticated' && <Link href="/api/auth/signout">Logout</Link>}
         {status === 'unauthenticated' && <Link href="/api/auth/signin">Login</Link>}
         </Box>
     </nav>
