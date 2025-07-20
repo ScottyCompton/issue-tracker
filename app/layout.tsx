@@ -5,6 +5,7 @@ import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import Navbar from './components/Navbar'
 import { Container, Theme } from "@radix-ui/themes"
+import { SessionProvider } from "next-auth/react";
 
 const inter = Inter({
 	subsets: ["latin"],
@@ -25,9 +26,12 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.variable}>
         <Theme>
-          <Navbar />
-          <main className='p-5'>
-            <Container >{children}</Container></main>
+          <SessionProvider>
+            <Navbar />
+            <main className='p-5'>
+              <Container>{children}</Container>
+            </main>
+          </SessionProvider>
         </Theme>
       </body>
     </html>

@@ -5,9 +5,14 @@ import React from 'react'
 import { BsBugFill } from "react-icons/bs";
 import { usePathname } from 'next/navigation';
 import classNames from 'classnames';
+import { useSession } from 'next-auth/react'
+import { Box } from '@radix-ui/themes';
 
 const Navbar:React.FC = () => {
     const currentPath = usePathname()
+
+    const {status, data: session} = useSession()
+
     const links = [
         {label: 'Dashboard', href: '/'},
         {label: 'Issues', href: '/issues/list'},
@@ -30,8 +35,11 @@ const Navbar:React.FC = () => {
                     </li>
                 )
             })}
-
         </ul>
+        <Box>
+        {status === 'authenticated' && <Link href="/api/auth/signout">Sign Out</Link>}
+        {status === 'unauthenticated' && <Link href="/api/auth/signin">Login</Link>}
+        </Box>
     </nav>
   )
 }
