@@ -10,6 +10,12 @@ export const typeDefs = gql`
     updatedAt: String!
   }
 
+  type User {
+    id:  ID!
+    name: String!
+    email: String!
+  }
+
   enum Status {
     OPEN
     IN_PROGRESS
@@ -19,6 +25,7 @@ export const typeDefs = gql`
   type Query {
     issues: [Issue!]!
     issue(id: ID!): Issue
+    users: [User!]!
   }
 
   input CreateIssueInput {

@@ -13,6 +13,10 @@ export const resolvers = {
       return await prisma.issue.findUnique({
         where: { id: parseInt(id) }
       })
+    },
+
+    users: async () => {
+      return await prisma.user.findMany()
     }
   },
 

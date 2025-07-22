@@ -16,7 +16,6 @@ interface Issue {
 
 
 const IssuesList:React.FC = async () => {
-    // const issues = await prisma.issue.findMany()
     const { data } = await graphqlClient.query({
       query: GET_ISSUES_QUERY
     })

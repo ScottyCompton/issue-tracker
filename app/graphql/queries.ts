@@ -24,6 +24,16 @@ const GET_ISSUE_QUERY = gql`
   }
 `
 
+const GET_USERS_QUERY = gql`
+    query GetUsers {
+        users {
+            id
+            name
+            email
+        }
+    }
+`
+
 const UPDATE_ISSUE_MUTATION = gql`
   mutation UpdateIssue($id: ID!, $input: UpdateIssueInput!) {
     updateIssue(id: $id, input: $input) {
@@ -56,4 +66,4 @@ const DELETE_ISSUE_MUTATION = gql`
   }
 `
 
-export {GET_ISSUES_QUERY, GET_ISSUE_QUERY, UPDATE_ISSUE_MUTATION, CREATE_ISSUE_MUTATION, DELETE_ISSUE_MUTATION}
+export {GET_ISSUES_QUERY, GET_ISSUE_QUERY, UPDATE_ISSUE_MUTATION, CREATE_ISSUE_MUTATION, DELETE_ISSUE_MUTATION, GET_USERS_QUERY}
