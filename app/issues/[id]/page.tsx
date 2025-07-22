@@ -1,11 +1,12 @@
-import prisma from '@/prisma/client'
-import { Box, Flex, Grid } from '@radix-ui/themes'
-import { notFound } from 'next/navigation'
-import EditIssueButton from './EditIssueButton'
-import IssueDetails from './IssueDetails'
-import DeleteIssueButton from './DeleteIssueButton'
+import { notFound } from "next/navigation"
+import { client as graphqlClient } from '@/app/lib/graphql-client'
+import { GET_ISSUE_QUERY } from '@/app/graphql/queries'
 import { getServerSession } from 'next-auth'
 import authOptions from '@/app/auth/authOptions'
+import { Box, Flex, Grid } from '@radix-ui/themes'
+import IssueDetails from './IssueDetails'
+import EditIssueButton from './EditIssueButton'
+import DeleteIssueButton from './DeleteIssueButton'
 
 interface Props {
     params: Promise<{
@@ -15,12 +16,12 @@ interface Props {
 
 const IssueDetailsPage: React.FC<Props> = async ({ params }: Props) => {
     const session = await getServerSession(authOptions)
-
     const { id } = await params
 
-    const issue = await prisma.issue.findUnique({
-        where: { id: parseInt(id) },
-    })
+    const issue = await graphqlClient.query({
+        query: GET_ISSUE_QUERY,
+        variables: { id }
+    }).then(res => res.data.issue)
 
     if (!issue) notFound()
     return (

@@ -1,9 +1,26 @@
 import { IssueStatusBadge, Link } from '@/app/components'
-import prisma from '@/prisma/client'
 import { Table } from '@radix-ui/themes'
+import { client as graphqlClient} from '@/app/lib/graphql-client'
+import { Status } from '@/app/generated/prisma'
+import { GET_ISSUES_QUERY } from '@/app/graphql/queries'
+import { formatDate } from '@/app/lib/utils'
+
+
+
+interface Issue {
+    id: number,
+    title: string,
+    status: Status,
+    createdAt: Date
+}
+
 
 const IssuesList:React.FC = async () => {
-    const issues = await prisma.issue.findMany()
+    // const issues = await prisma.issue.findMany()
+    const { data } = await graphqlClient.query({
+      query: GET_ISSUES_QUERY
+    })
+    const { issues } = data
     return (
         <>
             {issues.length > 0 && (
@@ -22,7 +39,7 @@ const IssuesList:React.FC = async () => {
                         </Table.Row>
                     </Table.Header>
                     <Table.Body>
-                        {issues.map((issue) => (
+                        {issues.map((issue:Issue) => (
                             <Table.Row key={issue.id}>
                                 <Table.Cell>
                                     <Link href={`/issues/${issue.id}`}>
@@ -38,7 +55,7 @@ const IssuesList:React.FC = async () => {
                                     <IssueStatusBadge status={issue.status} />
                                 </Table.Cell>
                                 <Table.Cell className="hidden md:table-cell">
-                                    {issue.createdAt.toDateString()}
+                                    {formatDate(issue.createdAt)}
                                 </Table.Cell>
                             </Table.Row>
                         ))}

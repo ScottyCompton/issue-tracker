@@ -1,5 +1,5 @@
 import prisma from "@/prisma/client"
-import { createIssueSchema, issueSchema } from "@/app/schemas/validationSchemas"
+import { issueSchema } from "@/app/schemas/validationSchemas"
 
 export const resolvers = {
   Query: {
@@ -19,7 +19,7 @@ export const resolvers = {
   Mutation: {
     createIssue: async (_: any, { input }: { input: { title: string; description: string } }) => {
       // Validate input
-      const validation = createIssueSchema.safeParse(input)
+      const validation = issueSchema.safeParse(input)
       if (!validation.success) {
         throw new Error('Invalid input data')
       }
