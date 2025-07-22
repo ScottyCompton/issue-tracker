@@ -2,7 +2,8 @@
 import { Select } from '@radix-ui/themes'
 import { client as graphqlClient} from '@/app/lib/graphql-client'
 import { GET_USERS_QUERY } from '@/app/graphql/queries'
-import { useEffect, useState } from 'react'
+import { useQuery } from '@tanstack/react-query'
+import { Skeleton } from '@/app/components'
 
 interface User {
     id: string
@@ -11,18 +12,17 @@ interface User {
 }
 
 const AssigneeSelect = () => {
-    const [users, setUsers] = useState<User[]>([])
+    const { data: users, error, isLoading} = useQuery<User[]>({
+        queryKey: ['users'],
+        queryFn: () => graphqlClient.query({query: GET_USERS_QUERY}).then(res => res.data.users),
+        staleTime: 6000,
+        retry: 3
+    })
 
-    useEffect(() => {
-        const fetchUsers = async () => {
-            const {data} = await graphqlClient.query({
-                query: GET_USERS_QUERY
-            })
-            const {users} = data
-            setUsers(users)
-        }
-        fetchUsers()
-    }, [])
+    if(isLoading) return <Skeleton />
+
+    if(error) return null
+
 
   return (
     <Select.Root>
@@ -30,7 +30,7 @@ const AssigneeSelect = () => {
 	<Select.Content>
 		<Select.Group>
 			<Select.Label>Suggestions</Select.Label>
-            {users && users.map((user:User) => <Select.Item key={user.id} value={user.id}>{user.name}</Select.Item>)}
+            {users?.map((user:User) => <Select.Item key={user.id} value={user.id}>{user.name}</Select.Item>)}
 		</Select.Group>
 
 	</Select.Content>
