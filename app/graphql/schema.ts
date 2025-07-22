@@ -8,6 +8,12 @@ export const typeDefs = gql`
     status: Status!
     createdAt: String!
     updatedAt: String!
+    assignedToUserId: String
+  }
+
+  type IssueAssignee {
+    id: ID!
+    assignedToUserId: String
   }
 
   type User {
@@ -37,11 +43,17 @@ export const typeDefs = gql`
     title: String
     description: String
     status: Status
+    assignedToUserId: String
+  }
+
+  input UpdateIssueAssigneeInput {
+    assignedToUserId: String
   }
 
   type Mutation {
     createIssue(input: CreateIssueInput!): Issue!
     updateIssue(id: ID!, input: UpdateIssueInput!): Issue!
+    updateIssueAssignee(id: ID!, input: UpdateIssueAssigneeInput!): IssueAssignee!
     deleteIssue(id: ID!): Boolean!
   }
 ` 

@@ -20,6 +20,7 @@ const GET_ISSUE_QUERY = gql`
       status
       createdAt
       updatedAt
+      assignedToUserId
     }
   }
 `
@@ -47,6 +48,15 @@ const UPDATE_ISSUE_MUTATION = gql`
   }
 `
 
+const UPDATE_ISSUE_ASSIGNEE_MUTATION = gql`
+    mutation UpdateIssueAssignee($id: ID!, $input: UpdateIssueAssigneeInput!) {
+        updateIssueAssignee(id: $id, input: $input) {
+          id
+          assignedToUserId
+        }
+    }
+`
+
 const CREATE_ISSUE_MUTATION = gql`
   mutation CreateIssue($input: CreateIssueInput!) {
     createIssue(input: $input) {
@@ -66,4 +76,12 @@ const DELETE_ISSUE_MUTATION = gql`
   }
 `
 
-export {GET_ISSUES_QUERY, GET_ISSUE_QUERY, UPDATE_ISSUE_MUTATION, CREATE_ISSUE_MUTATION, DELETE_ISSUE_MUTATION, GET_USERS_QUERY}
+export {
+    GET_ISSUES_QUERY, 
+    GET_ISSUE_QUERY, 
+    UPDATE_ISSUE_MUTATION, 
+    CREATE_ISSUE_MUTATION, 
+    DELETE_ISSUE_MUTATION, 
+    GET_USERS_QUERY, 
+    UPDATE_ISSUE_ASSIGNEE_MUTATION
+}

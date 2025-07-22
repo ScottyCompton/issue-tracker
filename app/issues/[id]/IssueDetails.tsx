@@ -1,16 +1,25 @@
 import { IssueStatusBadge } from '@/app/components'
-import { Issue } from '@/app/generated/prisma'
 import { Card, Flex, Heading, Text } from '@radix-ui/themes'
 import React from 'react'
 import ReactMarkdown from 'react-markdown'
 import { formatDate } from '@/app/lib/utils'
+import { Status } from '@/app/generated/prisma'
+
+interface GraphQLIssue {
+    id: string
+    title: string
+    description: string | null
+    status: Status
+    createdAt: string
+    updatedAt: string
+    assignedToUserId: string | null
+}
 
 interface Props {
-    issue: Issue
+    issue: GraphQLIssue
 }
 
 const IssueDetails:React.FC<Props> = ({issue}: Props) => {
-
   return (
     <>
     <Heading>{issue.title}</Heading>
