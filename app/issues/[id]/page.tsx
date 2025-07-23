@@ -4,10 +4,10 @@ import { GET_ISSUE_QUERY } from '@/app/graphql/queries'
 import { getServerSession } from 'next-auth'
 import authOptions from '@/app/auth/authOptions'
 import { Box, Flex, Grid } from '@radix-ui/themes'
-import IssueDetails from './IssueDetails'
-import EditIssueButton from './EditIssueButton'
-import DeleteIssueButton from './DeleteIssueButton'
-import AssigneeSelect from "./AssigneeSelect"
+import IssueDetails from '../_components/IssueDetails'
+import EditIssueButton from '../_components/EditIssueButton'
+import DeleteIssueButton from '../_components/DeleteIssueButton'
+import AssigneeSelect from "../_components/AssigneeSelect"
 
 interface Props {
     params: Promise<{

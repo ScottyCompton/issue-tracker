@@ -1,14 +1,25 @@
-import { Button } from '@radix-ui/themes'
+'use client'
+
+import { Button, Container, Flex } from '@radix-ui/themes'
 import Link from 'next/link'
+import IssueStatusFilter from './IssueStatusFilter'
 
 
 interface Props {
   loading?: boolean
+  currStatus?: string
 }
 
-const IssuesToolbar:React.FC<Props> = ({loading = false}: Props) => {
+const IssuesToolbar:React.FC<Props> = ({currStatus, loading = false}: Props) => {
+
+
   return (
-    <div className='mb-5 text-right'><Button disabled={loading}><Link href='/issues/new/'>Create Issue</Link></Button></div>
+    <Container className="my-3">
+    <Flex justify="between">
+      <IssueStatusFilter currStatus={currStatus} />
+      <Button disabled={loading}><Link href='/issues/new/'>Create Issue</Link></Button>
+    </Flex>
+    </Container>
 )
 }
 

@@ -14,15 +14,21 @@ interface Issue {
     createdAt: Date
 }
 
+interface Props {
+   filter: string
 
-const IssuesList:React.FC = async () => {
+}
+
+
+const IssuesList:React.FC<Props> = async ({filter}: Props) => {
     const { data } = await graphqlClient.query({
       query: GET_ISSUES_QUERY
     })
-    const { issues } = data
+    // const {issues} = data;
+    const issues = filter ? data.issues.filter((item: Issue) => item.status.toString() === filter) : data.issues
+
     return (
         <>
-            {issues.length > 0 && (
                 <Table.Root variant="surface">
                     <Table.Header>
                         <Table.Row>
@@ -38,7 +44,7 @@ const IssuesList:React.FC = async () => {
                         </Table.Row>
                     </Table.Header>
                     <Table.Body>
-                        {issues.map((issue:Issue) => (
+                        {issues && issues.map((issue:Issue) => (
                             <Table.Row key={issue.id}>
                                 <Table.Cell>
                                     <Link href={`/issues/${issue.id}`}>
@@ -58,9 +64,13 @@ const IssuesList:React.FC = async () => {
                                 </Table.Cell>
                             </Table.Row>
                         ))}
+                        {issues.length === 0 && 
+                            <Table.Row>
+                                <Table.Cell colSpan={3} className='py-10 text-center'>No Issues with status of <IssueStatusBadge status={filter as Status} /> found</Table.Cell>
+                            </Table.Row>
+                        }
                     </Table.Body>
                 </Table.Root>
-            )}
         </>
     )
 }

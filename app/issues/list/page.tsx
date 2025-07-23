@@ -3,12 +3,19 @@ import delay from 'delay'
 import IssuesToolbar from '../_components/IssuesToolbar'
 import IssuesList from '../_components/IssuesList'
 
-const IssuesPage:React.FC = async () => {
+interface Props {
+  searchParams: Promise<{
+    status: string
+  }>
+}
 
+
+const IssuesPage:React.FC<Props> = async ({searchParams}: Props) => {
+  const {status} = await searchParams
   return (
     <div>
-        <IssuesToolbar />
-        <IssuesList />
+        <IssuesToolbar currStatus={status} />
+        <IssuesList filter={status} />
     </div>
   )
 }

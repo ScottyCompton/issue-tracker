@@ -11,6 +11,12 @@ const globalForPrisma = global as unknown as {
     prisma: PrismaClientSingleton | undefined
 }
 
+export enum Status {
+    OPEN,
+    IN_PROGRESS,
+    CLOSED
+  }
+
 const prisma = globalForPrisma.prisma ?? prismaClientSingleton()
 
 if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma
