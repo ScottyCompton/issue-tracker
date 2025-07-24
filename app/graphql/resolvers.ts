@@ -1,11 +1,11 @@
 import prisma from "@/prisma/client"
-import { createIssueSchema, issueSchema } from "@/app/schemas/validationSchemas"
+import { issueSchema, updateIssueAssigneeSchema } from "@/app/schemas/validationSchemas"
 
 export const resolvers = {
   Query: {
-    issues: async () => {
+    issues: async (_:any, args: any) => {
       return await prisma.issue.findMany({
-        orderBy: { createdAt: 'desc' }
+        orderBy: args.orderBy
       })
     },
     
@@ -13,13 +13,18 @@ export const resolvers = {
       return await prisma.issue.findUnique({
         where: { id: parseInt(id) }
       })
-    }
+    },
+
+    users: async () => {
+      return await prisma.user.findMany()
+    },
+
   },
 
   Mutation: {
     createIssue: async (_: any, { input }: { input: { title: string; description: string } }) => {
       // Validate input
-      const validation = createIssueSchema.safeParse(input)
+      const validation = issueSchema.safeParse(input)
       if (!validation.success) {
         throw new Error('Invalid input data')
       }
@@ -32,6 +37,39 @@ export const resolvers = {
       })
     },
 
+    updateIssueAssignee: async(_: any, {id, input}: {id: string, input: any}) => {
+      const validation = updateIssueAssigneeSchema.safeParse(input)
+
+      if(!validation.success) {
+        throw new Error('Invalid input')
+      }
+
+      const issue = await prisma.issue.findUnique({
+        where: { id: parseInt(id) }
+      })
+            
+      if (!issue) {
+        throw new Error('Issue not found')
+      }
+
+      const { assignedToUserId }  = input
+      if (assignedToUserId) {
+        const user = await prisma.user.findUnique({
+          where: { id: assignedToUserId }
+        })
+        
+        if(!user) {
+          throw new Error('Invalid assignedToUserId')
+        }
+      }
+
+      return await prisma.issue.update({
+        where: { id: parseInt(id) },
+        data: input
+      })
+
+    },
+
     updateIssue: async (_: any, { id, input }: { id: string; input: any }) => {
       // Validate input
       const validation = issueSchema.safeParse(input)
@@ -42,6 +80,17 @@ export const resolvers = {
       const issue = await prisma.issue.findUnique({
         where: { id: parseInt(id) }
       })
+
+      const { assignedToUserId }  = input
+      if (assignedToUserId) {
+        const user = await prisma.user.findUnique({
+          where: { id: assignedToUserId }
+        })
+        
+        if(!user) {
+          throw new Error('Invalid assignedToUserId')
+        }
+      }
 
       if (!issue) {
         throw new Error('Issue not found')

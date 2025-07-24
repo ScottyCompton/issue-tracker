@@ -1,10 +1,11 @@
 'use client'
 import { Spinner } from '@/app/components'
 import { AlertDialog, Button, Callout, Flex } from '@radix-ui/themes'
-import axios from 'axios'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { BsExclamationTriangle } from 'react-icons/bs'
+import { client as graphqlClient } from '@/app/lib/graphql-client'
+import { DELETE_ISSUE_MUTATION } from '@/app/graphql/queries'
 
 
 interface Props {
@@ -20,7 +21,10 @@ const DeleteIssueButton: React.FC<Props> = ({ issueId }: Props) => {
     const doDelete = async () => {
         try {
             setIsDeleting(true)
-            await axios.delete(`/api/issues/${issueId}`)            
+            await graphqlClient.mutate({
+              mutation: DELETE_ISSUE_MUTATION,
+              variables: { id: issueId }
+            })
             router.push('/issues/list')
             router.refresh()
         } catch(apiError) {

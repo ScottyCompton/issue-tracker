@@ -1,14 +1,21 @@
-import React from 'react'
-import delay from 'delay'
 import IssuesToolbar from '../_components/IssuesToolbar'
 import IssuesList from '../_components/IssuesList'
 
-const IssuesPage:React.FC = async () => {
+interface Props {
+  searchParams: Promise<{
+    status: string
+    sortBy?: string
+    sortOrder?: string
+  }>
+}
 
+
+const IssuesPage:React.FC<Props> = async ({searchParams}: Props) => {
+  const {status, sortBy, sortOrder} = await searchParams
   return (
     <div>
-        <IssuesToolbar />
-        <IssuesList />
+        <IssuesToolbar currStatus={status} />
+        <IssuesList filter={status} sortBy={sortBy} sortOrder={sortOrder} />
     </div>
   )
 }
