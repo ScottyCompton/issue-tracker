@@ -1,6 +1,18 @@
 import { gql } from 'graphql-tag'
 
 export const typeDefs = gql`
+
+  enum Status {
+    OPEN
+    IN_PROGRESS
+    CLOSED
+  }
+
+  enum SortOrder {
+    asc 
+    desc
+  }
+
   type Issue {
     id: ID!
     title: String!
@@ -22,14 +34,10 @@ export const typeDefs = gql`
     email: String!
   }
 
-  enum Status {
-    OPEN
-    IN_PROGRESS
-    CLOSED
-  }
+
 
   type Query {
-    issues: [Issue!]!
+    issues(orderBy: IssueOrderBy): [Issue!]!
     issue(id: ID!): Issue
     users: [User!]!
   }
@@ -37,6 +45,12 @@ export const typeDefs = gql`
   input CreateIssueInput {
     title: String!
     description: String!
+  }
+
+  input IssueOrderBy {
+    title: SortOrder
+    description: SortOrder
+    createdAt: SortOrder
   }
 
   input UpdateIssueInput {

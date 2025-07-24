@@ -3,9 +3,9 @@ import { issueSchema, updateIssueAssigneeSchema } from "@/app/schemas/validation
 
 export const resolvers = {
   Query: {
-    issues: async () => {
+    issues: async (_:any, args: any) => {
       return await prisma.issue.findMany({
-        orderBy: { createdAt: 'desc' }
+        orderBy: args.orderBy
       })
     },
     

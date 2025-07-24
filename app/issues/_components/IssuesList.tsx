@@ -4,7 +4,8 @@ import { client as graphqlClient} from '@/app/lib/graphql-client'
 import { Status } from '@/app/generated/prisma'
 import { GET_ISSUES_QUERY } from '@/app/graphql/queries'
 import { formatDate } from '@/app/lib/utils'
-
+import NextLink from 'next/link'
+import { ArrowDownIcon, ArrowUpIcon } from '@radix-ui/react-icons'
 
 
 interface Issue {
@@ -15,16 +16,34 @@ interface Issue {
 }
 
 interface Props {
-   filter: string
+   filter?: string
+   sortBy?: string
+   sortOrder?: string
 
 }
 
+interface Column {
+    label: string
+    value: keyof Issue 
+    className?: string
+    width: string
+}
 
-const IssuesList:React.FC<Props> = async ({filter}: Props) => {
+const IssuesList:React.FC<Props> = async ({filter, sortBy, sortOrder}: Props) => {
+
+    const columns:Column[] = [
+        {label: 'Issue', value: 'title', width: '50%'},
+        {label: 'Status', value: 'status', className: 'hidden md:table-cell', width: '25%'},
+        {label: 'Created', value: 'createdAt', className: 'hidden md:table-cell', width: '25%'},
+    ]
+
+    console.log(sortBy, sortOrder)
+
     const { data } = await graphqlClient.query({
-      query: GET_ISSUES_QUERY
+      query: GET_ISSUES_QUERY,
+      variables: {orderBy: {title: sortOrder}}
     })
-    // const {issues} = data;
+
     const issues = filter ? data.issues.filter((item: Issue) => item.status.toString() === filter) : data.issues
 
     return (
@@ -32,15 +51,21 @@ const IssuesList:React.FC<Props> = async ({filter}: Props) => {
                 <Table.Root variant="surface">
                     <Table.Header>
                         <Table.Row>
-                            <Table.ColumnHeaderCell>
-                                Issue
+                          {columns.map((col) => (
+                            <Table.ColumnHeaderCell key={col.value} style={{width: col.width}}>
+                              <NextLink href={{
+                                query: {
+                                    status: filter,
+                                    sortBy: col.value,
+                                    sortOrder: sortOrder === 'asc' ? 'desc' : 'asc'
+                                }}
+                              }>{col.label}</NextLink>
+                              {col.value === sortBy && (
+                                sortOrder === 'asc' ? <ArrowUpIcon className='inline' /> : <ArrowDownIcon className='inline' />
+                              )}
                             </Table.ColumnHeaderCell>
-                            <Table.ColumnHeaderCell className="hidden md:table-cell">
-                                Status
-                            </Table.ColumnHeaderCell>
-                            <Table.ColumnHeaderCell className="hidden md:table-cell">
-                                Created
-                            </Table.ColumnHeaderCell>
+                          ))}
+
                         </Table.Row>
                     </Table.Header>
                     <Table.Body>
