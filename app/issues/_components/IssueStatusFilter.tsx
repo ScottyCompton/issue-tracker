@@ -2,7 +2,7 @@
 
 import { Select } from '@radix-ui/themes'
 import { Status } from '@/app/generated/prisma'
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 
 const statusArray: { label: string; value: Status}[] = [
@@ -17,9 +17,19 @@ interface Props {
 
 const IssueStatusFilter:React.FC<Props>  = ({currStatus}: Props) => {
     const router = useRouter()
+    const searchParams = useSearchParams()
 
     const handleSelect = (status: string) => {
-        router.push(`/issues/list/${status !== '-1' ? '?status=' + status : ''}`)
+        const params = new URLSearchParams()
+        if(status && status !== '-1') params.append('status', status)
+        if(searchParams.get('sortyBy')) 
+            params.append('sortBy', searchParams.get('sortBy')!)
+        if(searchParams.get('sortOrder')) 
+           params.append('sortOrder', searchParams.get('sortOrder')!)
+        
+        const query = params.size ? '?' + params.toString() : ''
+        console.log(query)
+        router.push(`/issues/list/${query}`)
     }
     return (
         <Select.Root
