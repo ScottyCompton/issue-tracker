@@ -37,7 +37,7 @@ export const typeDefs = gql`
 
 
   type Query {
-    issues(orderBy: IssueOrderBy): [Issue!]!
+    issues(orderBy: IssueOrderBy, status: Status): [Issue!]!
     issue(id: ID!): Issue
     users: [User!]!
   }
@@ -49,7 +49,7 @@ export const typeDefs = gql`
 
   input IssueOrderBy {
     title: SortOrder
-    description: SortOrder
+    status: SortOrder
     createdAt: SortOrder
   }
 

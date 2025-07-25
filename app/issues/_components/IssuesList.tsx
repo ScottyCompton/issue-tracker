@@ -37,12 +37,17 @@ const IssuesList:React.FC<Props> = async ({filter, sortBy, sortOrder}: Props) =>
         {label: 'Created', value: 'createdAt', className: 'hidden md:table-cell', width: '25%'},
     ]
 
+    const queryVariables = {
+        status: filter,
+        orderBy: sortBy && sortOrder ? { [sortBy]: sortOrder } : undefined
+    }
+
     const { data } = await graphqlClient.query({
       query: GET_ISSUES_QUERY,
-      variables: {orderBy: {title: sortOrder}}
+      variables: queryVariables
     })
 
-    const issues = filter ? data.issues.filter((item: Issue) => item.status.toString() === filter) : data.issues
+    const { issues } = data
 
     return (
         <>

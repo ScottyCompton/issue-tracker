@@ -1,8 +1,8 @@
 import { gql } from '@apollo/client'
 
 const GET_ISSUES_QUERY = gql`
-  query GetIssues($orderBy: IssueOrderBy) {
-    issues(orderBy: $orderBy) {
+  query GetIssues($orderBy: IssueOrderBy, $status: Status) {
+    issues(orderBy: $orderBy, status: $status) {
       id
       title
       status
