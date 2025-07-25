@@ -4,14 +4,8 @@ import { Status } from '@/app/generated/prisma'
 import { formatDate } from '@/app/lib/utils'
 import NextLink from 'next/link'
 import { ArrowDownIcon, ArrowUpIcon } from '@radix-ui/react-icons'
+import { Issue } from '@/app/interfaces'
 
-
-interface Issue {
-    id: number,
-    title: string,
-    status: Status,
-    createdAt: Date
-}
 
 export interface IssueQuery {
     status: string

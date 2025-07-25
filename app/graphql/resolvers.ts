@@ -17,6 +17,17 @@ export const resolvers = {
         take: args.paging.take
       })
     },
+
+    latestIssues: async () => {
+      return await prisma.issue.findMany({
+        orderBy: {createdAt: 'desc'},
+        take: 5,
+        include: {
+          assignedToUser: true
+        }
+      })
+      
+    },
     
     issuesCount: async(_:any, args: any) => {
       const where: any = {}
@@ -35,7 +46,9 @@ export const resolvers = {
     },
 
     users: async () => {
-      return await prisma.user.findMany()
+      const users = await prisma.user.findMany()
+      console.log('Available users:', users.map(user => ({ id: user.id, name: user.name })))
+      return users
     },
 
   },

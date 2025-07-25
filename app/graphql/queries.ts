@@ -11,6 +11,22 @@ const GET_ISSUES_QUERY = gql`
   }
 `
 
+const GET_LATEST_ISSUES_QUERY = gql`
+  query GetLatestIssues {
+    latestIssues {
+      id
+      title
+      status
+      assignedToUser {
+        id
+        name
+        email
+        image
+      }
+    }
+  }
+`
+
 
 const GET_ISSUES_COUNT_QUERY = gql`
   query GetIssuesCount($status: Status) {
@@ -86,6 +102,7 @@ const DELETE_ISSUE_MUTATION = gql`
 export {
     GET_ISSUES_QUERY, 
     GET_ISSUES_COUNT_QUERY,
+    GET_LATEST_ISSUES_QUERY,
     GET_ISSUE_QUERY, 
     UPDATE_ISSUE_MUTATION, 
     CREATE_ISSUE_MUTATION, 
