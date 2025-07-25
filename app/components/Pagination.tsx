@@ -25,12 +25,12 @@ const Pagination:React.FC<Props> = ({itemCount, pageSize, currentPage}: Props) =
     }
 
   return (
-    <Flex align="center" gap="2">
+    <Flex align="center" gap="2" justify="center" mt="5">
         <Text size="2">Page {currentPage} of {pageCount}</Text>
-        <Button color="gray" variant="soft" disabled={currentPage === 1} onClick={() => changePage(1)}><DoubleArrowLeftIcon /> </Button>
-        <Button color="gray" variant="soft" disabled={currentPage === 1} onClick={() => changePage(currentPage - 1)}><ChevronLeftIcon /> </Button>
-        <Button color="gray" variant="soft" disabled={currentPage === pageCount} onClick={() => changePage(currentPage + 1)}><ChevronRightIcon /> </Button>
-        <Button color="gray" variant="soft" disabled={currentPage === pageCount} onClick={() => changePage(pageCount)}><DoubleArrowRightIcon /> </Button>
+        <Button color="gray" variant="soft" disabled={currentPage === 1} onClick={() => changePage(1)}><DoubleArrowLeftIcon className={currentPage !== 1 ? 'cursor-pointer' : '' }/> </Button>
+        <Button color="gray" variant="soft" disabled={currentPage === 1} onClick={() => changePage(currentPage - 1)}><ChevronLeftIcon className={currentPage !== 1 ? 'cursor-pointer' : '' } /> </Button>
+        <Button color="gray" variant="soft" disabled={currentPage === pageCount} onClick={() => changePage(currentPage + 1)}><ChevronRightIcon className={currentPage !== pageCount ? 'cursor-pointer' : '' } /> </Button>
+        <Button color="gray" variant="soft" disabled={currentPage === pageCount} onClick={() => changePage(pageCount)}><DoubleArrowRightIcon className={currentPage !== pageCount ? 'cursor-pointer' : '' } /> </Button>
     </Flex>
   )
 }

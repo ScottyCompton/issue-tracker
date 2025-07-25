@@ -9,13 +9,25 @@ export const resolvers = {
       if (args.status) {
         where.status = args.status
       }
-      
+      const {skip, take} = args.paging
       return await prisma.issue.findMany({
         where,
-        orderBy: args.orderBy
+        orderBy: args.orderBy,
+        skip: args.paging.skip,
+        take: args.paging.take
       })
     },
     
+    issuesCount: async(_:any, args: any) => {
+      const where: any = {}
+      if(args.status) {
+        where.status = args.status
+      }
+      return await prisma.issue.count({
+        where
+      })
+    },
+
     issue: async (_: any, { id }: { id: string }) => {
       return await prisma.issue.findUnique({
         where: { id: parseInt(id) }

@@ -37,7 +37,8 @@ export const typeDefs = gql`
 
 
   type Query {
-    issues(orderBy: IssueOrderBy, status: Status): [Issue!]!
+    issues(orderBy: IssueOrderBy, status: Status, paging: IssuePaging): [Issue!]!
+    issuesCount(status: Status): Int!
     issue(id: ID!): Issue
     users: [User!]!
   }
@@ -51,6 +52,11 @@ export const typeDefs = gql`
     title: SortOrder
     status: SortOrder
     createdAt: SortOrder
+  }
+
+  input IssuePaging {
+    skip: Int
+    take: Int
   }
 
   input UpdateIssueInput {
