@@ -1,13 +1,20 @@
 import { gql } from '@apollo/client'
 
 const GET_ISSUES_QUERY = gql`
-  query GetIssues($orderBy: IssueOrderBy) {
-    issues(orderBy: $orderBy) {
+  query GetIssues($orderBy: IssueOrderBy, $status: Status, $paging: IssuePaging) {
+    issues(orderBy: $orderBy, status: $status, paging: $paging) {
       id
       title
       status
       createdAt
     }
+  }
+`
+
+
+const GET_ISSUES_COUNT_QUERY = gql`
+  query GetIssuesCount($status: Status) {
+    issuesCount(status: $status)
   }
 `
 
@@ -78,6 +85,7 @@ const DELETE_ISSUE_MUTATION = gql`
 
 export {
     GET_ISSUES_QUERY, 
+    GET_ISSUES_COUNT_QUERY,
     GET_ISSUE_QUERY, 
     UPDATE_ISSUE_MUTATION, 
     CREATE_ISSUE_MUTATION, 
