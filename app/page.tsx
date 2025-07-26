@@ -18,6 +18,6 @@ export default function Home() {
 }
 
 export const metadata = {
-  title: 'Issue Tracker - Dashboard',
-  description: 'View a summary of project issues'
+    title: 'Issue Tracker - Dashboard',
+    description: 'View a summary of project issues',
 }

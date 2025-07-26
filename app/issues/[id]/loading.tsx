@@ -1,6 +1,6 @@
 import { Box, Card, Flex, Skeleton } from '@radix-ui/themes'
 
-const IssueDetailsPageLoading:React.FC = () => {
+const IssueDetailsPageLoading: React.FC = () => {
     return (
         <Box>
             <Skeleton className="max-w-xl" />

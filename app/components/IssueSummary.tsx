@@ -21,7 +21,9 @@ const IssueSummary = async () => {
 
     return (
         <Flex direction="column" className="w-full">
-            <Heading size="4" mb="5">Issue Status Summary</Heading>
+            <Heading size="4" mb="5">
+                Issue Status Summary
+            </Heading>
             <Flex gap="3" className="w-full">
                 {issueStatusCount.map((item: IssueStatusCount) => (
                     <Card

@@ -1,12 +1,12 @@
 'use client'
-import { Select } from '@radix-ui/themes'
-import { client as graphqlClient } from '@/app/lib/graphql-client'
+import { Skeleton } from '@/app/components'
 import {
     GET_USERS_QUERY,
     UPDATE_ISSUE_ASSIGNEE_MUTATION,
 } from '@/app/graphql/queries'
+import { client as graphqlClient } from '@/app/lib/graphql-client'
+import { Select } from '@radix-ui/themes'
 import { useQuery } from '@tanstack/react-query'
-import { Skeleton } from '@/app/components'
 import toast, { Toaster } from 'react-hot-toast'
 
 interface User {
@@ -31,7 +31,7 @@ const AssigneeSelect = ({ issueId, assignedToUserId }: Props) => {
             graphqlClient
                 .query({ query: GET_USERS_QUERY })
                 .then((res) => res.data.users),
-        staleTime: 3600*1000,
+        staleTime: 3600 * 1000,
         retry: 3,
     })
 
@@ -39,26 +39,25 @@ const AssigneeSelect = ({ issueId, assignedToUserId }: Props) => {
 
     if (error) return null
 
-    const assignIssue = (async (userId: string) => {
-        toast.dismiss();
+    const assignIssue = async (userId: string) => {
+        toast.dismiss()
         await graphqlClient
             .mutate({
                 mutation: UPDATE_ISSUE_ASSIGNEE_MUTATION,
                 variables: {
                     id: issueId.toString(),
                     input: {
-                        assignedToUserId:
-                            userId === '-1' ? null : userId,
+                        assignedToUserId: userId === '-1' ? null : userId,
                     },
                 },
-            }).then(() => {
+            })
+            .then(() => {
                 toast.success('Changes saved successfully.')
             })
             .catch((error) => {
                 toast.error('Changes could not be saved')
             })
-    })
-
+    }
 
     return (
         <>

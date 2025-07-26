@@ -2,9 +2,7 @@ import React from 'react'
 import IssueFormSkeleton from '../_components/IssueFormSkeleton'
 
 const NewIssueLoading = () => {
-  return (
-    <IssueFormSkeleton />
-  )
+    return <IssueFormSkeleton />
 }
 
 export default NewIssueLoading
