@@ -42,4 +42,18 @@ const IssueDetailsPage: React.FC<Props> = async ({ params }: Props) => {
     )
 }
 
+export async function generateMetadata({params}: Props) {
+    const { id } = await params
+
+    const issue = await graphqlClient.query({
+        query: GET_ISSUE_QUERY,
+        variables: { id }
+    }).then(res => res.data.issue)
+    
+    return {
+        title: 'Edit Issue - ' + issue.title,
+        description: issue.description
+    }
+}
+
 export default IssueDetailsPage

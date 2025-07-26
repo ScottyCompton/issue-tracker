@@ -47,5 +47,10 @@ const IssuesPage:React.FC<Props> = async ({searchParams}: Props) => {
     </div>
   )
 }
+export const metadata = {
+  title: 'Issue Tracker - Issues List',
+  description: 'View all project issues'
+}
+
 export const dynamic = 'force-dynamic';
 export default IssuesPage
