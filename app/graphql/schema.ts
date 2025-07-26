@@ -46,7 +46,7 @@ export const typeDefs = gql`
 
   type Query {
     issues(orderBy: IssueOrderBy, status: Status, paging: IssuePaging): [Issue!]!
-    issueStatusCount: [IssueStatusCount!]!
+    issueStatusCount(includeAll: Boolean = false): [IssueStatusCount!]!
     issuesCount(status: Status): Int!
     latestIssues: [Issue!]!
     issue(id: ID!): Issue

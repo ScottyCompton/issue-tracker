@@ -13,7 +13,10 @@ interface IssueStatusCount {
 const IssueSummary = async () => {
 
     const { data } = await graphqlClient.query({
-        query: GET_ISSUES_STATUS_COUNT_QUERY
+        query: GET_ISSUES_STATUS_COUNT_QUERY,
+        variables: {
+            includeAll: true
+        }
       })
      
      const { issueStatusCount } = data

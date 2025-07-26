@@ -12,8 +12,8 @@ const GET_ISSUES_QUERY = gql`
 `
 
 const GET_ISSUES_STATUS_COUNT_QUERY = gql`
-  query IssueStatusCount {
-    issueStatusCount {
+  query IssueStatusCount($includeAll: Boolean = false) {
+    issueStatusCount(includeAll: $includeAll) {
       label,
       status,
       count

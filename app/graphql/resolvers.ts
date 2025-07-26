@@ -39,20 +39,25 @@ export const resolvers = {
       })
     },
 
-    issueStatusCount: async() => {
+    issueStatusCount: async(_:any, args: any) => {
       const aryOut:{label: string, status: string, count: number}[] = []
+      let issuesCount
+      
+      console.log('args.includeAll =', args.includeAll)
 
-      let issuesCount = await prisma.issue.count()
-      aryOut.push({label: 'All', status: '', count: issuesCount})
 
+      if(args.includeAll) {
+        issuesCount = await prisma.issue.count()
+        aryOut.push({label: 'All', status: '', count: issuesCount})          
+      }
 
       issuesCount = await prisma.issue.count({
         where: {
           status: 'OPEN'
         }      
       })
+
       aryOut.push({label: 'Open', status: 'OPEN', count: issuesCount})
-      console.log(aryOut)
 
       issuesCount = await prisma.issue.count({
         where: {
