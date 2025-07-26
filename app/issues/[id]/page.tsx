@@ -8,6 +8,7 @@ import IssueDetails from '../_components/IssueDetails'
 import EditIssueButton from '../_components/EditIssueButton'
 import DeleteIssueButton from '../_components/DeleteIssueButton'
 import AssigneeSelect from "../_components/AssigneeSelect"
+import { cache } from "react"
 
 interface Props {
     params: Promise<{
@@ -15,14 +16,20 @@ interface Props {
     }>
 }
 
-const IssueDetailsPage: React.FC<Props> = async ({ params }: Props) => {
-    const session = await getServerSession(authOptions)
-    const { id } = await params
-
+const fetchIssue = cache(async (id: string) => {
     const issue = await graphqlClient.query({
         query: GET_ISSUE_QUERY,
         variables: { id }
     }).then(res => res.data.issue)
+
+    return issue
+})
+
+const IssueDetailsPage: React.FC<Props> = async ({ params }: Props) => {
+    const session = await getServerSession(authOptions)
+    const { id } = await params
+    const issue = await fetchIssue(id)
+
 
     if (!issue) notFound()
 
@@ -44,12 +51,8 @@ const IssueDetailsPage: React.FC<Props> = async ({ params }: Props) => {
 
 export async function generateMetadata({params}: Props) {
     const { id } = await params
+    const issue = await fetchIssue(id)
 
-    const issue = await graphqlClient.query({
-        query: GET_ISSUE_QUERY,
-        variables: { id }
-    }).then(res => res.data.issue)
-    
     return {
         title: 'Edit Issue - ' + issue.title,
         description: issue.description
