@@ -1,4 +1,4 @@
-import prisma from "@/prisma/client"
+import prisma, { Status } from "@/prisma/client"
 import { issueSchema, updateIssueAssigneeSchema } from "@/app/schemas/validationSchemas"
 
 export const resolvers = {
@@ -39,6 +39,39 @@ export const resolvers = {
       })
     },
 
+    issueStatusCount: async() => {
+      const aryOut:{label: string, status: string, count: number}[] = []
+
+      let issuesCount = await prisma.issue.count()
+      aryOut.push({label: 'All', status: '', count: issuesCount})
+
+
+      issuesCount = await prisma.issue.count({
+        where: {
+          status: 'OPEN'
+        }      
+      })
+      aryOut.push({label: 'Open', status: 'OPEN', count: issuesCount})
+      console.log(aryOut)
+
+      issuesCount = await prisma.issue.count({
+        where: {
+          status: 'IN_PROGRESS'
+        }      
+      })
+      aryOut.push({label: 'In Progress', status: 'IN_PROGRESS', count: issuesCount})
+
+      issuesCount = await prisma.issue.count({
+        where: {
+          status: 'CLOSED'
+        }      
+      })
+      aryOut.push({label: 'Closed', status: 'CLOSED', count: issuesCount})
+
+      return aryOut
+      
+    },
+
     issue: async (_: any, { id }: { id: string }) => {
       return await prisma.issue.findUnique({
         where: { id: parseInt(id) }
@@ -47,7 +80,6 @@ export const resolvers = {
 
     users: async () => {
       const users = await prisma.user.findMany()
-      console.log('Available users:', users.map(user => ({ id: user.id, name: user.name })))
       return users
     },
 

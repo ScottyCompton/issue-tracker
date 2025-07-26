@@ -11,6 +11,16 @@ const GET_ISSUES_QUERY = gql`
   }
 `
 
+const GET_ISSUES_STATUS_COUNT_QUERY = gql`
+  query IssueStatusCount {
+    issueStatusCount {
+      label,
+      status,
+      count
+    }
+  }
+`
+
 const GET_LATEST_ISSUES_QUERY = gql`
   query GetLatestIssues {
     latestIssues {
@@ -103,6 +113,7 @@ export {
     GET_ISSUES_QUERY, 
     GET_ISSUES_COUNT_QUERY,
     GET_LATEST_ISSUES_QUERY,
+    GET_ISSUES_STATUS_COUNT_QUERY,
     GET_ISSUE_QUERY, 
     UPDATE_ISSUE_MUTATION, 
     CREATE_ISSUE_MUTATION, 

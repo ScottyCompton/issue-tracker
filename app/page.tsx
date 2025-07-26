@@ -1,3 +1,4 @@
+import IssueSummary from "./components/IssueSummary"
 import LatestIssues from "./components/LatestIssues"
 
 export default function Home() {
@@ -6,6 +7,7 @@ export default function Home() {
     <>
     <div>Hello world</div>
     <LatestIssues />
+    <IssueSummary />
     </>
 )
 }

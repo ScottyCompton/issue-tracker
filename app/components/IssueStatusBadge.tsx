@@ -1,5 +1,5 @@
 import React from 'react'
-import { Status } from '../generated/prisma'
+import { Status } from '@/prisma/client'
 import { Badge } from '@radix-ui/themes'
 
 

@@ -1,4 +1,5 @@
-import { Status, User } from '@/app/generated/prisma'
+import { User } from '@/app/generated/prisma'
+import { Status } from '@/prisma/client'
 
 export interface Issue {
     id: number,

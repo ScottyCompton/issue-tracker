@@ -1,7 +1,7 @@
 import { client as graphqlClient} from '@/app/lib/graphql-client'
 import { GET_LATEST_ISSUES_QUERY } from '../graphql/queries'
 import { Avatar, Card, Flex, Heading, Table } from '@radix-ui/themes'
-import { Issue } from '@/app/interfaces'
+import { Issue } from '@/app/lib/interfaces'
 import Link from 'next/link'
 import IssueStatusBadge from './IssueStatusBadge'
 

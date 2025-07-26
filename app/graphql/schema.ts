@@ -24,6 +24,12 @@ export const typeDefs = gql`
     assignedToUser: User
   }
 
+  type IssueStatusCount {
+    label: String!
+    status: String!
+    count: Int
+  }
+
   type IssueAssignee {
     id: ID!
     assignedToUserId: String
@@ -40,6 +46,7 @@ export const typeDefs = gql`
 
   type Query {
     issues(orderBy: IssueOrderBy, status: Status, paging: IssuePaging): [Issue!]!
+    issueStatusCount: [IssueStatusCount!]!
     issuesCount(status: Status): Int!
     latestIssues: [Issue!]!
     issue(id: ID!): Issue
