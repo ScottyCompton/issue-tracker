@@ -1,4 +1,5 @@
 import react from '@vitejs/plugin-react'
+import path from 'path'
 import { defineConfig } from 'vite'
 import { defineConfig as testConfig } from 'vitest/config'
 
@@ -16,6 +17,11 @@ const exclusions = [
 // Vite configuration
 const config = defineConfig({
     plugins: [react()],
+    resolve: {
+        alias: {
+            '@': path.resolve(__dirname, './'),
+        },
+    },
 })
 
 // Vitest configuration
@@ -27,6 +33,11 @@ const tstConfig = testConfig({
             exclude: exclusions,
         },
         setupFiles: './tests/setup.js',
+    },
+    resolve: {
+        alias: {
+            '@': path.resolve(__dirname, './'),
+        },
     },
 })
 

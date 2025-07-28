@@ -3,6 +3,8 @@ import IssueChart from './components/IssueChart/IssueChart'
 import IssueSummary from './components/IssueSummary'
 import LatestIssues from './components/LatestIssues'
 
+// Force dynamic rendering to prevent build-time GraphQL queries
+
 export default function Home() {
     return (
         <>
