@@ -1,7 +1,7 @@
 'use client'
 
-import { Select } from '@radix-ui/themes'
 import { Status } from '@/app/generated/prisma'
+import { Select } from '@radix-ui/themes'
 import { useRouter, useSearchParams } from 'next/navigation'
 
 const statusArray: { label: string; value: Status }[] = [
@@ -14,25 +14,33 @@ interface Props {
     currStatus?: string
 }
 
+// Export the handleSelect function for testing
+export const handleSelect = (
+    status: string,
+    searchParams: URLSearchParams,
+    router: any
+) => {
+    const params = new URLSearchParams()
+    if (status && status !== '-1') params.append('status', status)
+    if (searchParams.get('sortBy'))
+        params.append('sortBy', searchParams.get('sortBy')!)
+    if (searchParams.get('sortOrder'))
+        params.append('sortOrder', searchParams.get('sortOrder')!)
+
+    const query = params.size ? '?' + params.toString() : ''
+    console.log(query)
+    router.push(`/issues/list/${query}`)
+}
+
 const IssueStatusFilter: React.FC<Props> = ({ currStatus }: Props) => {
     const router = useRouter()
     const searchParams = useSearchParams()
 
-    const handleSelect = (status: string) => {
-        const params = new URLSearchParams()
-        if (status && status !== '-1') params.append('status', status)
-        if (searchParams.get('sortyBy'))
-            params.append('sortBy', searchParams.get('sortBy')!)
-        if (searchParams.get('sortOrder'))
-            params.append('sortOrder', searchParams.get('sortOrder')!)
-
-        const query = params.size ? '?' + params.toString() : ''
-        console.log(query)
-        router.push(`/issues/list/${query}`)
-    }
     return (
         <Select.Root
-            onValueChange={(value) => handleSelect(value as Status)}
+            onValueChange={(value) =>
+                handleSelect(value as Status, searchParams, router)
+            }
             defaultValue={currStatus}
         >
             <Select.Trigger
