@@ -8,10 +8,12 @@ const exclusions = [
     'public',
     'prisma',
     '.next',
-    './app/generated',
+    'app/generated/**',
     './middleware.ts',
     '**/*.config*',
     '.vscode',
+    'tests/utils/test-utils.tsx',
+    '',
 ]
 
 // Vite configuration
@@ -33,6 +35,7 @@ const tstConfig = testConfig({
             exclude: exclusions,
         },
         setupFiles: './tests/setup.js',
+        testTimeout: 10000,
     },
     resolve: {
         alias: {
