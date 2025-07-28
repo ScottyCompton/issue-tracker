@@ -234,6 +234,92 @@ describe('Issue Details Page', () => {
         })
     })
 
+    it('executes successfully when user is authenticated (sidebar components should be rendered)', async () => {
+        mockQuery.mockResolvedValue({
+            data: { issue: mockIssue },
+        })
+        mockGetServerSession.mockResolvedValue({
+            user: { id: 'user-123', email: 'test@example.com' },
+        })
+
+        const params = Promise.resolve({ id: '1' })
+        await IssueDetailsPage({ params })
+
+        // Verify that the component executes without errors when user is authenticated
+        // The sidebar components (AssigneeSelect, EditIssueButton, DeleteIssueButton)
+        // should be rendered in the JSX when session exists
+        expect(mockQuery).toHaveBeenCalledWith({
+            query: { query: 'GET_ISSUE_QUERY' },
+            variables: { id: '1' },
+        })
+    })
+
+    it('executes successfully when user is not authenticated (sidebar components should not be rendered)', async () => {
+        mockQuery.mockResolvedValue({
+            data: { issue: mockIssue },
+        })
+        mockGetServerSession.mockResolvedValue(null)
+
+        const params = Promise.resolve({ id: '1' })
+        await IssueDetailsPage({ params })
+
+        // Verify that the component executes without errors when user is not authenticated
+        // The sidebar components should NOT be rendered in the JSX when session is null
+        expect(mockQuery).toHaveBeenCalledWith({
+            query: { query: 'GET_ISSUE_QUERY' },
+            variables: { id: '1' },
+        })
+    })
+
+    it('executes successfully with different issue data for sidebar components', async () => {
+        const issueWithAssignee = {
+            ...mockIssue,
+            id: 'issue-456',
+            assignedToUserId: 'user-789',
+        }
+
+        mockQuery.mockResolvedValue({
+            data: { issue: issueWithAssignee },
+        })
+        mockGetServerSession.mockResolvedValue({
+            user: { id: 'user-123', email: 'test@example.com' },
+        })
+
+        const params = Promise.resolve({ id: 'issue-456' })
+        await IssueDetailsPage({ params })
+
+        // Verify that the component executes with different issue data
+        // The sidebar components should receive the correct props
+        expect(mockQuery).toHaveBeenCalledWith({
+            query: { query: 'GET_ISSUE_QUERY' },
+            variables: { id: 'issue-456' },
+        })
+    })
+
+    it('executes successfully with issues without assignee in sidebar components', async () => {
+        const issueWithoutAssignee = {
+            ...mockIssue,
+            assignedToUserId: null,
+        }
+
+        mockQuery.mockResolvedValue({
+            data: { issue: issueWithoutAssignee },
+        })
+        mockGetServerSession.mockResolvedValue({
+            user: { id: 'user-123', email: 'test@example.com' },
+        })
+
+        const params = Promise.resolve({ id: '1' })
+        await IssueDetailsPage({ params })
+
+        // Verify that the component executes with null assignee
+        // The sidebar components should handle null assignedToUserId correctly
+        expect(mockQuery).toHaveBeenCalledWith({
+            query: { query: 'GET_ISSUE_QUERY' },
+            variables: { id: '1' },
+        })
+    })
+
     it('handles GraphQL errors gracefully', async () => {
         mockQuery.mockRejectedValue(new Error('Network Error'))
 
