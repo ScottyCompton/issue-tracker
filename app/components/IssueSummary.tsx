@@ -1,7 +1,9 @@
 import { client as graphqlClient } from '@/app/lib/graphql-client'
 import { Card, Flex, Heading, Text } from '@radix-ui/themes'
 import Link from 'next/link'
+import { Suspense } from 'react'
 import { GET_ISSUES_STATUS_COUNT_QUERY } from '../graphql/queries'
+import IssueSummarySkeleton from './IssueSummarySkeleton'
 
 interface IssueStatusCount {
     label: string
@@ -9,7 +11,10 @@ interface IssueStatusCount {
     count: number
 }
 
-const IssueSummary = async () => {
+const IssueSummaryContent = async () => {
+    // Add artificial delay to see the skeleton
+    await new Promise((resolve) => setTimeout(resolve, 1000))
+
     const { data } = await graphqlClient.query({
         query: GET_ISSUES_STATUS_COUNT_QUERY,
         variables: {
@@ -47,6 +52,14 @@ const IssueSummary = async () => {
                 ))}
             </Flex>
         </Flex>
+    )
+}
+
+const IssueSummary = () => {
+    return (
+        <Suspense fallback={<IssueSummarySkeleton />}>
+            <IssueSummaryContent />
+        </Suspense>
     )
 }
 
