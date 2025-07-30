@@ -11,7 +11,7 @@ interface IssueStatusCount {
     count: number
 }
 
-const IssueSummaryContent = async () => {
+export const IssueSummaryContent = async () => {
     // Add artificial delay to see the skeleton
     await new Promise((resolve) => setTimeout(resolve, 1000))
 
