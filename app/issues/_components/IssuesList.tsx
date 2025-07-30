@@ -1,17 +1,10 @@
 import { IssueStatusBadge, Link } from '@/app/components'
 import { Table } from '@radix-ui/themes'
-import { Status } from '@/app/generated/prisma'
+import { Status } from '@/prisma/client'
 import { formatDate } from '@/app/lib/utils'
 import NextLink from 'next/link'
 import { ArrowDownIcon, ArrowUpIcon } from '@radix-ui/react-icons'
-
-
-interface Issue {
-    id: number,
-    title: string,
-    status: Status,
-    createdAt: Date
-}
+import { Issue } from '@/app/lib/interfaces'
 
 export interface IssueQuery {
     status: string
@@ -20,40 +13,51 @@ export interface IssueQuery {
     page?: string
 }
 
-
 interface Props {
-    searchParams: Promise<IssueQuery>,
+    searchParams: Promise<IssueQuery>
     issues: Issue[]
-  }
+}
 
-
-const IssuesList:React.FC<Props> = async ({searchParams, issues}: Props) => {
+const IssuesList: React.FC<Props> = async ({ searchParams, issues }: Props) => {
     const { status, sortBy, sortOrder } = await searchParams
 
     return (
         <>
-                <Table.Root variant="surface">
-                    <Table.Header>
-                        <Table.Row>
-                          {columns.map((col) => (
-                            <Table.ColumnHeaderCell key={col.value} style={{width: col.width}}>
-                              <NextLink href={{
-                                query: {
-                                    status,
-                                    sortBy: col.value,
-                                    sortOrder: sortOrder === 'asc' ? 'desc' : 'asc'
-                                }}
-                              }>{col.label}</NextLink>
-                              {col.value === sortBy && (
-                                sortOrder === 'asc' ? <ArrowUpIcon className='inline' /> : <ArrowDownIcon className='inline' />
-                              )}
+            <Table.Root variant="surface">
+                <Table.Header>
+                    <Table.Row>
+                        {columns.map((col) => (
+                            <Table.ColumnHeaderCell
+                                key={col.value}
+                                style={{ width: col.width }}
+                            >
+                                <NextLink
+                                    href={{
+                                        query: {
+                                            status,
+                                            sortBy: col.value,
+                                            sortOrder:
+                                                sortOrder === 'asc'
+                                                    ? 'desc'
+                                                    : 'asc',
+                                        },
+                                    }}
+                                >
+                                    {col.label}
+                                </NextLink>
+                                {col.value === sortBy &&
+                                    (sortOrder === 'asc' ? (
+                                        <ArrowUpIcon className="inline" />
+                                    ) : (
+                                        <ArrowDownIcon className="inline" />
+                                    ))}
                             </Table.ColumnHeaderCell>
-                          ))}
-
-                        </Table.Row>
-                    </Table.Header>
-                    <Table.Body>
-                        {issues && issues.map((issue:Issue) => (
+                        ))}
+                    </Table.Row>
+                </Table.Header>
+                <Table.Body>
+                    {issues &&
+                        issues.map((issue: Issue) => (
                             <Table.Row key={issue.id}>
                                 <Table.Cell>
                                     <Link href={`/issues/${issue.id}`}>
@@ -73,27 +77,43 @@ const IssuesList:React.FC<Props> = async ({searchParams, issues}: Props) => {
                                 </Table.Cell>
                             </Table.Row>
                         ))}
-                        {issues.length === 0 && 
-                            <Table.Row>
-                                <Table.Cell colSpan={3} className='py-10 text-center'>No Issues with status of <IssueStatusBadge status={status as Status} /> found</Table.Cell>
-                            </Table.Row>
-                        }
-                    </Table.Body>
-                </Table.Root>
-
+                    {issues.length === 0 && (
+                        <Table.Row>
+                            <Table.Cell
+                                colSpan={3}
+                                className="py-10 text-center"
+                            >
+                                No Issues with status of{' '}
+                                <IssueStatusBadge status={status as Status} />{' '}
+                                found
+                            </Table.Cell>
+                        </Table.Row>
+                    )}
+                </Table.Body>
+            </Table.Root>
         </>
     )
 }
 
-const columns:{
+const columns: {
     label: string
-    value: keyof Issue 
+    value: keyof Issue
     className?: string
     width: string
 }[] = [
-    {label: 'Issue', value: 'title', width: '50%'},
-    {label: 'Status', value: 'status', className: 'hidden md:table-cell', width: '25%'},
-    {label: 'Created', value: 'createdAt', className: 'hidden md:table-cell', width: '25%'},
+    { label: 'Issue', value: 'title', width: '50%' },
+    {
+        label: 'Status',
+        value: 'status',
+        className: 'hidden md:table-cell',
+        width: '25%',
+    },
+    {
+        label: 'Created',
+        value: 'createdAt',
+        className: 'hidden md:table-cell',
+        width: '25%',
+    },
 ]
 
 export default IssuesList

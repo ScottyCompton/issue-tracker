@@ -1,34 +1,276 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Issue Tracker
 
-## Getting Started
+A modern, full-stack issue tracking application built with Next.js, featuring real-time issue management, user authentication, and comprehensive project oversight capabilities.
 
-First, run the development server:
+## 📋 Summary
+
+The Issue Tracker is a comprehensive project management tool designed to help teams efficiently track, manage, and resolve issues throughout their development lifecycle. Built with modern web technologies, it provides an intuitive interface for creating, updating, and monitoring project issues with real-time updates and detailed analytics.
+
+## 🎯 Purpose
+
+This application serves as a centralized platform for:
+
+- **Issue Management**: Create, edit, and track project issues with detailed descriptions and status updates
+- **Team Collaboration**: Assign issues to team members and track progress
+- **Project Analytics**: Visualize issue distribution and project health through interactive charts
+- **Workflow Optimization**: Streamline development processes with status-based filtering and sorting
+- **Real-time Updates**: Stay informed with live issue updates and notifications
+
+## ✨ Features
+
+### Core Functionality
+
+- **Issue Creation & Management**: Create, edit, and delete issues with rich text descriptions
+- **Status Tracking**: Monitor issues through OPEN, IN_PROGRESS, and CLOSED statuses
+- **User Assignment**: Assign issues to team members for accountability
+- **Real-time Dashboard**: View project overview with issue summaries and charts
+- **Advanced Filtering**: Filter issues by status, assignee, and date ranges
+- **Pagination**: Handle large issue lists with efficient pagination
+
+### User Experience
+
+- **Responsive Design**: Works seamlessly on desktop, tablet, and mobile devices
+- **Modern UI**: Clean, intuitive interface built with Radix UI components
+- **Loading States**: Smooth loading animations and skeleton screens
+- **Error Handling**: Comprehensive error boundaries and user-friendly error messages
+- **Form Validation**: Client and server-side validation with helpful feedback
+
+### Technical Features
+
+- **Authentication**: Secure user authentication with NextAuth.js
+- **GraphQL API**: Efficient data fetching with Apollo GraphQL
+- **Database**: MySQL database with Prisma ORM for type-safe queries
+- **Real-time Updates**: Live issue updates and notifications
+- **Email Integration**: Automated email notifications for issue assignments
+- **Testing**: Comprehensive test suite with Vitest and React Testing Library
+
+## 🛠️ Technology Stack
+
+### Frontend
+
+- **Next.js 15**: React framework with App Router
+- **TypeScript**: Type-safe development
+- **Tailwind CSS**: Utility-first CSS framework
+- **Radix UI**: Accessible component library
+- **React Hook Form**: Form handling and validation
+- **React Query**: Server state management
+- **Recharts**: Data visualization
+
+### Backend
+
+- **GraphQL**: API layer with Apollo Server
+- **Prisma**: Database ORM
+- **MySQL**: Primary database
+- **NextAuth.js**: Authentication provider
+- **Zod**: Schema validation
+
+### Development Tools
+
+- **Vitest**: Unit and integration testing
+- **ESLint**: Code linting
+- **Prettier**: Code formatting
+- **React Testing Library**: Component testing
+
+## 🚀 Installation & Setup
+
+### Prerequisites
+
+Before you begin, ensure you have the following installed:
+
+- **Node.js** (v18 or higher)
+- **npm** or **yarn** package manager
+- **MySQL** database server
+- **Git** for version control
+
+### Step 1: Clone the Repository
+
+```bash
+git clone <repository-url>
+cd issue-tracker
+```
+
+### Step 2: Install Dependencies
+
+```bash
+npm install
+# or
+yarn install
+```
+
+### Step 3: Environment Configuration
+
+Create a `.env.local` file in the root directory with the following variables:
+
+```env
+# Database
+DATABASE_URL="mysql://username:password@localhost:3306/issue_tracker"
+
+# Authentication (NextAuth.js)
+NEXTAUTH_URL="http://localhost:3000"
+NEXTAUTH_SECRET="your-secret-key-here"
+
+# Email Provider (Optional - for email notifications)
+EMAIL_SERVER_HOST="smtp.example.com"
+EMAIL_SERVER_PORT=587
+EMAIL_SERVER_USER="your-email@example.com"
+EMAIL_SERVER_PASSWORD="your-email-password"
+
+# OAuth Providers (Optional)
+GOOGLE_CLIENT_ID="your-google-client-id"
+GOOGLE_CLIENT_SECRET="your-google-client-secret"
+GITHUB_CLIENT_ID="your-github-client-id"
+GITHUB_CLIENT_SECRET="your-github-client-secret"
+```
+
+### Step 4: Database Setup
+
+1. **Create Database**: Create a MySQL database named `issue_tracker`
+
+```sql
+CREATE DATABASE issue_tracker;
+```
+
+2. **Run Migrations**: Apply database schema
+
+```bash
+npx prisma migrate dev
+```
+
+3. **Generate Prisma Client**: Generate the database client
+
+```bash
+npx prisma generate
+```
+
+### Step 5: Start Development Server
 
 ```bash
 npm run dev
 # or
 yarn dev
-# or
-pnpm dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) in your browser to view the application.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 🧪 Testing
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+### Run Tests
 
-## Learn More
+```bash
+# Run all tests
+npm test
 
-To learn more about Next.js, take a look at the following resources:
+# Run tests with coverage
+npm run coverage
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+# Run tests in watch mode
+npm test -- --watch
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+# Run specific test file
+npm test -- tests/app/components/Navbar.spec.tsx
+```
 
-## Deploy on Vercel
+### Test Coverage Goals
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- **Statements**: 90%
+- **Branches**: 85%
+- **Functions**: 90%
+- **Lines**: 90%
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+## 📦 Available Scripts
+
+```bash
+# Development
+npm run dev          # Start development server
+npm run build        # Build for production
+npm run start        # Start production server
+
+# Testing
+npm test             # Run tests
+npm run coverage     # Run tests with coverage
+
+# Code Quality
+npm run lint         # Run ESLint
+npm run format       # Format code with Prettier
+npm run format:check # Check code formatting
+
+# Database
+npx prisma migrate dev    # Run database migrations
+npx prisma generate      # Generate Prisma client
+npx prisma studio        # Open Prisma Studio
+```
+
+## 🏗️ Project Structure
+
+```
+issue-tracker/
+├── app/                    # Next.js App Router
+│   ├── api/               # API routes
+│   ├── components/        # Shared components
+│   ├── issues/           # Issue management pages
+│   ├── graphql/          # GraphQL schema and resolvers
+│   ├── lib/              # Utility functions
+│   └── auth/             # Authentication configuration
+├── prisma/               # Database schema and migrations
+├── tests/                # Test files (mirrors app structure)
+├── public/               # Static assets
+└── docs/                 # Documentation
+```
+
+## 🔧 Configuration
+
+### Database Configuration
+
+The application uses Prisma with MySQL. Update the `DATABASE_URL` in your `.env.local` file to point to your MySQL instance.
+
+### Authentication Setup
+
+Configure authentication providers in `app/auth/authOptions.ts`. The application supports:
+
+- Email/Password authentication
+- OAuth providers (Google, GitHub)
+- Custom authentication flows
+
+### Email Notifications
+
+Set up email providers in your environment variables to enable email notifications for issue assignments and updates.
+
+## 🚀 Deployment
+
+### Vercel (Recommended)
+
+1. Connect your GitHub repository to Vercel
+2. Configure environment variables in Vercel dashboard
+3. Deploy automatically on push to main branch
+
+### Other Platforms
+
+The application can be deployed to any platform that supports Next.js:
+
+- **Netlify**: Configure build settings for Next.js
+- **Railway**: Deploy with automatic database provisioning
+- **AWS/Google Cloud**: Use container deployment
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## 📝 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🆘 Support
+
+For support and questions:
+
+- Create an issue in the GitHub repository
+- Check the documentation in the `/docs` folder
+- Review the test files for usage examples
+
+---
+
+**Built with ❤️ using Next.js, TypeScript, and modern web technologies**

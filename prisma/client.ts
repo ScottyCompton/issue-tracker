@@ -1,4 +1,4 @@
-import { PrismaClient } from '../app/generated/prisma'
+import { PrismaClient } from '@/app/generated/prisma'
 
 
 const prismaClientSingleton = () => {
@@ -11,11 +11,7 @@ const globalForPrisma = global as unknown as {
     prisma: PrismaClientSingleton | undefined
 }
 
-export enum Status {
-    OPEN,
-    IN_PROGRESS,
-    CLOSED
-  }
+export type Status = 'OPEN' | 'IN_PROGRESS' | 'CLOSED'
 
 const prisma = globalForPrisma.prisma ?? prismaClientSingleton()
 

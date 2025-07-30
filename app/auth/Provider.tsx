@@ -6,12 +6,8 @@ interface Props {
     children: ReactElement
 }
 
-const AuthProvider = ({children}: Props) => {
-  return (
-    <SessionProvider>
-        {children}
-    </SessionProvider>
-  )
+const AuthProvider = ({ children }: Props) => {
+    return <SessionProvider>{children}</SessionProvider>
 }
 
 export default AuthProvider

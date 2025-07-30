@@ -41,7 +41,6 @@ model User {
   accounts       Account[]
   sessions       Session[]
   assignedIssues Issue[]
-
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
