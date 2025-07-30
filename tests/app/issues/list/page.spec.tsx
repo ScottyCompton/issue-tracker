@@ -78,6 +78,7 @@ describe('Issues List Page', () => {
             sortBy: 'createdAt',
             sortOrder: 'desc',
             page: '2',
+            pageSize: '25',
         })
 
         await IssuesPage({ searchParams })
@@ -91,8 +92,8 @@ describe('Issues List Page', () => {
                 status: 'OPEN',
                 orderBy: { createdAt: 'desc' },
                 paging: {
-                    skip: 10, // (2 - 1) * 10
-                    take: 10,
+                    skip: 25, // (2 - 1) * 25
+                    take: 25,
                 },
             },
         })
@@ -110,6 +111,7 @@ describe('Issues List Page', () => {
             sortBy: undefined,
             sortOrder: undefined,
             page: undefined,
+            pageSize: undefined,
         })
 
         await IssuesPage({ searchParams })
@@ -151,6 +153,7 @@ describe('Issues List Page', () => {
                 sortBy: 'createdAt',
                 sortOrder: 'desc',
                 page,
+                pageSize: '10',
             })
 
             await IssuesPage({ searchParams })
@@ -208,6 +211,7 @@ describe('Issues List Page', () => {
             sortBy: undefined,
             sortOrder: undefined,
             page: '1',
+            pageSize: '10',
         })
 
         await IssuesPage({ searchParams })
@@ -226,6 +230,7 @@ describe('Issues List Page', () => {
             sortBy: 'title',
             sortOrder: 'asc',
             page: '3',
+            pageSize: '10',
         })
 
         await IssuesPage({ searchParams })
@@ -249,6 +254,7 @@ describe('Issues List Page', () => {
             sortBy: 'createdAt',
             sortOrder: 'desc',
             page: '10',
+            pageSize: '10',
         })
 
         await IssuesPage({ searchParams })
@@ -280,6 +286,7 @@ describe('Issues List Page', () => {
             sortBy: '',
             sortOrder: '',
             page: '',
+            pageSize: undefined,
         })
 
         await IssuesPage({ searchParams })
@@ -295,5 +302,45 @@ describe('Issues List Page', () => {
                 },
             },
         })
+    })
+
+    it('handles different page sizes correctly', async () => {
+        const testCases = [
+            { pageSize: '5', expectedTake: 5 },
+            { pageSize: '10', expectedTake: 10 },
+            { pageSize: '25', expectedTake: 25 },
+            { pageSize: '50', expectedTake: 50 },
+        ]
+
+        for (const { pageSize, expectedTake } of testCases) {
+            mockQuery.mockClear()
+            mockQuery
+                .mockResolvedValueOnce({
+                    data: { issues: mockIssues },
+                })
+                .mockResolvedValueOnce({
+                    data: { issuesCount: mockIssuesCount },
+                })
+
+            const searchParams = Promise.resolve({
+                status: 'OPEN',
+                sortBy: 'createdAt',
+                sortOrder: 'desc',
+                page: '1',
+                pageSize,
+            })
+
+            await IssuesPage({ searchParams })
+
+            expect(mockQuery).toHaveBeenNthCalledWith(1, {
+                query: { query: 'GET_ISSUES_QUERY' },
+                variables: expect.objectContaining({
+                    paging: {
+                        skip: 0,
+                        take: expectedTake,
+                    },
+                }),
+            })
+        }
     })
 })

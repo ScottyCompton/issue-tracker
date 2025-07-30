@@ -26,6 +26,10 @@ export const handleSelect = (
         params.append('sortBy', searchParams.get('sortBy')!)
     if (searchParams.get('sortOrder'))
         params.append('sortOrder', searchParams.get('sortOrder')!)
+    if (searchParams.get('page'))
+        params.append('page', searchParams.get('page')!)
+    if (searchParams.get('pageSize'))
+        params.append('pageSize', searchParams.get('pageSize')!)
 
     const query = params.size ? '?' + params.toString() : ''
     console.log(query)

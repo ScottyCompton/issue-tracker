@@ -625,4 +625,29 @@ describe('IssueStatusFilter', () => {
 
         consoleSpy.mockRestore()
     })
+
+    it('preserves pageSize and page parameters when changing status', async () => {
+        const { default: IssueStatusFilter, handleSelect } = await import(
+            '@/app/issues/_components/IssueStatusFilter'
+        )
+
+        const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {})
+
+        // Set up search params with pageSize and page
+        mockSearchParams.set('pageSize', '25')
+        mockSearchParams.set('page', '2')
+
+        // Test handleSelect with existing pageSize and page parameters
+        handleSelect('OPEN', mockSearchParams, { push: mockPush })
+
+        // Should preserve pageSize and page parameters along with other params
+        expect(mockPush).toHaveBeenCalledWith(
+            '/issues/list/?status=OPEN&sortBy=title&sortOrder=asc&page=2&pageSize=25'
+        )
+        expect(consoleSpy).toHaveBeenCalledWith(
+            '?status=OPEN&sortBy=title&sortOrder=asc&page=2&pageSize=25'
+        )
+
+        consoleSpy.mockRestore()
+    })
 })

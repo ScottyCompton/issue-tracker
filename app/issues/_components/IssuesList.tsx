@@ -1,16 +1,17 @@
 import { IssueStatusBadge, Link } from '@/app/components'
-import { Table } from '@radix-ui/themes'
-import { Status } from '@/prisma/client'
-import { formatDate } from '@/app/lib/utils'
-import NextLink from 'next/link'
-import { ArrowDownIcon, ArrowUpIcon } from '@radix-ui/react-icons'
 import { Issue } from '@/app/lib/interfaces'
+import { formatDate } from '@/app/lib/utils'
+import { Status } from '@/prisma/client'
+import { ArrowDownIcon, ArrowUpIcon } from '@radix-ui/react-icons'
+import { Table } from '@radix-ui/themes'
+import NextLink from 'next/link'
 
 export interface IssueQuery {
     status: string
     sortBy?: string
     sortOrder?: string
     page?: string
+    pageSize?: string
 }
 
 interface Props {
@@ -19,7 +20,7 @@ interface Props {
 }
 
 const IssuesList: React.FC<Props> = async ({ searchParams, issues }: Props) => {
-    const { status, sortBy, sortOrder } = await searchParams
+    const { status, sortBy, sortOrder, page, pageSize } = await searchParams
 
     return (
         <>
@@ -40,6 +41,8 @@ const IssuesList: React.FC<Props> = async ({ searchParams, issues }: Props) => {
                                                 sortOrder === 'asc'
                                                     ? 'desc'
                                                     : 'asc',
+                                            page,
+                                            pageSize,
                                         },
                                     }}
                                 >
