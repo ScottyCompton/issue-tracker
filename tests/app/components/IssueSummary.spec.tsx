@@ -82,6 +82,7 @@ describe('IssueSummary', () => {
             variables: {
                 includeAll: true,
             },
+            fetchPolicy: 'network-only',
         })
     })
 
@@ -103,6 +104,7 @@ describe('IssueSummary', () => {
             variables: {
                 includeAll: true,
             },
+            fetchPolicy: 'network-only',
         })
     })
 
@@ -130,6 +132,7 @@ describe('IssueSummary', () => {
             variables: {
                 includeAll: true,
             },
+            fetchPolicy: 'network-only',
         })
     })
 
@@ -167,6 +170,7 @@ describe('IssueSummary', () => {
             variables: {
                 includeAll: true,
             },
+            fetchPolicy: 'network-only',
         })
     })
 
@@ -214,6 +218,7 @@ describe('IssueSummary', () => {
             variables: {
                 includeAll: true,
             },
+            fetchPolicy: 'network-only',
         })
     })
 

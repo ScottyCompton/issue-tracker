@@ -96,12 +96,14 @@ describe('Issues List Page', () => {
                     take: 25,
                 },
             },
+            fetchPolicy: 'network-only',
         })
 
         // Check second call for count
         expect(mockQuery).toHaveBeenNthCalledWith(2, {
             query: { query: 'GET_ISSUES_COUNT_QUERY' },
             variables: { status: 'OPEN' },
+            fetchPolicy: 'network-only',
         })
     })
 
@@ -127,6 +129,7 @@ describe('Issues List Page', () => {
                     take: 10,
                 },
             },
+            fetchPolicy: 'network-only',
         })
     })
 
@@ -166,6 +169,7 @@ describe('Issues List Page', () => {
                         take: 10,
                     },
                 }),
+                fetchPolicy: 'network-only',
             })
         }
     })
@@ -201,6 +205,7 @@ describe('Issues List Page', () => {
                 variables: expect.objectContaining({
                     orderBy: { [sortBy]: sortOrder },
                 }),
+                fetchPolicy: 'network-only',
             })
         }
     })
@@ -221,6 +226,7 @@ describe('Issues List Page', () => {
             variables: expect.objectContaining({
                 orderBy: undefined,
             }),
+            fetchPolicy: 'network-only',
         })
     })
 
@@ -245,6 +251,7 @@ describe('Issues List Page', () => {
                     take: 10,
                 },
             },
+            fetchPolicy: 'network-only',
         })
     })
 
@@ -267,6 +274,7 @@ describe('Issues List Page', () => {
                     take: 10,
                 },
             }),
+            fetchPolicy: 'network-only',
         })
     })
 
@@ -301,6 +309,7 @@ describe('Issues List Page', () => {
                     take: 10,
                 },
             },
+            fetchPolicy: 'network-only',
         })
     })
 
@@ -340,6 +349,7 @@ describe('Issues List Page', () => {
                         take: expectedTake,
                     },
                 }),
+                fetchPolicy: 'network-only',
             })
         }
     })

@@ -26,12 +26,14 @@ const IssuesPage: React.FC<Props> = async ({ searchParams }: Props) => {
     const { data } = await graphqlClient.query({
         query: GET_ISSUES_QUERY,
         variables: queryVariables,
+        fetchPolicy: 'network-only', // Always fetch fresh data
     })
     const { issues } = data
 
     const { data: issuesCountData } = await graphqlClient.query({
         query: GET_ISSUES_COUNT_QUERY,
         variables: { status },
+        fetchPolicy: 'network-only', // Always fetch fresh data
     })
     const { issuesCount } = issuesCountData
 

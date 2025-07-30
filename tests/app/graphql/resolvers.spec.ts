@@ -5,6 +5,9 @@ vi.mock('@/app/schemas/validationSchemas', () => ({
     issueSchema: {
         safeParse: vi.fn(),
     },
+    updateIssueSchema: {
+        safeParse: vi.fn(),
+    },
     updateIssueAssigneeSchema: {
         safeParse: vi.fn(),
     },
@@ -33,8 +36,12 @@ import { resolvers } from '@/app/graphql/resolvers'
 import {
     issueSchema,
     updateIssueAssigneeSchema,
+    updateIssueSchema,
 } from '@/app/schemas/validationSchemas'
 import prisma from '@/prisma/client'
+
+// Type the mocked functions
+const mockPrisma = prisma as any
 
 describe('GraphQL Resolvers', () => {
     beforeEach(() => {
@@ -49,7 +56,7 @@ describe('GraphQL Resolvers', () => {
                     { id: 2, title: 'Issue 2', status: 'CLOSED' },
                 ]
 
-                prisma.issue.findMany.mockResolvedValue(mockIssues)
+                mockPrisma.issue.findMany.mockResolvedValue(mockIssues)
 
                 const result = await resolvers.Query.issues(
                     {},
@@ -60,7 +67,7 @@ describe('GraphQL Resolvers', () => {
                 )
 
                 expect(result).toEqual(mockIssues)
-                expect(prisma.issue.findMany).toHaveBeenCalledWith({
+                expect(mockPrisma.issue.findMany).toHaveBeenCalledWith({
                     where: {},
                     orderBy: { createdAt: 'desc' },
                     skip: 0,
@@ -73,7 +80,7 @@ describe('GraphQL Resolvers', () => {
                     { id: 1, title: 'Open Issue', status: 'OPEN' },
                 ]
 
-                prisma.issue.findMany.mockResolvedValue(mockIssues)
+                mockPrisma.issue.findMany.mockResolvedValue(mockIssues)
 
                 const result = await resolvers.Query.issues(
                     {},
@@ -84,7 +91,7 @@ describe('GraphQL Resolvers', () => {
                 )
 
                 expect(result).toEqual(mockIssues)
-                expect(prisma.issue.findMany).toHaveBeenCalledWith({
+                expect(mockPrisma.issue.findMany).toHaveBeenCalledWith({
                     where: { status: 'OPEN' },
                     orderBy: undefined,
                     skip: 0,
@@ -98,18 +105,28 @@ describe('GraphQL Resolvers', () => {
                 const mockIssues = [
                     {
                         id: 1,
-                        title: 'Latest Issue',
+                        title: 'Latest Issue 1',
                         status: 'OPEN',
-                        assignedToUser: { id: 'user1', name: 'John Doe' },
+                        assignedToUser: {
+                            id: 'user1',
+                            name: 'John Doe',
+                            email: 'john@example.com',
+                        },
+                    },
+                    {
+                        id: 2,
+                        title: 'Latest Issue 2',
+                        status: 'IN_PROGRESS',
+                        assignedToUser: null,
                     },
                 ]
 
-                prisma.issue.findMany.mockResolvedValue(mockIssues)
+                mockPrisma.issue.findMany.mockResolvedValue(mockIssues)
 
-                const result = await resolvers.Query.latestIssues({}, {})
+                const result = await resolvers.Query.latestIssues()
 
                 expect(result).toEqual(mockIssues)
-                expect(prisma.issue.findMany).toHaveBeenCalledWith({
+                expect(mockPrisma.issue.findMany).toHaveBeenCalledWith({
                     orderBy: { createdAt: 'desc' },
                     take: 5,
                     include: {
@@ -121,18 +138,18 @@ describe('GraphQL Resolvers', () => {
 
         describe('issuesCount', () => {
             it('should return total count when no status filter', async () => {
-                prisma.issue.count.mockResolvedValue(10)
+                mockPrisma.issue.count.mockResolvedValue(10)
 
                 const result = await resolvers.Query.issuesCount({}, {})
 
                 expect(result).toBe(10)
-                expect(prisma.issue.count).toHaveBeenCalledWith({
+                expect(mockPrisma.issue.count).toHaveBeenCalledWith({
                     where: {},
                 })
             })
 
             it('should return count filtered by status', async () => {
-                prisma.issue.count.mockResolvedValue(5)
+                mockPrisma.issue.count.mockResolvedValue(5)
 
                 const result = await resolvers.Query.issuesCount(
                     {},
@@ -140,7 +157,7 @@ describe('GraphQL Resolvers', () => {
                 )
 
                 expect(result).toBe(5)
-                expect(prisma.issue.count).toHaveBeenCalledWith({
+                expect(mockPrisma.issue.count).toHaveBeenCalledWith({
                     where: { status: 'OPEN' },
                 })
             })
@@ -148,7 +165,7 @@ describe('GraphQL Resolvers', () => {
 
         describe('issueStatusCount', () => {
             it('should return status counts without includeAll', async () => {
-                prisma.issue.count
+                mockPrisma.issue.count
                     .mockResolvedValueOnce(3) // OPEN
                     .mockResolvedValueOnce(2) // IN_PROGRESS
                     .mockResolvedValueOnce(1) // CLOSED
@@ -164,11 +181,11 @@ describe('GraphQL Resolvers', () => {
                     { label: 'Closed', status: 'CLOSED', count: 1 },
                 ])
 
-                expect(prisma.issue.count).toHaveBeenCalledTimes(3)
+                expect(mockPrisma.issue.count).toHaveBeenCalledTimes(3)
             })
 
             it('should return status counts with includeAll', async () => {
-                prisma.issue.count
+                mockPrisma.issue.count
                     .mockResolvedValueOnce(6) // Total count
                     .mockResolvedValueOnce(3) // OPEN
                     .mockResolvedValueOnce(2) // IN_PROGRESS
@@ -186,7 +203,7 @@ describe('GraphQL Resolvers', () => {
                     { label: 'Closed', status: 'CLOSED', count: 1 },
                 ])
 
-                expect(prisma.issue.count).toHaveBeenCalledTimes(4)
+                expect(mockPrisma.issue.count).toHaveBeenCalledTimes(4)
             })
         })
 
@@ -199,23 +216,23 @@ describe('GraphQL Resolvers', () => {
                     status: 'OPEN',
                 }
 
-                prisma.issue.findUnique.mockResolvedValue(mockIssue)
+                mockPrisma.issue.findUnique.mockResolvedValue(mockIssue)
 
                 const result = await resolvers.Query.issue({}, { id: '1' })
 
                 expect(result).toEqual(mockIssue)
-                expect(prisma.issue.findUnique).toHaveBeenCalledWith({
+                expect(mockPrisma.issue.findUnique).toHaveBeenCalledWith({
                     where: { id: 1 },
                 })
             })
 
             it('should return null for non-existent issue', async () => {
-                prisma.issue.findUnique.mockResolvedValue(null)
+                mockPrisma.issue.findUnique.mockResolvedValue(null)
 
                 const result = await resolvers.Query.issue({}, { id: '999' })
 
                 expect(result).toBeNull()
-                expect(prisma.issue.findUnique).toHaveBeenCalledWith({
+                expect(mockPrisma.issue.findUnique).toHaveBeenCalledWith({
                     where: { id: 999 },
                 })
             })
@@ -236,12 +253,12 @@ describe('GraphQL Resolvers', () => {
                     },
                 ]
 
-                prisma.user.findMany.mockResolvedValue(mockUsers)
+                mockPrisma.user.findMany.mockResolvedValue(mockUsers)
 
-                const result = await resolvers.Query.users({}, {})
+                const result = await resolvers.Query.users()
 
                 expect(result).toEqual(mockUsers)
-                expect(prisma.user.findMany).toHaveBeenCalledWith()
+                expect(mockPrisma.user.findMany).toHaveBeenCalledWith()
             })
         })
     })
@@ -264,7 +281,7 @@ describe('GraphQL Resolvers', () => {
                     success: true,
                     data: input,
                 })
-                prisma.issue.create.mockResolvedValue(mockCreatedIssue)
+                mockPrisma.issue.create.mockResolvedValue(mockCreatedIssue)
 
                 const result = await resolvers.Mutation.createIssue(
                     {},
@@ -273,7 +290,7 @@ describe('GraphQL Resolvers', () => {
 
                 expect(result).toEqual(mockCreatedIssue)
                 expect(issueSchema.safeParse).toHaveBeenCalledWith(input)
-                expect(prisma.issue.create).toHaveBeenCalledWith({
+                expect(mockPrisma.issue.create).toHaveBeenCalledWith({
                     data: {
                         title: 'New Issue',
                         description: 'New Description',
@@ -293,7 +310,7 @@ describe('GraphQL Resolvers', () => {
                 ).rejects.toThrow('Invalid input data')
 
                 expect(issueSchema.safeParse).toHaveBeenCalledWith(input)
-                expect(prisma.issue.create).not.toHaveBeenCalled()
+                expect(mockPrisma.issue.create).not.toHaveBeenCalled()
             })
         })
 
@@ -311,9 +328,9 @@ describe('GraphQL Resolvers', () => {
                     success: true,
                     data: input,
                 })
-                prisma.issue.findUnique.mockResolvedValue(mockIssue)
-                prisma.user.findUnique.mockResolvedValue(mockUser)
-                prisma.issue.update.mockResolvedValue(mockUpdatedIssue)
+                mockPrisma.issue.findUnique.mockResolvedValue(mockIssue)
+                mockPrisma.user.findUnique.mockResolvedValue(mockUser)
+                mockPrisma.issue.update.mockResolvedValue(mockUpdatedIssue)
 
                 const result = await resolvers.Mutation.updateIssueAssignee(
                     {},
@@ -324,13 +341,13 @@ describe('GraphQL Resolvers', () => {
                 expect(
                     updateIssueAssigneeSchema.safeParse
                 ).toHaveBeenCalledWith(input)
-                expect(prisma.issue.findUnique).toHaveBeenCalledWith({
+                expect(mockPrisma.issue.findUnique).toHaveBeenCalledWith({
                     where: { id: 1 },
                 })
-                expect(prisma.user.findUnique).toHaveBeenCalledWith({
+                expect(mockPrisma.user.findUnique).toHaveBeenCalledWith({
                     where: { id: 'user1' },
                 })
-                expect(prisma.issue.update).toHaveBeenCalledWith({
+                expect(mockPrisma.issue.update).toHaveBeenCalledWith({
                     where: { id: 1 },
                     data: input,
                 })
@@ -353,7 +370,7 @@ describe('GraphQL Resolvers', () => {
                 expect(
                     updateIssueAssigneeSchema.safeParse
                 ).toHaveBeenCalledWith(input)
-                expect(prisma.issue.findUnique).not.toHaveBeenCalled()
+                expect(mockPrisma.issue.findUnique).not.toHaveBeenCalled()
             })
 
             it('should throw error for non-existent issue', async () => {
@@ -363,7 +380,7 @@ describe('GraphQL Resolvers', () => {
                     success: true,
                     data: input,
                 })
-                prisma.issue.findUnique.mockResolvedValue(null)
+                mockPrisma.issue.findUnique.mockResolvedValue(null)
 
                 await expect(
                     resolvers.Mutation.updateIssueAssignee(
@@ -372,10 +389,10 @@ describe('GraphQL Resolvers', () => {
                     )
                 ).rejects.toThrow('Issue not found')
 
-                expect(prisma.issue.findUnique).toHaveBeenCalledWith({
+                expect(mockPrisma.issue.findUnique).toHaveBeenCalledWith({
                     where: { id: 999 },
                 })
-                expect(prisma.issue.update).not.toHaveBeenCalled()
+                expect(mockPrisma.issue.update).not.toHaveBeenCalled()
             })
 
             it('should throw error for invalid assignedToUserId', async () => {
@@ -386,8 +403,8 @@ describe('GraphQL Resolvers', () => {
                     success: true,
                     data: input,
                 })
-                prisma.issue.findUnique.mockResolvedValue(mockIssue)
-                prisma.user.findUnique.mockResolvedValue(null)
+                mockPrisma.issue.findUnique.mockResolvedValue(mockIssue)
+                mockPrisma.user.findUnique.mockResolvedValue(null)
 
                 await expect(
                     resolvers.Mutation.updateIssueAssignee(
@@ -396,10 +413,10 @@ describe('GraphQL Resolvers', () => {
                     )
                 ).rejects.toThrow('Invalid assignedToUserId')
 
-                expect(prisma.user.findUnique).toHaveBeenCalledWith({
+                expect(mockPrisma.user.findUnique).toHaveBeenCalledWith({
                     where: { id: 'invalid-user' },
                 })
-                expect(prisma.issue.update).not.toHaveBeenCalled()
+                expect(mockPrisma.issue.update).not.toHaveBeenCalled()
             })
 
             it('should allow null assignedToUserId', async () => {
@@ -414,8 +431,8 @@ describe('GraphQL Resolvers', () => {
                     success: true,
                     data: input,
                 })
-                prisma.issue.findUnique.mockResolvedValue(mockIssue)
-                prisma.issue.update.mockResolvedValue(mockUpdatedIssue)
+                mockPrisma.issue.findUnique.mockResolvedValue(mockIssue)
+                mockPrisma.issue.update.mockResolvedValue(mockUpdatedIssue)
 
                 const result = await resolvers.Mutation.updateIssueAssignee(
                     {},
@@ -423,8 +440,8 @@ describe('GraphQL Resolvers', () => {
                 )
 
                 expect(result).toEqual(mockUpdatedIssue)
-                expect(prisma.user.findUnique).not.toHaveBeenCalled()
-                expect(prisma.issue.update).toHaveBeenCalledWith({
+                expect(mockPrisma.user.findUnique).not.toHaveBeenCalled()
+                expect(mockPrisma.issue.update).toHaveBeenCalledWith({
                     where: { id: 1 },
                     data: input,
                 })
@@ -440,12 +457,12 @@ describe('GraphQL Resolvers', () => {
                 const mockIssue = { id: 1, title: 'Original Issue' }
                 const mockUpdatedIssue = { ...mockIssue, ...input }
 
-                ;(issueSchema.safeParse as any).mockReturnValue({
+                ;(updateIssueSchema.safeParse as any).mockReturnValue({
                     success: true,
                     data: input,
                 })
-                prisma.issue.findUnique.mockResolvedValue(mockIssue)
-                prisma.issue.update.mockResolvedValue(mockUpdatedIssue)
+                mockPrisma.issue.findUnique.mockResolvedValue(mockIssue)
+                mockPrisma.issue.update.mockResolvedValue(mockUpdatedIssue)
 
                 const result = await resolvers.Mutation.updateIssue(
                     {},
@@ -453,11 +470,11 @@ describe('GraphQL Resolvers', () => {
                 )
 
                 expect(result).toEqual(mockUpdatedIssue)
-                expect(issueSchema.safeParse).toHaveBeenCalledWith(input)
-                expect(prisma.issue.findUnique).toHaveBeenCalledWith({
+                expect(updateIssueSchema.safeParse).toHaveBeenCalledWith(input)
+                expect(mockPrisma.issue.findUnique).toHaveBeenCalledWith({
                     where: { id: 1 },
                 })
-                expect(prisma.issue.update).toHaveBeenCalledWith({
+                expect(mockPrisma.issue.update).toHaveBeenCalledWith({
                     where: { id: 1 },
                     data: input,
                 })
@@ -466,7 +483,7 @@ describe('GraphQL Resolvers', () => {
             it('should throw error for invalid input', async () => {
                 const input = { title: '', description: '' }
 
-                ;(issueSchema.safeParse as any).mockReturnValue({
+                ;(updateIssueSchema.safeParse as any).mockReturnValue({
                     success: false,
                 })
 
@@ -474,27 +491,27 @@ describe('GraphQL Resolvers', () => {
                     resolvers.Mutation.updateIssue({}, { id: '1', input })
                 ).rejects.toThrow('Invalid input data')
 
-                expect(issueSchema.safeParse).toHaveBeenCalledWith(input)
-                expect(prisma.issue.update).not.toHaveBeenCalled()
+                expect(updateIssueSchema.safeParse).toHaveBeenCalledWith(input)
+                expect(mockPrisma.issue.update).not.toHaveBeenCalled()
             })
 
             it('should throw error for non-existent issue', async () => {
                 const input = { title: 'Updated Issue' }
 
-                ;(issueSchema.safeParse as any).mockReturnValue({
+                ;(updateIssueSchema.safeParse as any).mockReturnValue({
                     success: true,
                     data: input,
                 })
-                prisma.issue.findUnique.mockResolvedValue(null)
+                mockPrisma.issue.findUnique.mockResolvedValue(null)
 
                 await expect(
                     resolvers.Mutation.updateIssue({}, { id: '999', input })
                 ).rejects.toThrow('Issue not found')
 
-                expect(prisma.issue.findUnique).toHaveBeenCalledWith({
+                expect(mockPrisma.issue.findUnique).toHaveBeenCalledWith({
                     where: { id: 999 },
                 })
-                expect(prisma.issue.update).not.toHaveBeenCalled()
+                expect(mockPrisma.issue.update).not.toHaveBeenCalled()
             })
 
             it('should validate assignedToUserId if provided', async () => {
@@ -506,13 +523,13 @@ describe('GraphQL Resolvers', () => {
                 const mockUser = { id: 'user1', name: 'John Doe' }
                 const mockUpdatedIssue = { ...mockIssue, ...input }
 
-                ;(issueSchema.safeParse as any).mockReturnValue({
+                ;(updateIssueSchema.safeParse as any).mockReturnValue({
                     success: true,
                     data: input,
                 })
-                prisma.issue.findUnique.mockResolvedValue(mockIssue)
-                prisma.user.findUnique.mockResolvedValue(mockUser)
-                prisma.issue.update.mockResolvedValue(mockUpdatedIssue)
+                mockPrisma.issue.findUnique.mockResolvedValue(mockIssue)
+                mockPrisma.user.findUnique.mockResolvedValue(mockUser)
+                mockPrisma.issue.update.mockResolvedValue(mockUpdatedIssue)
 
                 const result = await resolvers.Mutation.updateIssue(
                     {},
@@ -520,7 +537,7 @@ describe('GraphQL Resolvers', () => {
                 )
 
                 expect(result).toEqual(mockUpdatedIssue)
-                expect(prisma.user.findUnique).toHaveBeenCalledWith({
+                expect(mockPrisma.user.findUnique).toHaveBeenCalledWith({
                     where: { id: 'user1' },
                 })
             })
@@ -532,21 +549,21 @@ describe('GraphQL Resolvers', () => {
                 }
                 const mockIssue = { id: 1, title: 'Original Issue' }
 
-                ;(issueSchema.safeParse as any).mockReturnValue({
+                ;(updateIssueSchema.safeParse as any).mockReturnValue({
                     success: true,
                     data: input,
                 })
-                prisma.issue.findUnique.mockResolvedValue(mockIssue)
-                prisma.user.findUnique.mockResolvedValue(null)
+                mockPrisma.issue.findUnique.mockResolvedValue(mockIssue)
+                mockPrisma.user.findUnique.mockResolvedValue(null)
 
                 await expect(
                     resolvers.Mutation.updateIssue({}, { id: '1', input })
                 ).rejects.toThrow('Invalid assignedToUserId')
 
-                expect(prisma.user.findUnique).toHaveBeenCalledWith({
+                expect(mockPrisma.user.findUnique).toHaveBeenCalledWith({
                     where: { id: 'invalid-user' },
                 })
-                expect(prisma.issue.update).not.toHaveBeenCalled()
+                expect(mockPrisma.issue.update).not.toHaveBeenCalled()
             })
         })
 
@@ -554,8 +571,8 @@ describe('GraphQL Resolvers', () => {
             it('should delete existing issue', async () => {
                 const mockIssue = { id: 1, title: 'Issue to Delete' }
 
-                prisma.issue.findUnique.mockResolvedValue(mockIssue)
-                prisma.issue.delete.mockResolvedValue(mockIssue)
+                mockPrisma.issue.findUnique.mockResolvedValue(mockIssue)
+                mockPrisma.issue.delete.mockResolvedValue(mockIssue)
 
                 const result = await resolvers.Mutation.deleteIssue(
                     {},
@@ -563,32 +580,32 @@ describe('GraphQL Resolvers', () => {
                 )
 
                 expect(result).toBe(true)
-                expect(prisma.issue.findUnique).toHaveBeenCalledWith({
+                expect(mockPrisma.issue.findUnique).toHaveBeenCalledWith({
                     where: { id: 1 },
                 })
-                expect(prisma.issue.delete).toHaveBeenCalledWith({
+                expect(mockPrisma.issue.delete).toHaveBeenCalledWith({
                     where: { id: 1 },
                 })
             })
 
             it('should throw error for non-existent issue', async () => {
-                prisma.issue.findUnique.mockResolvedValue(null)
+                mockPrisma.issue.findUnique.mockResolvedValue(null)
 
                 await expect(
                     resolvers.Mutation.deleteIssue({}, { id: '999' })
                 ).rejects.toThrow('Issue not found')
 
-                expect(prisma.issue.findUnique).toHaveBeenCalledWith({
+                expect(mockPrisma.issue.findUnique).toHaveBeenCalledWith({
                     where: { id: 999 },
                 })
-                expect(prisma.issue.delete).not.toHaveBeenCalled()
+                expect(mockPrisma.issue.delete).not.toHaveBeenCalled()
             })
         })
     })
 
     describe('Error Handling', () => {
         it('should handle Prisma errors gracefully', async () => {
-            prisma.issue.findMany.mockRejectedValue(
+            mockPrisma.issue.findMany.mockRejectedValue(
                 new Error('Database connection failed')
             )
 
@@ -619,7 +636,7 @@ describe('GraphQL Resolvers', () => {
                 success: true,
                 data: input,
             })
-            prisma.issue.create.mockResolvedValue({ id: 1, ...input })
+            mockPrisma.issue.create.mockResolvedValue({ id: 1, ...input })
 
             const result = await resolvers.Mutation.createIssue({}, { input })
 
@@ -636,9 +653,12 @@ describe('GraphQL Resolvers', () => {
                 success: true,
                 data: input,
             })
-            prisma.issue.findUnique.mockResolvedValue(mockIssue)
-            prisma.user.findUnique.mockResolvedValue(mockUser)
-            prisma.issue.update.mockResolvedValue({ ...mockIssue, ...input })
+            mockPrisma.issue.findUnique.mockResolvedValue(mockIssue)
+            mockPrisma.user.findUnique.mockResolvedValue(mockUser)
+            mockPrisma.issue.update.mockResolvedValue({
+                ...mockIssue,
+                ...input,
+            })
 
             const result = await resolvers.Mutation.updateIssueAssignee(
                 {},

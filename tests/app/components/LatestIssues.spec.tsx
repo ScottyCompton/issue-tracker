@@ -50,7 +50,8 @@ describe('LatestIssues', () => {
             ],
         }
 
-        mockQuery.mockResolvedValueOnce({ data: mockData })
+        // Set up the mock to return the data
+        mockQuery.mockImplementation(() => Promise.resolve({ data: mockData }))
 
         const { default: LatestIssues } = await import(
             '@/app/components/LatestIssues'
@@ -61,6 +62,7 @@ describe('LatestIssues', () => {
 
         expect(mockQuery).toHaveBeenCalledWith({
             query: { query: 'GET_LATEST_ISSUES_QUERY' },
+            fetchPolicy: 'network-only',
         })
     })
 
@@ -69,7 +71,8 @@ describe('LatestIssues', () => {
             latestIssues: [],
         }
 
-        mockQuery.mockResolvedValueOnce({ data: mockData })
+        // Set up the mock to return the data
+        mockQuery.mockImplementation(() => Promise.resolve({ data: mockData }))
 
         const { default: LatestIssues } = await import(
             '@/app/components/LatestIssues'
@@ -79,11 +82,15 @@ describe('LatestIssues', () => {
 
         expect(mockQuery).toHaveBeenCalledWith({
             query: { query: 'GET_LATEST_ISSUES_QUERY' },
+            fetchPolicy: 'network-only',
         })
     })
 
     it('handles GraphQL errors gracefully', async () => {
-        mockQuery.mockRejectedValueOnce(new Error('GraphQL error'))
+        // Set up the mock to throw an error
+        mockQuery.mockImplementation(() =>
+            Promise.reject(new Error('GraphQL error'))
+        )
 
         const { default: LatestIssues } = await import(
             '@/app/components/LatestIssues'
@@ -97,7 +104,9 @@ describe('LatestIssues', () => {
             '@/app/graphql/queries'
         )
         expect(GET_LATEST_ISSUES_QUERY).toBeDefined()
-        expect(GET_LATEST_ISSUES_QUERY.query).toBe('GET_LATEST_ISSUES_QUERY')
+        expect((GET_LATEST_ISSUES_QUERY as any).query).toBe(
+            'GET_LATEST_ISSUES_QUERY'
+        )
     })
 
     it('imports required dependencies', async () => {

@@ -26,6 +26,7 @@ interface LatestIssues {
 const LatestIssues: React.FC = async () => {
     const { data } = await graphqlClient.query<LatestIssues>({
         query: GET_LATEST_ISSUES_QUERY,
+        fetchPolicy: 'network-only', // Always fetch fresh data
     })
 
     const { latestIssues } = data

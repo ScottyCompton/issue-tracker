@@ -15,6 +15,7 @@ const IssueSummary = async () => {
         variables: {
             includeAll: true,
         },
+        fetchPolicy: 'network-only', // Always fetch fresh data
     })
 
     const { issueStatusCount } = data

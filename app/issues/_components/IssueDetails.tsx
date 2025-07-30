@@ -1,9 +1,12 @@
+'use client'
+
 import { IssueStatusBadge } from '@/app/components'
 import { Status } from '@/app/generated/prisma'
 import { formatDate } from '@/app/lib/utils'
 import { Card, Flex, Heading, Text } from '@radix-ui/themes'
-import React from 'react'
+import React, { useState } from 'react'
 import ReactMarkdown from 'react-markdown'
+import StatusSelect from './StatusSelect'
 
 interface GraphQLIssue {
     id: string
@@ -20,11 +23,24 @@ interface Props {
 }
 
 const IssueDetails: React.FC<Props> = ({ issue }: Props) => {
+    const [currentStatus, setCurrentStatus] = useState<Status>(issue.status)
+
+    const handleStatusChange = (newStatus: Status) => {
+        setCurrentStatus(newStatus)
+    }
+
     return (
         <>
-            <Heading>{issue.title}</Heading>
+            <Flex justify="between" align="center" mb="2">
+                <Heading>{issue.title}</Heading>
+                <StatusSelect
+                    issueId={issue.id}
+                    currentStatus={currentStatus}
+                    onStatusChange={handleStatusChange}
+                />
+            </Flex>
             <Flex className="space-x-3" my="2">
-                <IssueStatusBadge status={issue.status} />
+                <IssueStatusBadge status={currentStatus} />
                 <Text>{formatDate(issue.createdAt)}</Text>
             </Flex>
             <Card mt="4">

@@ -12,6 +12,7 @@ export const updateIssueSchema = z.object({
         .max(65536)
         .min(1, 'Description is required')
         .optional(),
+    status: z.enum(['OPEN', 'IN_PROGRESS', 'CLOSED']).optional(),
     assignedToUserId: z
         .string()
         .max(255)
