@@ -1,10 +1,10 @@
 # Issue Tracker
 
-A modern, full-stack issue tracking application built with Next.js, featuring issue management, user authentication, and comprehensive project oversight capabilities.
+A modern, full-stack issue tracking application built with Next.js, featuring issue management, user authentication, comprehensive project oversight capabilities, and advanced analytics dashboard.
 
 ## 📋 Summary
 
-The Issue Tracker is a comprehensive project management tool designed to help teams efficiently track, manage, and resolve issues throughout their development lifecycle. Built with modern web technologies, it provides an intuitive interface for creating, updating, and monitoring project issues with detailed analytics and flexible deployment options.
+The Issue Tracker is a simple project management tool designed to help teams efficiently track, manage, and resolve issues throughout their development lifecycle. Built with modern web technologies, it provides an intuitive interface for creating, updating, and monitoring project issues with detailed analytics, interactive visualizations, and flexible deployment options.
 
 ## 🎯 Purpose
 
@@ -12,9 +12,10 @@ This application serves as a centralized platform for:
 
 - **Issue Management**: Create, edit, and track project issues with detailed descriptions and status updates
 - **Team Collaboration**: Assign issues to team members and track progress
-- **Project Analytics**: Visualize issue distribution and project health through interactive charts
+- **Project Analytics**: Visualize issue distribution and project health through interactive charts and dashboards
 - **Workflow Optimization**: Streamline development processes with status-based filtering and sorting
-- **Dashboard Overview**: Monitor project status with comprehensive issue summaries
+- **Dashboard Overview**: Monitor project status with comprehensive issue summaries and real-time data
+- **Advanced Reporting**: Generate insights through issue status counts and latest activity tracking
 
 ## ✨ Features
 
@@ -23,25 +24,36 @@ This application serves as a centralized platform for:
 - **Issue Creation & Management**: Create, edit, and delete issues with rich text descriptions
 - **Status Tracking**: Monitor issues through OPEN, IN_PROGRESS, and CLOSED statuses
 - **User Assignment**: Assign issues to team members for accountability
-- **Real-time Dashboard**: View project overview with issue summaries and charts
+- **Real-time Dashboard**: View project overview with issue summaries and interactive charts
 - **Advanced Filtering**: Filter issues by status, assignee, and date ranges
 - **Pagination**: Handle large issue lists with efficient pagination
+- **Interactive Analytics**: Clickable charts that navigate to filtered issue lists
+
+### Dashboard & Analytics
+
+- **Issue Status Summary**: Real-time overview of issue distribution across all statuses
+- **Interactive Bar Charts**: Visual representation of issue counts with clickable navigation
+- **Latest Issues Tracking**: Display recent issues with assignee information and status badges
+- **Responsive Analytics**: Charts and summaries that adapt to different screen sizes
+- **Real-time Data**: Fresh data fetching with network-only policies for up-to-date information
 
 ### User Experience
 
 - **Responsive Design**: Works seamlessly on desktop, tablet, and mobile devices
 - **Modern UI**: Clean, intuitive interface built with Radix UI components
-- **Loading States**: Smooth loading animations and skeleton screens
+- **Loading States**: Smooth loading animations and skeleton screens for all components
 - **Error Handling**: Comprehensive error boundaries and user-friendly error messages
 - **Form Validation**: Client and server-side validation with helpful feedback
+- **Skeleton Loading**: Enhanced user experience with skeleton screens during data loading
 
 ### Technical Features
 
 - **Authentication**: Secure user authentication with NextAuth.js
-- **GraphQL API**: Efficient data fetching with Apollo GraphQL
+- **GraphQL API**: Efficient data fetching with Apollo GraphQL and enhanced schema
 - **Database**: MySQL database with Prisma ORM for type-safe queries
 - **Environment Configuration**: Flexible deployment with environment variables
-- **Testing**: Comprehensive test suite with Vitest and React Testing Library
+- **Comprehensive Testing**: Extensive test suite with Vitest and React Testing Library
+- **Advanced GraphQL Schema**: Enhanced schema with issue status counts and latest issues queries
 
 ## 🛠️ Technology Stack
 
@@ -53,11 +65,12 @@ This application serves as a centralized platform for:
 - **Radix UI**: Accessible component library
 - **React Hook Form**: Form handling and validation
 - **React Query**: Server state management
-- **Recharts**: Data visualization
+- **Recharts**: Interactive data visualization
+- **React Email**: Email template system
 
 ### Backend
 
-- **GraphQL**: API layer with Apollo Server
+- **GraphQL**: API layer with Apollo Server and enhanced schema
 - **Prisma**: Database ORM
 - **MySQL**: Primary database
 - **NextAuth.js**: Authentication provider
@@ -65,10 +78,11 @@ This application serves as a centralized platform for:
 
 ### Development Tools
 
-- **Vitest**: Unit and integration testing
+- **Vitest**: Unit and integration testing with comprehensive coverage
 - **ESLint**: Code linting
 - **Prettier**: Code formatting
 - **React Testing Library**: Component testing
+- **Coverage Reporting**: HTML coverage reports for test analysis
 
 ## 🚀 Installation & Setup
 
@@ -159,6 +173,9 @@ npm test
 # Run tests with coverage
 npm run coverage
 
+# Run tests with HTML coverage report
+npm run coverage:html
+
 # Run tests in watch mode
 npm test -- --watch
 
@@ -172,6 +189,15 @@ npm test -- tests/app/components/Navbar.spec.tsx
 - **Branches**: 85%
 - **Functions**: 90%
 - **Lines**: 90%
+
+### Testing Features
+
+- **Comprehensive Test Suite**: Unit and integration tests for all components
+- **GraphQL Testing**: Complete coverage of queries, resolvers, and schema
+- **Component Testing**: Full testing of UI components with loading states
+- **API Route Testing**: Complete coverage of REST and GraphQL endpoints
+- **Form Validation Testing**: Client and server-side validation testing
+- **Error Boundary Testing**: Comprehensive error handling tests
 
 ## 📦 Available Scripts
 
@@ -190,6 +216,10 @@ npm run coverage:html # Run tests with HTML coverage report
 npm run lint         # Run ESLint
 npm run format       # Format code with Prettier
 npm run format:check # Check code formatting
+npm run format:tsx   # Format TypeScript files
+
+# Email Preview
+npm run preview-email # Start email preview server
 
 # Database
 npx prisma migrate dev    # Run database migrations
@@ -204,12 +234,14 @@ issue-tracker/
 ├── app/                    # Next.js App Router
 │   ├── api/               # API routes
 │   ├── components/        # Shared components
+│   │   ├── IssueChart/   # Interactive analytics components
+│   │   └── ...           # Other UI components
 │   ├── issues/           # Issue management pages
 │   ├── graphql/          # GraphQL schema and resolvers
 │   ├── lib/              # Utility functions
 │   └── auth/             # Authentication configuration
 ├── prisma/               # Database schema and migrations
-├── tests/                # Test files (mirrors app structure)
+├── tests/                # Comprehensive test files (mirrors app structure)
 ├── public/               # Static assets
 └── docs/                 # Documentation
 ```
