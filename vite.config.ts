@@ -13,6 +13,7 @@ const exclusions = [
     '**/*.config*',
     '.vscode',
     'tests/utils/test-utils.tsx',
+    'html/*',
     '',
 ]
 
