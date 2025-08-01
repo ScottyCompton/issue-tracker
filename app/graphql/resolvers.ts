@@ -14,6 +14,10 @@ export const resolvers = {
                 where.status = args.status
             }
 
+            if (args.assignedToUserId) {
+                where.assignedToUserId = args.assignedToUserId
+            }
+
             const paging = args.paging || {}
             const { skip, take } = paging
 
@@ -39,6 +43,9 @@ export const resolvers = {
             const where: any = {}
             if (args.status) {
                 where.status = args.status
+            }
+            if (args.assignedToUserId) {
+                where.assignedToUserId = args.assignedToUserId
             }
             return await prisma.issue.count({
                 where,

@@ -1,5 +1,9 @@
 import Pagination from '@/app/components/Pagination'
-import { GET_ISSUES_COUNT_QUERY, GET_ISSUES_QUERY } from '@/app/graphql/queries'
+import {
+    GET_ISSUES_COUNT_QUERY,
+    GET_ISSUES_QUERY,
+    GET_USERS_QUERY,
+} from '@/app/graphql/queries'
 import { client as graphqlClient } from '@/app/lib/graphql-client'
 import { Box } from '@radix-ui/themes'
 import IssuesList, { IssueQuery } from '../_components/IssuesList'
@@ -10,12 +14,14 @@ interface Props {
 }
 
 const IssuesPage: React.FC<Props> = async ({ searchParams }: Props) => {
-    const { status, sortBy, sortOrder, page, pageSize } = await searchParams
+    const { status, sortBy, sortOrder, page, pageSize, userId } =
+        await searchParams
     const currentPage = page ? parseInt(page) : 1
     const currentPageSize = pageSize ? parseInt(pageSize) : 10
 
     const queryVariables = {
         status,
+        assignedToUserId: userId,
         orderBy: sortBy && sortOrder ? { [sortBy]: sortOrder } : undefined,
         paging: {
             skip: (currentPage - 1) * currentPageSize,
@@ -32,15 +38,37 @@ const IssuesPage: React.FC<Props> = async ({ searchParams }: Props) => {
 
     const { data: issuesCountData } = await graphqlClient.query({
         query: GET_ISSUES_COUNT_QUERY,
-        variables: { status },
+        variables: { status, assignedToUserId: userId },
         fetchPolicy: 'network-only', // Always fetch fresh data
     })
     const { issuesCount } = issuesCountData
 
+    // Fetch current user information if filtering by user
+    let currentUser = null
+    if (userId) {
+        try {
+            const { data: usersData } = await graphqlClient.query({
+                query: GET_USERS_QUERY,
+                fetchPolicy: 'network-only',
+            })
+            currentUser = usersData.users.find(
+                (user: any) => user.id === userId
+            )
+        } catch (error) {
+            console.error('Error fetching user information:', error)
+        }
+    }
+
     return (
         <div>
-            <IssuesToolbar currStatus={status} />
-            {<IssuesList searchParams={searchParams} issues={issues} />}
+            <IssuesToolbar currStatus={status} currUserId={userId} />
+            {
+                <IssuesList
+                    searchParams={searchParams}
+                    issues={issues}
+                    currentUser={currentUser}
+                />
+            }
             <Box className="text-center w-full">
                 <Pagination
                     pageSize={currentPageSize}

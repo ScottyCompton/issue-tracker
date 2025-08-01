@@ -45,10 +45,11 @@ export const typeDefs = gql`
         issues(
             orderBy: IssueOrderBy
             status: Status
+            assignedToUserId: String
             paging: IssuePaging
         ): [Issue!]!
         issueStatusCount(includeAll: Boolean = false): [IssueStatusCount!]!
-        issuesCount(status: Status): Int!
+        issuesCount(status: Status, assignedToUserId: String): Int!
         latestIssues: [Issue!]!
         issue(id: ID!): Issue
         users: [User!]!
