@@ -1,6 +1,6 @@
 import { Flex, Grid } from '@radix-ui/themes'
+import { IssueSummary } from './components'
 import IssueChart from './components/IssueChart/IssueChart'
-import IssueSummary from './components/IssueSummary'
 import LatestIssues from './components/LatestIssues'
 
 // Force dynamic rendering to prevent build-time GraphQL queries

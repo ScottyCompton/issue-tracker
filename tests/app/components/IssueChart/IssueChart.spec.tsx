@@ -41,8 +41,15 @@ describe('IssueChart', () => {
         expect(typeof IssueChart).toBe('function')
     })
 
-    it('is an async function component', () => {
-        expect(IssueChart.constructor.name).toBe('AsyncFunction')
+    it('is a regular function component that wraps async content', () => {
+        expect(IssueChart.constructor.name).toBe('Function')
+    })
+
+    it('exports IssueChartContent as async function', async () => {
+        const { IssueChartContent } = await import(
+            '@/app/components/IssueChart/IssueChart'
+        )
+        expect(IssueChartContent.constructor.name).toBe('AsyncFunction')
     })
 
     it('handles GraphQL query with mock data', async () => {
@@ -68,7 +75,11 @@ describe('IssueChart', () => {
 
         mockQuery.mockResolvedValueOnce({ data: mockData })
 
-        await expect(IssueChart()).resolves.toBeDefined()
+        const { IssueChartContent } = await import(
+            '@/app/components/IssueChart/IssueChart'
+        )
+
+        await expect(IssueChartContent()).resolves.toBeDefined()
 
         expect(mockQuery).toHaveBeenCalledWith({
             query: { query: 'GET_ISSUES_STATUS_COUNT_QUERY' },
@@ -82,7 +93,11 @@ describe('IssueChart', () => {
 
         mockQuery.mockResolvedValueOnce({ data: mockData })
 
-        await expect(IssueChart()).resolves.toBeDefined()
+        const { IssueChartContent } = await import(
+            '@/app/components/IssueChart/IssueChart'
+        )
+
+        await expect(IssueChartContent()).resolves.toBeDefined()
 
         expect(mockQuery).toHaveBeenCalledWith({
             query: { query: 'GET_ISSUES_STATUS_COUNT_QUERY' },
@@ -102,7 +117,11 @@ describe('IssueChart', () => {
 
         mockQuery.mockResolvedValueOnce({ data: mockData })
 
-        await expect(IssueChart()).resolves.toBeDefined()
+        const { IssueChartContent } = await import(
+            '@/app/components/IssueChart/IssueChart'
+        )
+
+        await expect(IssueChartContent()).resolves.toBeDefined()
 
         expect(mockQuery).toHaveBeenCalledWith({
             query: { query: 'GET_ISSUES_STATUS_COUNT_QUERY' },
@@ -132,7 +151,11 @@ describe('IssueChart', () => {
 
         mockQuery.mockResolvedValueOnce({ data: mockData })
 
-        await expect(IssueChart()).resolves.toBeDefined()
+        const { IssueChartContent } = await import(
+            '@/app/components/IssueChart/IssueChart'
+        )
+
+        await expect(IssueChartContent()).resolves.toBeDefined()
 
         expect(mockQuery).toHaveBeenCalledWith({
             query: { query: 'GET_ISSUES_STATUS_COUNT_QUERY' },
@@ -142,7 +165,11 @@ describe('IssueChart', () => {
     it('handles GraphQL errors gracefully', async () => {
         mockQuery.mockRejectedValueOnce(new Error('GraphQL error'))
 
-        await expect(IssueChart()).rejects.toThrow('GraphQL error')
+        const { IssueChartContent } = await import(
+            '@/app/components/IssueChart/IssueChart'
+        )
+
+        await expect(IssueChartContent()).rejects.toThrow('GraphQL error')
     })
 
     it('uses the correct GraphQL query', async () => {
@@ -171,7 +198,11 @@ describe('IssueChart', () => {
 
         mockQuery.mockResolvedValueOnce({ data: mockData })
 
-        await IssueChart()
+        const { IssueChartContent } = await import(
+            '@/app/components/IssueChart/IssueChart'
+        )
+
+        await IssueChartContent()
 
         expect(mockQuery).toHaveBeenCalledWith({
             query: { query: 'GET_ISSUES_STATUS_COUNT_QUERY' },

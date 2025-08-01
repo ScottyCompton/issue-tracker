@@ -9,6 +9,7 @@
         "lint": "next lint",
         "test": "vitest",
         "coverage": "vitest run --coverage",
+        "coverage:html": "vitest run --coverage --reporter=html && npx open-cli coverage/index.html",
         "preview-email": "email dev -p 3030",
         "format": "prettier --write \"**/*.{tsx,ts,js,jsx,json,css,md}\"",
         "format:check": "prettier --check \"**/*.{tsx,ts,js,jsx,json,css,md}\"",
@@ -71,8 +72,10 @@
         "@types/lodash": "^4.17.20",
         "@vitejs/plugin-react": "^4.7.0",
         "@vitest/coverage-v8": "^3.2.4",
+        "@vitest/ui": "^3.2.4",
         "jest": "^30.0.5",
         "jsdom": "^26.1.0",
+        "open-cli": "^8.0.0",
         "prettier": "3.6.2",
         "vitest": "^3.2.4"
     }

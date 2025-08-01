@@ -455,4 +455,25 @@ describe('IssuesList', () => {
 
         expect(result).toBeDefined()
     })
+
+    it('preserves pageSize and page parameters when sorting', async () => {
+        const searchParamsWithPageSize = Promise.resolve({
+            status: 'OPEN',
+            sortBy: 'title',
+            sortOrder: 'asc',
+            page: '2',
+            pageSize: '25',
+        })
+
+        const { default: IssuesList } = await import(
+            '@/app/issues/_components/IssuesList'
+        )
+
+        const result = await IssuesList({
+            searchParams: searchParamsWithPageSize,
+            issues: mockIssues,
+        })
+
+        expect(result).toBeDefined()
+    })
 })

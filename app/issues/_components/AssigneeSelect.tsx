@@ -7,7 +7,7 @@ import {
 import { client as graphqlClient } from '@/app/lib/graphql-client'
 import { Select } from '@radix-ui/themes'
 import { useQuery } from '@tanstack/react-query'
-import toast, { Toaster } from 'react-hot-toast'
+import toast from 'react-hot-toast'
 
 interface User {
     id: string
@@ -78,7 +78,6 @@ const AssigneeSelect = ({ issueId, assignedToUserId }: Props) => {
                     </Select.Group>
                 </Select.Content>
             </Select.Root>
-            <Toaster />
         </>
     )
 }

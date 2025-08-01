@@ -2,8 +2,10 @@ import { client as graphqlClient } from '@/app/lib/graphql-client'
 import { Status } from '@/prisma/client'
 import { Avatar, Card, Flex, Heading, Table } from '@radix-ui/themes'
 import Link from 'next/link'
+import { Suspense } from 'react'
 import { GET_LATEST_ISSUES_QUERY } from '../graphql/queries'
 import IssueStatusBadge from './IssueStatusBadge'
+import LatestIssuesSkeleton from './LatestIssuesSkeleton'
 
 interface AssignedToUser {
     id: string
@@ -23,9 +25,13 @@ interface LatestIssues {
     latestIssues: LatestIssue[]
 }
 
-const LatestIssues: React.FC = async () => {
+export const LatestIssuesContent = async () => {
+    // Add artificial delay to see the skeleton
+    await new Promise((resolve) => setTimeout(resolve, 1000))
+
     const { data } = await graphqlClient.query<LatestIssues>({
         query: GET_LATEST_ISSUES_QUERY,
+        fetchPolicy: 'network-only', // Always fetch fresh data
     })
 
     const { latestIssues } = data
@@ -74,6 +80,14 @@ const LatestIssues: React.FC = async () => {
                 </Table.Body>
             </Table.Root>
         </Card>
+    )
+}
+
+const LatestIssues = () => {
+    return (
+        <Suspense fallback={<LatestIssuesSkeleton />}>
+            <LatestIssuesContent />
+        </Suspense>
     )
 }
 

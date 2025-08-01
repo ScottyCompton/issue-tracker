@@ -1,10 +1,10 @@
 # Issue Tracker
 
-A modern, full-stack issue tracking application built with Next.js, featuring real-time issue management, user authentication, and comprehensive project oversight capabilities.
+A modern, full-stack issue tracking application built with Next.js, featuring issue management, user authentication, and comprehensive project oversight capabilities.
 
 ## 📋 Summary
 
-The Issue Tracker is a comprehensive project management tool designed to help teams efficiently track, manage, and resolve issues throughout their development lifecycle. Built with modern web technologies, it provides an intuitive interface for creating, updating, and monitoring project issues with real-time updates and detailed analytics.
+The Issue Tracker is a comprehensive project management tool designed to help teams efficiently track, manage, and resolve issues throughout their development lifecycle. Built with modern web technologies, it provides an intuitive interface for creating, updating, and monitoring project issues with detailed analytics and flexible deployment options.
 
 ## 🎯 Purpose
 
@@ -14,7 +14,7 @@ This application serves as a centralized platform for:
 - **Team Collaboration**: Assign issues to team members and track progress
 - **Project Analytics**: Visualize issue distribution and project health through interactive charts
 - **Workflow Optimization**: Streamline development processes with status-based filtering and sorting
-- **Real-time Updates**: Stay informed with live issue updates and notifications
+- **Dashboard Overview**: Monitor project status with comprehensive issue summaries
 
 ## ✨ Features
 
@@ -40,8 +40,7 @@ This application serves as a centralized platform for:
 - **Authentication**: Secure user authentication with NextAuth.js
 - **GraphQL API**: Efficient data fetching with Apollo GraphQL
 - **Database**: MySQL database with Prisma ORM for type-safe queries
-- **Real-time Updates**: Live issue updates and notifications
-- **Email Integration**: Automated email notifications for issue assignments
+- **Environment Configuration**: Flexible deployment with environment variables
 - **Testing**: Comprehensive test suite with Vitest and React Testing Library
 
 ## 🛠️ Technology Stack
@@ -102,18 +101,15 @@ yarn install
 Create a `.env.local` file in the root directory with the following variables:
 
 ```env
+# API Configuration
+APP_PUBLIC_URL="http://localhost:3000"
+
 # Database
 DATABASE_URL="mysql://username:password@localhost:3306/issue_tracker"
 
 # Authentication (NextAuth.js)
 NEXTAUTH_URL="http://localhost:3000"
 NEXTAUTH_SECRET="your-secret-key-here"
-
-# Email Provider (Optional - for email notifications)
-EMAIL_SERVER_HOST="smtp.example.com"
-EMAIL_SERVER_PORT=587
-EMAIL_SERVER_USER="your-email@example.com"
-EMAIL_SERVER_PASSWORD="your-email-password"
 
 # OAuth Providers (Optional)
 GOOGLE_CLIENT_ID="your-google-client-id"
@@ -150,7 +146,7 @@ npm run dev
 yarn dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) in your browser to view the application.
+Open the application URL (default: http://localhost:3000) in your browser to view the application.
 
 ## 🧪 Testing
 
@@ -188,6 +184,7 @@ npm run start        # Start production server
 # Testing
 npm test             # Run tests
 npm run coverage     # Run tests with coverage
+npm run coverage:html # Run tests with HTML coverage report
 
 # Code Quality
 npm run lint         # Run ESLint
@@ -231,9 +228,9 @@ Configure authentication providers in `app/auth/authOptions.ts`. The application
 - OAuth providers (Google, GitHub)
 - Custom authentication flows
 
-### Email Notifications
+### Environment Configuration
 
-Set up email providers in your environment variables to enable email notifications for issue assignments and updates.
+The application uses environment variables for flexible deployment. The `APP_PUBLIC_URL` variable controls the API endpoint, making it easy to deploy to different environments.
 
 ## 🚀 Deployment
 

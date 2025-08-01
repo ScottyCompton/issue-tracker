@@ -308,16 +308,6 @@ describe('AssigneeSelect', () => {
         expect(select).toHaveTextContent(/assign|unassigned/i)
     })
 
-    it('renders toaster component', async () => {
-        const { default: AssigneeSelect } = await import(
-            '@/app/issues/_components/AssigneeSelect'
-        )
-
-        customRender(<AssigneeSelect issueId="issue1" />)
-
-        expect(screen.getByTestId('toaster')).toBeInTheDocument()
-    })
-
     it('calls React Query with correct parameters', async () => {
         const { default: AssigneeSelect } = await import(
             '@/app/issues/_components/AssigneeSelect'

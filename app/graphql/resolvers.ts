@@ -1,6 +1,7 @@
 import {
     issueSchema,
     updateIssueAssigneeSchema,
+    updateIssueSchema,
 } from '@/app/schemas/validationSchemas'
 import prisma from '@/prisma/client'
 
@@ -157,7 +158,7 @@ export const resolvers = {
             { id, input }: { id: string; input: any }
         ) => {
             // Validate input
-            const validation = issueSchema.safeParse(input)
+            const validation = updateIssueSchema.safeParse(input)
             if (!validation.success) {
                 throw new Error('Invalid input data')
             }

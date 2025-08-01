@@ -10,28 +10,30 @@ interface Props {
 }
 
 const IssuesPage: React.FC<Props> = async ({ searchParams }: Props) => {
-    const { status, sortBy, sortOrder, page } = await searchParams
+    const { status, sortBy, sortOrder, page, pageSize } = await searchParams
     const currentPage = page ? parseInt(page) : 1
-    const pageSize = 10
+    const currentPageSize = pageSize ? parseInt(pageSize) : 10
 
     const queryVariables = {
         status,
         orderBy: sortBy && sortOrder ? { [sortBy]: sortOrder } : undefined,
         paging: {
-            skip: (currentPage - 1) * pageSize,
-            take: pageSize,
+            skip: (currentPage - 1) * currentPageSize,
+            take: currentPageSize,
         },
     }
 
     const { data } = await graphqlClient.query({
         query: GET_ISSUES_QUERY,
         variables: queryVariables,
+        fetchPolicy: 'network-only', // Always fetch fresh data
     })
     const { issues } = data
 
     const { data: issuesCountData } = await graphqlClient.query({
         query: GET_ISSUES_COUNT_QUERY,
         variables: { status },
+        fetchPolicy: 'network-only', // Always fetch fresh data
     })
     const { issuesCount } = issuesCountData
 
@@ -41,7 +43,7 @@ const IssuesPage: React.FC<Props> = async ({ searchParams }: Props) => {
             {<IssuesList searchParams={searchParams} issues={issues} />}
             <Box className="text-center w-full">
                 <Pagination
-                    pageSize={10}
+                    pageSize={currentPageSize}
                     itemCount={issuesCount}
                     currentPage={currentPage}
                 />

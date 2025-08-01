@@ -27,19 +27,25 @@ describe('Pagination', () => {
         expect(buttons).toHaveLength(4)
     })
 
-    it('does not render when page count is 1 or less', () => {
+    it('renders with item count when page count is 1 or less', () => {
         const { container } = render(
             <Pagination itemCount={5} pageSize={10} currentPage={1} />
         )
 
-        // Check that no pagination text is rendered
-        expect(screen.queryByText(/Page \d+ of \d+/)).not.toBeInTheDocument()
+        // Check that item count text is rendered instead of page count
+        expect(screen.getByText('5 items')).toBeInTheDocument()
     })
 
     it('displays correct page information', () => {
         render(<Pagination itemCount={25} pageSize={5} currentPage={3} />)
 
         expect(screen.getByText('Page 3 of 5')).toBeInTheDocument()
+    })
+
+    it('displays item count when only one page', () => {
+        render(<Pagination itemCount={5} pageSize={10} currentPage={1} />)
+
+        expect(screen.getByText('5 items')).toBeInTheDocument()
     })
 
     it('disables first and previous buttons on first page', () => {

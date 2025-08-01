@@ -11,6 +11,15 @@ vi.mock('@/app/components', () => ({
     ),
 }))
 
+// Mock the StatusSelect component
+vi.mock('@/app/issues/_components/StatusSelect', () => ({
+    default: ({ currentStatus }: { currentStatus: string }) => (
+        <div data-testid="status-select" data-status={currentStatus}>
+            Status Select
+        </div>
+    ),
+}))
+
 // Mock the formatDate utility
 const mockFormatDate = vi.fn()
 vi.mock('@/app/lib/utils', () => ({
@@ -53,6 +62,18 @@ describe('IssueDetails', () => {
         customRender(<IssueDetails issue={mockIssue} />)
 
         expect(screen.getByText('Test Issue Title')).toBeInTheDocument()
+    })
+
+    it('renders status select component', async () => {
+        const { default: IssueDetails } = await import(
+            '@/app/issues/_components/IssueDetails'
+        )
+
+        customRender(<IssueDetails issue={mockIssue} />)
+
+        const statusSelect = screen.getByTestId('status-select')
+        expect(statusSelect).toBeInTheDocument()
+        expect(statusSelect).toHaveAttribute('data-status', 'OPEN')
     })
 
     it('renders issue status badge correctly', async () => {
