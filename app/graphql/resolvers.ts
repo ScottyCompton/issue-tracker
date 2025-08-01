@@ -13,12 +13,15 @@ export const resolvers = {
             if (args.status) {
                 where.status = args.status
             }
-            const { skip, take } = args.paging
+
+            const paging = args.paging || {}
+            const { skip, take } = paging
+
             return await prisma.issue.findMany({
                 where,
                 orderBy: args.orderBy,
-                skip: args.paging.skip,
-                take: args.paging.take,
+                skip: skip,
+                take: take,
             })
         },
 

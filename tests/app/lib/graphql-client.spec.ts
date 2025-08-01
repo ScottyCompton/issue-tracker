@@ -59,14 +59,14 @@ describe('graphql-client', () => {
     describe('URI configuration', () => {
         it('should use the correct API endpoint path', () => {
             const expectedPath = '/api/graphql'
-            const API_URL = process.env.APP_PUBLIC_URL
+            const API_URL = process.env.NEXT_PUBLIC_APP_URL
             const fullUri = `${API_URL}/api/graphql`
 
             expect(fullUri).toContain(expectedPath)
         })
 
         it('should use environment variable for API URL', () => {
-            const API_URL = process.env.APP_PUBLIC_URL
+            const API_URL = process.env.NEXT_PUBLIC_APP_URL
             const fullUri = `${API_URL}/api/graphql`
 
             expect(fullUri).toContain(API_URL)

@@ -2,14 +2,12 @@ import { Theme } from '@radix-ui/themes'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-// Mock the GraphQL client
-const mockQuery = vi.fn()
-const mockMutate = vi.fn()
-vi.mock('@/app/lib/graphql-client', () => ({
-    client: {
-        query: mockQuery,
-        mutate: mockMutate,
-    },
+// Mock Apollo Client
+const mockUseQuery = vi.fn()
+const mockUseMutation = vi.fn()
+vi.mock('@apollo/client', () => ({
+    useQuery: mockUseQuery,
+    useMutation: mockUseMutation,
 }))
 
 // Mock the GraphQL queries
@@ -19,18 +17,6 @@ vi.mock('@/app/graphql/queries', () => ({
         mutation: 'UPDATE_ISSUE_ASSIGNEE_MUTATION',
     },
 }))
-
-// Mock React Query
-const mockUseQuery = vi.fn()
-vi.mock('@tanstack/react-query', async () => {
-    const actual = await vi.importActual<
-        typeof import('@tanstack/react-query')
-    >('@tanstack/react-query')
-    return {
-        ...actual,
-        useQuery: mockUseQuery,
-    }
-})
 
 // Mock react-hot-toast
 const mockToast = {
@@ -50,44 +36,40 @@ vi.mock('@/app/components', () => ({
 
 // Custom render function with providers
 const customRender = (ui: React.ReactElement) => {
-    // Import here, after mocks are set up
-    const {
-        QueryClient,
-        QueryClientProvider,
-    } = require('@tanstack/react-query')
-    const queryClient = new QueryClient({
-        defaultOptions: {
-            queries: { retry: false },
-            mutations: { retry: false },
-        },
-    })
-
-    return render(
-        <QueryClientProvider client={queryClient}>
-            <Theme>{ui}</Theme>
-        </QueryClientProvider>
-    )
+    return render(<Theme>{ui}</Theme>)
 }
 
 describe('AssigneeSelect', () => {
     beforeEach(() => {
         vi.clearAllMocks()
         mockUseQuery.mockReturnValue({
-            data: [
-                {
-                    id: 'user1',
-                    name: 'John Doe',
-                    email: 'john@example.com',
-                },
-                {
-                    id: 'user2',
-                    name: 'Jane Smith',
-                    email: 'jane@example.com',
-                },
-            ],
+            data: {
+                users: [
+                    {
+                        id: 'user1',
+                        name: 'John Doe',
+                        email: 'john@example.com',
+                    },
+                    {
+                        id: 'user2',
+                        name: 'Jane Smith',
+                        email: 'jane@example.com',
+                    },
+                ],
+            },
             error: null,
-            isLoading: false,
+            loading: false,
         })
+        mockUseMutation.mockReturnValue([
+            vi.fn().mockResolvedValue({
+                data: {
+                    updateIssueAssignee: {
+                        id: 'issue1',
+                        assignedToUserId: 'user1',
+                    },
+                },
+            }),
+        ])
     })
 
     it('renders with users data', async () => {
@@ -109,7 +91,7 @@ describe('AssigneeSelect', () => {
         mockUseQuery.mockReturnValue({
             data: null,
             error: null,
-            isLoading: true,
+            loading: true,
         })
 
         const { default: AssigneeSelect } = await import(
@@ -125,7 +107,7 @@ describe('AssigneeSelect', () => {
         mockUseQuery.mockReturnValue({
             data: null,
             error: new Error('Failed to fetch users'),
-            isLoading: false,
+            loading: false,
         })
 
         const { default: AssigneeSelect } = await import(
@@ -142,7 +124,7 @@ describe('AssigneeSelect', () => {
     })
 
     it('handles user assignment successfully', async () => {
-        mockMutate.mockResolvedValueOnce({
+        const mockMutate = vi.fn().mockResolvedValue({
             data: {
                 updateIssueAssignee: {
                     id: 'issue1',
@@ -150,6 +132,7 @@ describe('AssigneeSelect', () => {
                 },
             },
         })
+        mockUseMutation.mockReturnValue([mockMutate])
 
         const { default: AssigneeSelect } = await import(
             '@/app/issues/_components/AssigneeSelect'
@@ -165,7 +148,6 @@ describe('AssigneeSelect', () => {
 
         await waitFor(() => {
             expect(mockMutate).toHaveBeenCalledWith({
-                mutation: { mutation: 'UPDATE_ISSUE_ASSIGNEE_MUTATION' },
                 variables: {
                     id: 'issue1',
                     input: {
@@ -183,11 +165,12 @@ describe('AssigneeSelect', () => {
     })
 
     it('handles unassignment successfully', async () => {
-        mockMutate.mockResolvedValueOnce({
+        const mockMutate = vi.fn().mockResolvedValue({
             data: {
                 updateIssueAssignee: { id: 'issue1', assignedToUserId: null },
             },
         })
+        mockUseMutation.mockReturnValue([mockMutate])
 
         const { default: AssigneeSelect } = await import(
             '@/app/issues/_components/AssigneeSelect'
@@ -205,7 +188,6 @@ describe('AssigneeSelect', () => {
 
         await waitFor(() => {
             expect(mockMutate).toHaveBeenCalledWith({
-                mutation: { mutation: 'UPDATE_ISSUE_ASSIGNEE_MUTATION' },
                 variables: {
                     id: 'issue1',
                     input: {
@@ -223,7 +205,10 @@ describe('AssigneeSelect', () => {
     })
 
     it('handles assignment error', async () => {
-        mockMutate.mockRejectedValueOnce(new Error('Assignment failed'))
+        const mockMutate = vi
+            .fn()
+            .mockRejectedValue(new Error('Assignment failed'))
+        mockUseMutation.mockReturnValue([mockMutate])
 
         const { default: AssigneeSelect } = await import(
             '@/app/issues/_components/AssigneeSelect'
@@ -239,7 +224,6 @@ describe('AssigneeSelect', () => {
 
         await waitFor(() => {
             expect(mockMutate).toHaveBeenCalledWith({
-                mutation: { mutation: 'UPDATE_ISSUE_ASSIGNEE_MUTATION' },
                 variables: {
                     id: 'issue1',
                     input: {
@@ -257,7 +241,7 @@ describe('AssigneeSelect', () => {
     })
 
     it('dismisses toast before making new assignment', async () => {
-        mockMutate.mockResolvedValueOnce({
+        const mockMutate = vi.fn().mockResolvedValue({
             data: {
                 updateIssueAssignee: {
                     id: 'issue1',
@@ -265,6 +249,7 @@ describe('AssigneeSelect', () => {
                 },
             },
         })
+        mockUseMutation.mockReturnValue([mockMutate])
 
         const { default: AssigneeSelect } = await import(
             '@/app/issues/_components/AssigneeSelect'
@@ -308,26 +293,24 @@ describe('AssigneeSelect', () => {
         expect(select).toHaveTextContent(/assign|unassigned/i)
     })
 
-    it('calls React Query with correct parameters', async () => {
+    it('calls Apollo Client with correct parameters', async () => {
         const { default: AssigneeSelect } = await import(
             '@/app/issues/_components/AssigneeSelect'
         )
 
         customRender(<AssigneeSelect issueId="issue1" />)
 
-        expect(mockUseQuery).toHaveBeenCalledWith({
-            queryKey: ['users'],
-            queryFn: expect.any(Function),
-            staleTime: 3600 * 1000,
-            retry: 3,
+        expect(mockUseQuery).toHaveBeenCalledWith({ query: 'GET_USERS_QUERY' })
+        expect(mockUseMutation).toHaveBeenCalledWith({
+            mutation: 'UPDATE_ISSUE_ASSIGNEE_MUTATION',
         })
     })
 
     it('handles empty users list', async () => {
         mockUseQuery.mockReturnValue({
-            data: [],
+            data: { users: [] },
             error: null,
-            isLoading: false,
+            loading: false,
         })
 
         const { default: AssigneeSelect } = await import(

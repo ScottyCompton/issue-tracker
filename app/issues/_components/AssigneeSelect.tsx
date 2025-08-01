@@ -4,9 +4,8 @@ import {
     GET_USERS_QUERY,
     UPDATE_ISSUE_ASSIGNEE_MUTATION,
 } from '@/app/graphql/queries'
-import { client as graphqlClient } from '@/app/lib/graphql-client'
+import { useMutation, useQuery } from '@apollo/client'
 import { Select } from '@radix-ui/themes'
-import { useQuery } from '@tanstack/react-query'
 import toast from 'react-hot-toast'
 
 interface User {
@@ -22,28 +21,21 @@ interface Props {
 
 const AssigneeSelect = ({ issueId, assignedToUserId }: Props) => {
     const {
-        data: users,
+        data: usersData,
         error,
-        isLoading,
-    } = useQuery<User[]>({
-        queryKey: ['users'],
-        queryFn: () =>
-            graphqlClient
-                .query({ query: GET_USERS_QUERY })
-                .then((res) => res.data.users),
-        staleTime: 3600 * 1000,
-        retry: 3,
-    })
+        loading,
+    } = useQuery<{ users: User[] }>(GET_USERS_QUERY)
 
-    if (isLoading) return <Skeleton />
+    const [updateIssueAssignee] = useMutation(UPDATE_ISSUE_ASSIGNEE_MUTATION)
+
+    if (loading) return <Skeleton />
 
     if (error) return null
 
     const assignIssue = async (userId: string) => {
         toast.dismiss()
-        await graphqlClient
-            .mutate({
-                mutation: UPDATE_ISSUE_ASSIGNEE_MUTATION,
+        try {
+            await updateIssueAssignee({
                 variables: {
                     id: issueId.toString(),
                     input: {
@@ -51,12 +43,10 @@ const AssigneeSelect = ({ issueId, assignedToUserId }: Props) => {
                     },
                 },
             })
-            .then(() => {
-                toast.success('Changes saved successfully.')
-            })
-            .catch((error) => {
-                toast.error('Changes could not be saved')
-            })
+            toast.success('Changes saved successfully.')
+        } catch (error) {
+            toast.error('Changes could not be saved')
+        }
     }
 
     return (
@@ -70,7 +60,7 @@ const AssigneeSelect = ({ issueId, assignedToUserId }: Props) => {
                     <Select.Group>
                         <Select.Label>Suggestions</Select.Label>
                         <Select.Item value="-1">Unassigned</Select.Item>
-                        {users?.map((user: User) => (
+                        {usersData?.users?.map((user: User) => (
                             <Select.Item key={user.id} value={user.id}>
                                 {user.name}
                             </Select.Item>
