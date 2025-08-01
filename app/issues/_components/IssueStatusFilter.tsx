@@ -57,10 +57,7 @@ const IssueStatusFilter: React.FC<Props> = ({ currStatus }: Props) => {
                         All
                     </Select.Item>
                     {statusArray.map((s) => (
-                        <Select.Item
-                            key={Math.floor(Math.random() * 1000)}
-                            value={s.value + ''}
-                        >
+                        <Select.Item key={s.value} value={s.value + ''}>
                             {s.label}
                         </Select.Item>
                     ))}

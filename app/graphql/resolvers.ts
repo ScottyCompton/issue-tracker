@@ -13,12 +13,19 @@ export const resolvers = {
             if (args.status) {
                 where.status = args.status
             }
-            const { skip, take } = args.paging
+
+            if (args.assignedToUserId) {
+                where.assignedToUserId = args.assignedToUserId
+            }
+
+            const paging = args.paging || {}
+            const { skip, take } = paging
+
             return await prisma.issue.findMany({
                 where,
                 orderBy: args.orderBy,
-                skip: args.paging.skip,
-                take: args.paging.take,
+                skip: skip,
+                take: take,
             })
         },
 
@@ -36,6 +43,9 @@ export const resolvers = {
             const where: any = {}
             if (args.status) {
                 where.status = args.status
+            }
+            if (args.assignedToUserId) {
+                where.assignedToUserId = args.assignedToUserId
             }
             return await prisma.issue.count({
                 where,

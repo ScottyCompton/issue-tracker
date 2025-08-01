@@ -1,13 +1,13 @@
-import React from 'react'
 import { Status } from '@/prisma/client'
 import { Badge } from '@radix-ui/themes'
+import React from 'react'
 
 interface Props {
-    status: Status
+    status: Status | string
 }
 
 const statusMap: Record<
-    Status,
+    string,
     { label: string; color: 'red' | 'violet' | 'green' }
 > = {
     OPEN: { label: 'Open', color: 'red' },
@@ -16,9 +16,13 @@ const statusMap: Record<
 }
 
 const IssueStatusBadge: React.FC<Props> = ({ status }: Props) => {
-    return (
-        <Badge color={statusMap[status].color}>{statusMap[status].label}</Badge>
-    )
+    const statusConfig = statusMap[status as string]
+
+    if (!statusConfig) {
+        return <Badge color="gray">Unknown</Badge>
+    }
+
+    return <Badge color={statusConfig.color}>{statusConfig.label}</Badge>
 }
 
 export default IssueStatusBadge

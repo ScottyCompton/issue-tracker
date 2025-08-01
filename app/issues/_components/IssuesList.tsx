@@ -12,15 +12,27 @@ export interface IssueQuery {
     sortOrder?: string
     page?: string
     pageSize?: string
+    userId?: string
 }
 
 interface Props {
     searchParams: Promise<IssueQuery>
     issues: Issue[]
+    currentUser?: {
+        id: string
+        name: string
+        email: string
+        image?: string
+    }
 }
 
-const IssuesList: React.FC<Props> = async ({ searchParams, issues }: Props) => {
-    const { status, sortBy, sortOrder, page, pageSize } = await searchParams
+const IssuesList: React.FC<Props> = async ({
+    searchParams,
+    issues,
+    currentUser,
+}: Props) => {
+    const { status, sortBy, sortOrder, page, pageSize, userId } =
+        await searchParams
 
     return (
         <>
@@ -43,6 +55,7 @@ const IssuesList: React.FC<Props> = async ({ searchParams, issues }: Props) => {
                                                     : 'asc',
                                             page,
                                             pageSize,
+                                            userId,
                                         },
                                     }}
                                 >
@@ -84,11 +97,23 @@ const IssuesList: React.FC<Props> = async ({ searchParams, issues }: Props) => {
                         <Table.Row>
                             <Table.Cell
                                 colSpan={3}
-                                className="py-10 text-center"
+                                className="py-30 text-center"
                             >
-                                No Issues with status of{' '}
-                                <IssueStatusBadge status={status as Status} />{' '}
-                                found
+                                {userId && currentUser ? (
+                                    <>
+                                        <strong>{currentUser.name}</strong>{' '}
+                                        currently has no issues assigned to
+                                        them.
+                                    </>
+                                ) : (
+                                    <>
+                                        No Issues with status of{' '}
+                                        <IssueStatusBadge
+                                            status={status as Status}
+                                        />{' '}
+                                        found
+                                    </>
+                                )}
                             </Table.Cell>
                         </Table.Row>
                     )}

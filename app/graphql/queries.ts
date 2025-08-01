@@ -4,9 +4,15 @@ const GET_ISSUES_QUERY = gql`
     query GetIssues(
         $orderBy: IssueOrderBy
         $status: Status
+        $assignedToUserId: String
         $paging: IssuePaging
     ) {
-        issues(orderBy: $orderBy, status: $status, paging: $paging) {
+        issues(
+            orderBy: $orderBy
+            status: $status
+            assignedToUserId: $assignedToUserId
+            paging: $paging
+        ) {
             id
             title
             status
@@ -42,8 +48,8 @@ const GET_LATEST_ISSUES_QUERY = gql`
 `
 
 const GET_ISSUES_COUNT_QUERY = gql`
-    query GetIssuesCount($status: Status) {
-        issuesCount(status: $status)
+    query GetIssuesCount($status: Status, $assignedToUserId: String) {
+        issuesCount(status: $status, assignedToUserId: $assignedToUserId)
     }
 `
 
@@ -67,6 +73,7 @@ const GET_USERS_QUERY = gql`
             id
             name
             email
+            image
         }
     }
 `

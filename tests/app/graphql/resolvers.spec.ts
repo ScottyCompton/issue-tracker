@@ -671,4 +671,118 @@ describe('GraphQL Resolvers', () => {
             )
         })
     })
+
+    describe('User Filtering', () => {
+        it('should filter issues by assignedToUserId when provided', async () => {
+            const mockIssues = [
+                { id: 1, title: 'Issue 1', assignedToUserId: 'user1' },
+                { id: 2, title: 'Issue 2', assignedToUserId: 'user2' },
+            ]
+
+            mockPrisma.issue.findMany.mockResolvedValue(mockIssues)
+
+            const result = await resolvers.Query.issues(null, {
+                assignedToUserId: 'user1',
+                paging: { skip: 0, take: 10 },
+            })
+
+            expect(mockPrisma.issue.findMany).toHaveBeenCalledWith({
+                where: {
+                    assignedToUserId: 'user1',
+                },
+                orderBy: undefined,
+                skip: 0,
+                take: 10,
+            })
+
+            expect(result).toEqual(mockIssues)
+        })
+
+        it('should not filter by assignedToUserId when not provided', async () => {
+            const mockIssues = [
+                { id: 1, title: 'Issue 1', assignedToUserId: 'user1' },
+                { id: 2, title: 'Issue 2', assignedToUserId: 'user2' },
+            ]
+
+            mockPrisma.issue.findMany.mockResolvedValue(mockIssues)
+
+            const result = await resolvers.Query.issues(null, {
+                paging: { skip: 0, take: 10 },
+            })
+
+            expect(mockPrisma.issue.findMany).toHaveBeenCalledWith({
+                where: {},
+                orderBy: undefined,
+                skip: 0,
+                take: 10,
+            })
+
+            expect(result).toEqual(mockIssues)
+        })
+
+        it('should combine status and assignedToUserId filters', async () => {
+            const mockIssues = [
+                {
+                    id: 1,
+                    title: 'Issue 1',
+                    status: 'OPEN',
+                    assignedToUserId: 'user1',
+                },
+            ]
+
+            mockPrisma.issue.findMany.mockResolvedValue(mockIssues)
+
+            const result = await resolvers.Query.issues(null, {
+                status: 'OPEN',
+                assignedToUserId: 'user1',
+                paging: { skip: 0, take: 10 },
+            })
+
+            expect(mockPrisma.issue.findMany).toHaveBeenCalledWith({
+                where: {
+                    status: 'OPEN',
+                    assignedToUserId: 'user1',
+                },
+                orderBy: undefined,
+                skip: 0,
+                take: 10,
+            })
+
+            expect(result).toEqual(mockIssues)
+        })
+
+        it('should count issues by assignedToUserId when provided', async () => {
+            mockPrisma.issue.count.mockResolvedValue(5)
+
+            const result = await resolvers.Query.issuesCount(null, {
+                assignedToUserId: 'user1',
+            })
+
+            expect(mockPrisma.issue.count).toHaveBeenCalledWith({
+                where: {
+                    assignedToUserId: 'user1',
+                },
+            })
+
+            expect(result).toBe(5)
+        })
+
+        it('should count issues by status and assignedToUserId when both provided', async () => {
+            mockPrisma.issue.count.mockResolvedValue(3)
+
+            const result = await resolvers.Query.issuesCount(null, {
+                status: 'OPEN',
+                assignedToUserId: 'user1',
+            })
+
+            expect(mockPrisma.issue.count).toHaveBeenCalledWith({
+                where: {
+                    status: 'OPEN',
+                    assignedToUserId: 'user1',
+                },
+            })
+
+            expect(result).toBe(3)
+        })
+    })
 })
