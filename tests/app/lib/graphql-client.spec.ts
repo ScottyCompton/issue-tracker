@@ -59,16 +59,17 @@ describe('graphql-client', () => {
     describe('URI configuration', () => {
         it('should use the correct API endpoint path', () => {
             const expectedPath = '/api/graphql'
-            const fullUri = 'http://localhost:3000/api/graphql'
+            const API_URL = process.env.APP_PUBLIC_URL
+            const fullUri = `${API_URL}/api/graphql`
 
             expect(fullUri).toContain(expectedPath)
         })
 
-        it('should use localhost:3000 for development', () => {
-            const expectedHost = 'localhost:3000'
-            const fullUri = 'http://localhost:3000/api/graphql'
+        it('should use environment variable for API URL', () => {
+            const API_URL = process.env.APP_PUBLIC_URL
+            const fullUri = `${API_URL}/api/graphql`
 
-            expect(fullUri).toContain(expectedHost)
+            expect(fullUri).toContain(API_URL)
         })
     })
 

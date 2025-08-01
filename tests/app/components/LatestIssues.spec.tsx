@@ -26,11 +26,18 @@ describe('LatestIssues', () => {
         expect(typeof LatestIssues).toBe('function')
     })
 
-    it('is an async function component', async () => {
+    it('is a regular function component that wraps async content', async () => {
         const { default: LatestIssues } = await import(
             '@/app/components/LatestIssues'
         )
-        expect(LatestIssues.constructor.name).toBe('AsyncFunction')
+        expect(LatestIssues.constructor.name).toBe('Function')
+    })
+
+    it('exports LatestIssuesContent as async function', async () => {
+        const { LatestIssuesContent } = await import(
+            '@/app/components/LatestIssues'
+        )
+        expect(LatestIssuesContent.constructor.name).toBe('AsyncFunction')
     })
 
     it('handles GraphQL query with mock data', async () => {
@@ -53,12 +60,12 @@ describe('LatestIssues', () => {
         // Set up the mock to return the data
         mockQuery.mockImplementation(() => Promise.resolve({ data: mockData }))
 
-        const { default: LatestIssues } = await import(
+        const { LatestIssuesContent } = await import(
             '@/app/components/LatestIssues'
         )
 
         // The component should execute without throwing when properly mocked
-        await expect(LatestIssues()).resolves.toBeDefined()
+        await expect(LatestIssuesContent()).resolves.toBeDefined()
 
         expect(mockQuery).toHaveBeenCalledWith({
             query: { query: 'GET_LATEST_ISSUES_QUERY' },
@@ -74,11 +81,11 @@ describe('LatestIssues', () => {
         // Set up the mock to return the data
         mockQuery.mockImplementation(() => Promise.resolve({ data: mockData }))
 
-        const { default: LatestIssues } = await import(
+        const { LatestIssuesContent } = await import(
             '@/app/components/LatestIssues'
         )
 
-        await expect(LatestIssues()).resolves.toBeDefined()
+        await expect(LatestIssuesContent()).resolves.toBeDefined()
 
         expect(mockQuery).toHaveBeenCalledWith({
             query: { query: 'GET_LATEST_ISSUES_QUERY' },
@@ -92,11 +99,11 @@ describe('LatestIssues', () => {
             Promise.reject(new Error('GraphQL error'))
         )
 
-        const { default: LatestIssues } = await import(
+        const { LatestIssuesContent } = await import(
             '@/app/components/LatestIssues'
         )
 
-        await expect(LatestIssues()).rejects.toThrow('GraphQL error')
+        await expect(LatestIssuesContent()).rejects.toThrow('GraphQL error')
     })
 
     it('uses the correct GraphQL query', async () => {
