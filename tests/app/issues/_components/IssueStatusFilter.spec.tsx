@@ -523,131 +523,98 @@ describe('IssueStatusFilter', () => {
 
     // NEW TEST: Actually trigger the handleSelect function to cover lines 22-32
     it('triggers handleSelect function when status is selected', async () => {
-        const { default: IssueStatusFilter, handleSelect } = await import(
+        const { default: IssueStatusFilter } = await import(
             '@/app/issues/_components/IssueStatusFilter'
         )
-
-        // Mock console.log to capture the output
-        const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {})
 
         customRender(<IssueStatusFilter />)
 
-        // Test the exported handleSelect function directly
-        handleSelect('OPEN', mockSearchParams, { push: mockPush })
+        const select = screen.getByRole('combobox')
+        fireEvent.click(select)
 
-        // Verify the function was called correctly
+        // Select "Open" status
+        const openOption = screen.getByText('Open')
+        fireEvent.click(openOption)
+
         expect(mockPush).toHaveBeenCalledWith(
-            '/issues/list/?status=OPEN&sortBy=title&sortOrder=asc'
+            '/issues/list?status=OPEN&sortBy=title&sortOrder=asc'
         )
-        expect(consoleSpy).toHaveBeenCalledWith(
-            '?status=OPEN&sortBy=title&sortOrder=asc'
-        )
-
-        consoleSpy.mockRestore()
     })
 
     it('tests handleSelect with "-1" status (All option)', async () => {
-        const { default: IssueStatusFilter, handleSelect } = await import(
+        const { handleSelect } = await import(
             '@/app/issues/_components/IssueStatusFilter'
         )
 
-        const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {})
-
-        // Test handleSelect with "-1" status (All option)
-        handleSelect('-1', mockSearchParams, { push: mockPush })
-
-        // Should not add status to params but preserve existing params
-        expect(mockPush).toHaveBeenCalledWith(
-            '/issues/list/?sortBy=title&sortOrder=asc'
+        const mockRouter = { push: vi.fn() }
+        const mockSearchParams = new URLSearchParams(
+            'sortBy=title&sortOrder=asc'
         )
-        expect(consoleSpy).toHaveBeenCalledWith('?sortBy=title&sortOrder=asc')
 
-        consoleSpy.mockRestore()
+        handleSelect('-1', mockSearchParams, mockRouter)
+
+        expect(mockRouter.push).toHaveBeenCalledWith(
+            '/issues/list?sortBy=title&sortOrder=asc'
+        )
     })
 
     it('tests handleSelect with empty status', async () => {
-        const { default: IssueStatusFilter, handleSelect } = await import(
+        const { handleSelect } = await import(
             '@/app/issues/_components/IssueStatusFilter'
         )
 
-        const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {})
-
-        // Test handleSelect with empty status
-        handleSelect('', mockSearchParams, { push: mockPush })
-
-        // Should not add status to params but preserve existing params
-        expect(mockPush).toHaveBeenCalledWith(
-            '/issues/list/?sortBy=title&sortOrder=asc'
+        const mockRouter = { push: vi.fn() }
+        const mockSearchParams = new URLSearchParams(
+            'sortBy=title&sortOrder=asc'
         )
-        expect(consoleSpy).toHaveBeenCalledWith('?sortBy=title&sortOrder=asc')
 
-        consoleSpy.mockRestore()
+        handleSelect('', mockSearchParams, mockRouter)
+
+        expect(mockRouter.push).toHaveBeenCalledWith(
+            '/issues/list?sortBy=title&sortOrder=asc'
+        )
     })
 
     it('tests handleSelect with missing search params', async () => {
-        const { default: IssueStatusFilter, handleSelect } = await import(
+        const { handleSelect } = await import(
             '@/app/issues/_components/IssueStatusFilter'
         )
 
-        const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {})
+        const mockRouter = { push: vi.fn() }
+        const mockSearchParams = new URLSearchParams()
 
-        // Clear search params
-        mockSearchParams.delete('sortBy')
-        mockSearchParams.delete('sortOrder')
+        handleSelect('OPEN', mockSearchParams, mockRouter)
 
-        // Test handleSelect when searchParams.get() returns null
-        handleSelect('OPEN', mockSearchParams, { push: mockPush })
-
-        // Should only add status to params
-        expect(mockPush).toHaveBeenCalledWith('/issues/list/?status=OPEN')
-        expect(consoleSpy).toHaveBeenCalledWith('?status=OPEN')
-
-        consoleSpy.mockRestore()
+        expect(mockRouter.push).toHaveBeenCalledWith('/issues/list?status=OPEN')
     })
 
     it('tests handleSelect with empty params', async () => {
-        const { default: IssueStatusFilter, handleSelect } = await import(
+        const { handleSelect } = await import(
             '@/app/issues/_components/IssueStatusFilter'
         )
 
-        const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {})
+        const mockRouter = { push: vi.fn() }
+        const mockSearchParams = new URLSearchParams()
 
-        // Clear search params
-        mockSearchParams.delete('sortBy')
-        mockSearchParams.delete('sortOrder')
+        handleSelect('-1', mockSearchParams, mockRouter)
 
-        // Test handleSelect when no params should be added
-        handleSelect('-1', mockSearchParams, { push: mockPush })
-
-        // Should not add any params
-        expect(mockPush).toHaveBeenCalledWith('/issues/list/')
-        expect(consoleSpy).toHaveBeenCalledWith('')
-
-        consoleSpy.mockRestore()
+        expect(mockRouter.push).toHaveBeenCalledWith('/issues/list')
     })
 
     it('preserves pageSize and page parameters when changing status', async () => {
-        const { default: IssueStatusFilter, handleSelect } = await import(
+        const { handleSelect } = await import(
             '@/app/issues/_components/IssueStatusFilter'
         )
 
-        const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {})
-
-        // Set up search params with pageSize and page
-        mockSearchParams.set('pageSize', '25')
-        mockSearchParams.set('page', '2')
-
-        // Test handleSelect with existing pageSize and page parameters
-        handleSelect('OPEN', mockSearchParams, { push: mockPush })
-
-        // Should preserve pageSize and page parameters along with other params
-        expect(mockPush).toHaveBeenCalledWith(
-            '/issues/list/?status=OPEN&sortBy=title&sortOrder=asc&page=2&pageSize=25'
-        )
-        expect(consoleSpy).toHaveBeenCalledWith(
-            '?status=OPEN&sortBy=title&sortOrder=asc&page=2&pageSize=25'
+        const mockRouter = { push: vi.fn() }
+        const mockSearchParams = new URLSearchParams(
+            'sortBy=title&sortOrder=asc&page=2&pageSize=25'
         )
 
-        consoleSpy.mockRestore()
+        handleSelect('OPEN', mockSearchParams, mockRouter)
+
+        expect(mockRouter.push).toHaveBeenCalledWith(
+            '/issues/list?status=OPEN&sortBy=title&sortOrder=asc&page=2&pageSize=25'
+        )
     })
 })

@@ -4,18 +4,21 @@ const GET_ISSUES_QUERY = gql`
     query GetIssues(
         $orderBy: IssueOrderBy
         $status: Status
+        $issueType: IssueType
         $assignedToUserId: String
         $paging: IssuePaging
     ) {
         issues(
             orderBy: $orderBy
             status: $status
+            issueType: $issueType
             assignedToUserId: $assignedToUserId
             paging: $paging
         ) {
             id
             title
             status
+            issueType
             createdAt
         }
     }
@@ -37,6 +40,7 @@ const GET_LATEST_ISSUES_QUERY = gql`
             id
             title
             status
+            issueType
             assignedToUser {
                 id
                 name
@@ -48,8 +52,16 @@ const GET_LATEST_ISSUES_QUERY = gql`
 `
 
 const GET_ISSUES_COUNT_QUERY = gql`
-    query GetIssuesCount($status: Status, $assignedToUserId: String) {
-        issuesCount(status: $status, assignedToUserId: $assignedToUserId)
+    query GetIssuesCount(
+        $status: Status
+        $issueType: IssueType
+        $assignedToUserId: String
+    ) {
+        issuesCount(
+            status: $status
+            issueType: $issueType
+            assignedToUserId: $assignedToUserId
+        )
     }
 `
 
@@ -60,6 +72,7 @@ const GET_ISSUE_QUERY = gql`
             title
             description
             status
+            issueType
             createdAt
             updatedAt
             assignedToUserId
@@ -85,6 +98,7 @@ const UPDATE_ISSUE_MUTATION = gql`
             title
             description
             status
+            issueType
             createdAt
             updatedAt
         }
@@ -107,6 +121,7 @@ const CREATE_ISSUE_MUTATION = gql`
             title
             description
             status
+            issueType
             createdAt
             updatedAt
         }

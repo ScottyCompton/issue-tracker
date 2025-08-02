@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE `issue` ADD COLUMN `issueType` ENUM('GENERAL', 'BUG', 'SPIKE', 'TASK', 'SUBTASK') NOT NULL DEFAULT 'GENERAL';
