@@ -85,8 +85,7 @@ const AuthStatus = () => {
 
     if (status === 'loading') return <Skeleton width="3rem" />
 
-    if (status === 'unauthenticated')
-        return <Link href="/api/auth/signin">Login</Link>
+    if (status === 'unauthenticated') return <Link href="/signin">Login</Link>
 
     return (
         <DropdownMenu.Root>

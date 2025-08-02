@@ -66,7 +66,7 @@ describe('Navbar', () => {
 
         const loginLink = screen.getByText('Login')
         expect(loginLink).toBeInTheDocument()
-        expect(loginLink).toHaveAttribute('href', '/api/auth/signin')
+        expect(loginLink).toHaveAttribute('href', '/signin')
     })
 
     it('shows loading skeleton when session is loading', () => {
