@@ -2,6 +2,7 @@
 
 import { Status } from '@/app/generated/prisma'
 import { UPDATE_ISSUE_MUTATION } from '@/app/graphql/queries'
+import { toProperCase } from '@/app/lib/utils'
 import { useMutation } from '@apollo/client'
 import { Select } from '@radix-ui/themes'
 import React from 'react'
@@ -22,7 +23,7 @@ const StatusSelect: React.FC<Props> = ({
         onCompleted: (data) => {
             const newStatus = data.updateIssue.status
             // Use a unique toast ID to prevent duplicates
-            toast.success(`Status changed to ${newStatus}`, {
+            toast.success(`Status changed to ${toProperCase(newStatus)}`, {
                 id: `status-change-${issueId}`,
             })
             onStatusChange?.(newStatus)

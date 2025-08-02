@@ -1,5 +1,6 @@
 import { Status } from '@/app/generated/prisma'
 import { UPDATE_ISSUE_MUTATION } from '@/app/graphql/queries'
+import { toProperCase } from '@/app/lib/utils'
 import { MockedProvider } from '@apollo/client/testing'
 import { Theme } from '@radix-ui/themes'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
@@ -115,7 +116,7 @@ describe('StatusSelect', () => {
         // Wait for the mutation to complete
         await waitFor(() => {
             expect(mockToast.success).toHaveBeenCalledWith(
-                'Status changed to IN_PROGRESS',
+                `Status changed to ${toProperCase('IN_PROGRESS')}`,
                 { id: 'status-change-1' }
             )
         })

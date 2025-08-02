@@ -1,5 +1,6 @@
 'use client'
 
+import { Skeleton } from '@/app/components'
 import {
     Avatar,
     Box,
@@ -14,7 +15,6 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import React from 'react'
 import { BsBugFill } from 'react-icons/bs'
-import { Skeleton } from '@/app/components'
 
 const Navbar: React.FC = () => {
     return (
@@ -39,6 +39,17 @@ const NavLinks = () => {
         { label: 'Issues', href: '/issues/list' },
     ]
 
+    const isActive = (href: string) => {
+        if (href === '/') {
+            // Dashboard is active only when we're exactly on the root path
+            return currentPath === '/'
+        } else if (href === '/issues/list') {
+            // Issues is active when we're on any issues-related path
+            return currentPath.startsWith('/issues')
+        }
+        return false
+    }
+
     return (
         <Flex gap="6">
             <Link href="/">
@@ -46,13 +57,16 @@ const NavLinks = () => {
             </Link>
             <ul className="flex space-x-6">
                 {links.map((link) => {
+                    const active = isActive(link.href)
                     return (
                         <li key={link.href}>
                             <Link
                                 className={classNames({
-                                    'text-zink-900': link.href === currentPath,
-                                    'text-zinc-500': link.href !== currentPath,
-                                    'hover:text-zinc-800 transition-colors': true,
+                                    'px-3 py-2 rounded-md transition-colors': true,
+                                    'bg-zinc-200 text-zinc-900 font-medium':
+                                        active,
+                                    'text-zinc-500 hover:text-zinc-800 hover:bg-zinc-100':
+                                        !active,
                                 })}
                                 href={link.href}
                             >

@@ -1,3 +1,4 @@
+import { ApolloClient, ApolloProvider, InMemoryCache } from '@apollo/client'
 import { Theme } from '@radix-ui/themes'
 import { render, screen } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
@@ -37,9 +38,33 @@ vi.mock('./IssueStatusFilter', () => ({
     ),
 }))
 
-// Custom render function with Theme provider
+// Mock UserFilter to avoid Apollo Client issues
+vi.mock('./UserFilter', () => ({
+    default: ({ currUserId }: { currUserId?: string }) => (
+        <div data-testid="user-filter" data-current-user-id={currUserId}>
+            User Filter
+        </div>
+    ),
+}))
+
+// Create a mock Apollo Client
+const createMockApolloClient = () => {
+    return new ApolloClient({
+        cache: new InMemoryCache(),
+        link: {
+            request: vi.fn(),
+        } as any,
+    })
+}
+
+// Custom render function with Theme and Apollo providers
 const customRender = (ui: React.ReactElement) => {
-    return render(<Theme>{ui}</Theme>)
+    const mockClient = createMockApolloClient()
+    return render(
+        <ApolloProvider client={mockClient}>
+            <Theme>{ui}</Theme>
+        </ApolloProvider>
+    )
 }
 
 describe('IssuesToolbar', () => {

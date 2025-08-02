@@ -52,7 +52,7 @@ describe('Navbar', () => {
         const issuesLink = screen.getByText('Issues')
         const dashboardLink = screen.getByText('Dashboard')
 
-        expect(issuesLink).toHaveClass('text-zink-900')
+        expect(issuesLink).toHaveClass('text-zinc-900')
         expect(dashboardLink).toHaveClass('text-zinc-500')
     })
 
@@ -144,18 +144,37 @@ describe('Navbar', () => {
     })
 
     it('applies hover styles to navigation links', () => {
+        // Set pathname to a different path so Dashboard is not active
+        mockUsePathname.mockReturnValue('/some-other-path')
         render(<Navbar />)
 
         const dashboardLink = screen.getByText('Dashboard')
         const issuesLink = screen.getByText('Issues')
 
+        // Check that both links have the base classes
         expect(dashboardLink).toHaveClass(
-            'hover:text-zinc-800',
+            'px-3',
+            'py-2',
+            'rounded-md',
             'transition-colors'
         )
         expect(issuesLink).toHaveClass(
-            'hover:text-zinc-800',
+            'px-3',
+            'py-2',
+            'rounded-md',
             'transition-colors'
+        )
+
+        // Check that inactive links have hover styles
+        expect(dashboardLink).toHaveClass(
+            'text-zinc-500',
+            'hover:text-zinc-800',
+            'hover:bg-zinc-100'
+        )
+        expect(issuesLink).toHaveClass(
+            'text-zinc-500',
+            'hover:text-zinc-800',
+            'hover:bg-zinc-100'
         )
     })
 

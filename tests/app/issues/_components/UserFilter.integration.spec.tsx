@@ -117,7 +117,7 @@ describe('UserFilter Integration', () => {
         handleUserSelect('1', mockParams, mockRouter)
 
         expect(mockRouter.push).toHaveBeenCalledWith(
-            '/issues/list?status=OPEN&userId=1'
+            '/issues/list/?status=OPEN&userId=1'
         )
     })
 
@@ -129,7 +129,9 @@ describe('UserFilter Integration', () => {
 
         handleUserSelect(null, mockParams, mockRouter)
 
-        expect(mockRouter.push).toHaveBeenCalledWith('/issues/list?status=OPEN')
+        expect(mockRouter.push).toHaveBeenCalledWith(
+            '/issues/list/?status=OPEN'
+        )
     })
 
     it('handleUserSelect function preserves other params when removing userId', () => {
@@ -144,7 +146,7 @@ describe('UserFilter Integration', () => {
         handleUserSelect(null, mockParams, mockRouter)
 
         expect(mockRouter.push).toHaveBeenCalledWith(
-            '/issues/list?status=IN_PROGRESS&sortBy=title&sortOrder=desc&page=2'
+            '/issues/list/?status=IN_PROGRESS&sortBy=title&sortOrder=desc&page=2'
         )
     })
 })
