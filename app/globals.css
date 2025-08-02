@@ -1,17 +1,17 @@
-@import "tailwindcss";
-@import "tailwindcss";
+@import 'tailwindcss';
+@import 'tailwindcss';
 @plugin "@tailwindcss/typography";
 
 :root {
-  --foreground-rgb: 0, 0, 0;
+    --foreground-rgb: 0, 0, 0;
 }
 
 @media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
-  }
+    :root {
+        --foreground-rgb: 255, 255, 255;
+        --background-start-rgb: 0, 0, 0;
+        --background-end-rgb: 0, 0, 0;
+    }
 }
 /* 
 body {

@@ -117,7 +117,9 @@ const IssueForm: React.FC<Props> = ({ issue }: Props) => {
                         {isSubmitting && <Spinner />}
                     </Button>{' '}
                     &nbsp;
-                    <Button onClick={handleCancelClick}>Cancel</Button>
+                    <Button type="button" onClick={handleCancelClick}>
+                        Cancel
+                    </Button>
                 </div>
             </form>
         </div>
