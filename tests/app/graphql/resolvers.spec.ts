@@ -294,6 +294,7 @@ describe('GraphQL Resolvers', () => {
                     data: {
                         title: 'New Issue',
                         description: 'New Description',
+                        issueType: 'GENERAL',
                     },
                 })
             })

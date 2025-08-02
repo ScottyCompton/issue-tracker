@@ -7,6 +7,14 @@ export const typeDefs = gql`
         CLOSED
     }
 
+    enum IssueType {
+        GENERAL
+        BUG
+        SPIKE
+        TASK
+        SUBTASK
+    }
+
     enum SortOrder {
         asc
         desc
@@ -17,6 +25,7 @@ export const typeDefs = gql`
         title: String!
         description: String
         status: Status!
+        issueType: IssueType!
         createdAt: String!
         updatedAt: String!
         assignedToUserId: String
@@ -45,11 +54,16 @@ export const typeDefs = gql`
         issues(
             orderBy: IssueOrderBy
             status: Status
+            issueType: IssueType
             assignedToUserId: String
             paging: IssuePaging
         ): [Issue!]!
         issueStatusCount(includeAll: Boolean = false): [IssueStatusCount!]!
-        issuesCount(status: Status, assignedToUserId: String): Int!
+        issuesCount(
+            status: Status
+            issueType: IssueType
+            assignedToUserId: String
+        ): Int!
         latestIssues: [Issue!]!
         issue(id: ID!): Issue
         users: [User!]!
@@ -58,12 +72,14 @@ export const typeDefs = gql`
     input CreateIssueInput {
         title: String!
         description: String!
+        issueType: IssueType
     }
 
     input IssueOrderBy {
         title: SortOrder
         status: SortOrder
         createdAt: SortOrder
+        issueType: SortOrder
     }
 
     input IssuePaging {
@@ -75,6 +91,7 @@ export const typeDefs = gql`
         title: String
         description: String
         status: Status
+        issueType: IssueType
         assignedToUserId: String
     }
 

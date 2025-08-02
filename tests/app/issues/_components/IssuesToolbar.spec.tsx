@@ -38,6 +38,18 @@ vi.mock('./IssueStatusFilter', () => ({
     ),
 }))
 
+// Mock the IssueTypeFilter component
+vi.mock('./IssueTypeFilter', () => ({
+    default: ({ currIssueType }: { currIssueType?: string }) => (
+        <div
+            data-testid="issue-type-filter"
+            data-current-issue-type={currIssueType}
+        >
+            Type Filter
+        </div>
+    ),
+}))
+
 // Mock UserFilter to avoid Apollo Client issues
 vi.mock('./UserFilter', () => ({
     default: ({ currUserId }: { currUserId?: string }) => (
@@ -72,14 +84,15 @@ describe('IssuesToolbar', () => {
         vi.clearAllMocks()
     })
 
-    it('renders toolbar with filter and create button', async () => {
+    it('renders toolbar with filters and create button', async () => {
         const { default: IssuesToolbar } = await import(
             '@/app/issues/_components/IssuesToolbar'
         )
 
         customRender(<IssuesToolbar />)
 
-        expect(screen.getByRole('combobox')).toBeInTheDocument()
+        const comboboxes = screen.getAllByRole('combobox')
+        expect(comboboxes).toHaveLength(2) // Status filter and Type filter
         expect(screen.getByTestId('create-issue-link')).toBeInTheDocument()
         expect(screen.getByText('Create Issue')).toBeInTheDocument()
     })
@@ -91,8 +104,8 @@ describe('IssuesToolbar', () => {
 
         customRender(<IssuesToolbar currStatus="OPEN" />)
 
-        const filter = screen.getByRole('combobox')
-        expect(filter).toBeInTheDocument()
+        const comboboxes = screen.getAllByRole('combobox')
+        expect(comboboxes).toHaveLength(2)
         expect(screen.getByText('Open')).toBeInTheDocument()
     })
 
@@ -103,8 +116,8 @@ describe('IssuesToolbar', () => {
 
         customRender(<IssuesToolbar currStatus={undefined} />)
 
-        const filter = screen.getByRole('combobox')
-        expect(filter).toBeInTheDocument()
+        const comboboxes = screen.getAllByRole('combobox')
+        expect(comboboxes).toHaveLength(2)
         expect(screen.getByText('Filter by status...')).toBeInTheDocument()
     })
 
@@ -159,8 +172,8 @@ describe('IssuesToolbar', () => {
 
         customRender(<IssuesToolbar currStatus="CLOSED" />)
 
-        const filter = screen.getByRole('combobox')
-        expect(filter).toBeInTheDocument()
+        const comboboxes = screen.getAllByRole('combobox')
+        expect(comboboxes).toHaveLength(2)
         expect(screen.getByText('Closed')).toBeInTheDocument()
     })
 
@@ -171,8 +184,8 @@ describe('IssuesToolbar', () => {
 
         customRender(<IssuesToolbar currStatus={null as any} />)
 
-        const filter = screen.getByRole('combobox')
-        expect(filter).toBeInTheDocument()
+        const comboboxes = screen.getAllByRole('combobox')
+        expect(comboboxes).toHaveLength(2)
     })
 
     it('renders with empty string status', async () => {
@@ -182,8 +195,8 @@ describe('IssuesToolbar', () => {
 
         customRender(<IssuesToolbar currStatus="" />)
 
-        const filter = screen.getByRole('combobox')
-        expect(filter).toBeInTheDocument()
+        const comboboxes = screen.getAllByRole('combobox')
+        expect(comboboxes).toHaveLength(2)
         expect(screen.getByText('Filter by status...')).toBeInTheDocument()
     })
 
@@ -194,8 +207,8 @@ describe('IssuesToolbar', () => {
 
         customRender(<IssuesToolbar currStatus="IN_PROGRESS" />)
 
-        const filter = screen.getByRole('combobox')
-        expect(filter).toBeInTheDocument()
+        const comboboxes = screen.getAllByRole('combobox')
+        expect(comboboxes).toHaveLength(2)
         expect(screen.getByText('In-Progress')).toBeInTheDocument()
     })
 
@@ -239,7 +252,8 @@ describe('IssuesToolbar', () => {
 
         customRender(<IssuesToolbar />)
 
-        expect(screen.getByRole('combobox')).toBeInTheDocument()
+        const comboboxes = screen.getAllByRole('combobox')
+        expect(comboboxes).toHaveLength(2)
         expect(screen.getByTestId('create-issue-link')).toBeInTheDocument()
     })
 
@@ -248,12 +262,18 @@ describe('IssuesToolbar', () => {
             '@/app/issues/_components/IssuesToolbar'
         )
 
-        customRender(<IssuesToolbar currStatus="OPEN" loading={true} />)
+        customRender(
+            <IssuesToolbar
+                currStatus="OPEN"
+                currIssueType="BUG"
+                loading={true}
+            />
+        )
 
-        const filter = screen.getByRole('combobox')
+        const comboboxes = screen.getAllByRole('combobox')
         const createButton = screen.getByRole('button')
 
-        expect(filter).toBeInTheDocument()
+        expect(comboboxes).toHaveLength(2)
         expect(screen.getByText('Open')).toBeInTheDocument()
         expect(createButton).toBeDisabled()
     })
@@ -280,18 +300,42 @@ describe('IssuesToolbar', () => {
         expect(createButton).not.toBeDisabled()
     })
 
-    it('renders both filter and button in correct positions', async () => {
+    it('renders both filters and button in correct positions', async () => {
         const { default: IssuesToolbar } = await import(
             '@/app/issues/_components/IssuesToolbar'
         )
 
         customRender(<IssuesToolbar />)
 
-        const filter = screen.getByRole('combobox')
+        const comboboxes = screen.getAllByRole('combobox')
         const createLink = screen.getByTestId('create-issue-link')
 
-        expect(filter).toBeInTheDocument()
+        expect(comboboxes).toHaveLength(2)
         expect(createLink).toBeInTheDocument()
         expect(screen.getByText('Create Issue')).toBeInTheDocument()
+    })
+
+    it('renders with current issue type', async () => {
+        const { default: IssuesToolbar } = await import(
+            '@/app/issues/_components/IssuesToolbar'
+        )
+
+        customRender(<IssuesToolbar currIssueType="BUG" />)
+
+        const comboboxes = screen.getAllByRole('combobox')
+        expect(comboboxes).toHaveLength(2)
+        expect(screen.getByText('Bug')).toBeInTheDocument()
+    })
+
+    it('renders without current issue type', async () => {
+        const { default: IssuesToolbar } = await import(
+            '@/app/issues/_components/IssuesToolbar'
+        )
+
+        customRender(<IssuesToolbar currIssueType={undefined} />)
+
+        const comboboxes = screen.getAllByRole('combobox')
+        expect(comboboxes).toHaveLength(2)
+        expect(screen.getByText('Filter by type...')).toBeInTheDocument()
     })
 })

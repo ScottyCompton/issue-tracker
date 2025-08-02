@@ -14,13 +14,14 @@ interface Props {
 }
 
 const IssuesPage: React.FC<Props> = async ({ searchParams }: Props) => {
-    const { status, sortBy, sortOrder, page, pageSize, userId } =
+    const { status, issueType, sortBy, sortOrder, page, pageSize, userId } =
         await searchParams
     const currentPage = page ? parseInt(page) : 1
     const currentPageSize = pageSize ? parseInt(pageSize) : 10
 
     const queryVariables = {
         status,
+        issueType,
         assignedToUserId: userId,
         orderBy: sortBy && sortOrder ? { [sortBy]: sortOrder } : undefined,
         paging: {
@@ -38,7 +39,7 @@ const IssuesPage: React.FC<Props> = async ({ searchParams }: Props) => {
 
     const { data: issuesCountData } = await graphqlClient.query({
         query: GET_ISSUES_COUNT_QUERY,
-        variables: { status, assignedToUserId: userId },
+        variables: { status, issueType, assignedToUserId: userId },
         fetchPolicy: 'network-only', // Always fetch fresh data
     })
     const { issuesCount } = issuesCountData
@@ -61,7 +62,11 @@ const IssuesPage: React.FC<Props> = async ({ searchParams }: Props) => {
 
     return (
         <div>
-            <IssuesToolbar currStatus={status} currUserId={userId} />
+            <IssuesToolbar
+                currStatus={status}
+                currIssueType={issueType}
+                currUserId={userId}
+            />
             {
                 <IssuesList
                     searchParams={searchParams}
