@@ -1,6 +1,6 @@
 import { client as graphqlClient } from '@/app/lib/graphql-client'
 import { Status } from '@/prisma/client'
-import { Avatar, Card, Flex, Heading, Table } from '@radix-ui/themes'
+import { Avatar, Card, Flex, Heading, Tooltip } from '@radix-ui/themes'
 import Link from 'next/link'
 import { Suspense } from 'react'
 import { GET_LATEST_ISSUES_QUERY } from '../graphql/queries'
@@ -37,33 +37,45 @@ export const LatestIssuesContent = async () => {
     const { latestIssues } = data
 
     return (
-        <Card>
+        <Flex direction="column" className="w-full">
             <Heading size="4" mb="5">
                 Latest Issues
             </Heading>
-            <Table.Root>
-                <Table.Body>
+            <Card>
+                <Flex direction="column" className="w-full">
                     {latestIssues &&
-                        latestIssues.map((issue: LatestIssue) => (
-                            <Table.Row key={issue.id}>
-                                <Table.Cell>
-                                    <Flex justify="between">
-                                        <Flex
-                                            direction="column"
-                                            align="start"
-                                            gap="2"
+                        latestIssues.map(
+                            (issue: LatestIssue, index: number) => (
+                                <Flex
+                                    key={issue.id}
+                                    justify="between"
+                                    align="center"
+                                    className={`p-4 ${
+                                        index !== latestIssues.length - 1
+                                            ? 'border-b border-gray-200'
+                                            : ''
+                                    }`}
+                                >
+                                    <Flex
+                                        direction="column"
+                                        align="start"
+                                        gap="2"
+                                        className="flex-1"
+                                    >
+                                        <Link
+                                            href={`/issues/${issue.id}`}
+                                            className="hover:text-violet-600 transition-colors"
                                         >
-                                            <Link
-                                                href={`/issues/${issue.id}`}
-                                                className="hover:text-violet-600 transition-colors"
-                                            >
-                                                {issue.title}
-                                            </Link>
-                                            <IssueStatusBadge
-                                                status={issue.status}
-                                            />
-                                        </Flex>
-                                        {issue.assignedToUser && (
+                                            {issue.title}
+                                        </Link>
+                                        <IssueStatusBadge
+                                            status={issue.status}
+                                        />
+                                    </Flex>
+                                    {issue.assignedToUser && (
+                                        <Tooltip
+                                            content={issue.assignedToUser.name}
+                                        >
                                             <Avatar
                                                 src={
                                                     issue.assignedToUser.image!
@@ -72,14 +84,14 @@ export const LatestIssuesContent = async () => {
                                                 size="2"
                                                 radius="full"
                                             />
-                                        )}
-                                    </Flex>
-                                </Table.Cell>
-                            </Table.Row>
-                        ))}
-                </Table.Body>
-            </Table.Root>
-        </Card>
+                                        </Tooltip>
+                                    )}
+                                </Flex>
+                            )
+                        )}
+                </Flex>
+            </Card>
+        </Flex>
     )
 }
 

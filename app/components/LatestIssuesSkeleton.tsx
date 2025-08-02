@@ -1,4 +1,4 @@
-import { Card, Flex, Heading, Skeleton, Table } from '@radix-ui/themes'
+import { Card, Flex, Skeleton } from '@radix-ui/themes'
 
 /**
  * LatestIssuesSkeleton - Loading skeleton for the LatestIssues component
@@ -6,7 +6,7 @@ import { Card, Flex, Heading, Skeleton, Table } from '@radix-ui/themes'
  * This component provides a skeleton loading state that matches the layout
  * of the LatestIssues component. It displays:
  * - A title skeleton
- * - Multiple table rows with skeleton placeholders for issue data
+ * - Multiple skeleton rows with placeholders for issue data
  * - Avatar placeholders for assigned users
  *
  * Usage:
@@ -30,33 +30,36 @@ const LatestIssuesSkeleton = () => {
     const skeletonRows = [1, 2, 3, 4, 5]
 
     return (
-        <Card>
-            <Heading size="4" mb="5">
-                Latest Issues
-            </Heading>
-            <Table.Root>
-                <Table.Body>
+        <Flex direction="column" className="w-full">
+            <Skeleton className="max-w-xs mb-5" height="1.5rem" />
+            <Card>
+                <Flex direction="column" className="w-full">
                     {skeletonRows.map((index) => (
-                        <Table.Row key={index}>
-                            <Table.Cell>
-                                <Flex justify="between" align="center">
-                                    <Flex
-                                        direction="column"
-                                        align="start"
-                                        gap="2"
-                                        className="flex-1"
-                                    >
-                                        <Skeleton className="w-48 h-4" />
-                                        <Skeleton className="w-20 h-5" />
-                                    </Flex>
-                                    <Skeleton className="w-6 h-6 rounded-full" />
-                                </Flex>
-                            </Table.Cell>
-                        </Table.Row>
+                        <Flex
+                            key={index}
+                            justify="between"
+                            align="center"
+                            className={`p-4 ${
+                                index !== skeletonRows.length - 1
+                                    ? 'border-b border-gray-200'
+                                    : ''
+                            }`}
+                        >
+                            <Flex
+                                direction="column"
+                                align="start"
+                                gap="2"
+                                className="flex-1"
+                            >
+                                <Skeleton className="w-48 h-4" />
+                                <Skeleton className="w-20 h-5" />
+                            </Flex>
+                            <Skeleton className="w-6 h-6 rounded-full" />
+                        </Flex>
                     ))}
-                </Table.Body>
-            </Table.Root>
-        </Card>
+                </Flex>
+            </Card>
+        </Flex>
     )
 }
 
