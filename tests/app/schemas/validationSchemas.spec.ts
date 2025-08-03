@@ -11,6 +11,7 @@ describe('validationSchemas', () => {
             const validIssue = {
                 title: 'Test Issue',
                 description: 'This is a test issue description',
+                issueType: 'GENERAL',
             }
 
             const result = issueSchema.safeParse(validIssue)
@@ -24,6 +25,7 @@ describe('validationSchemas', () => {
             const invalidIssue = {
                 title: '',
                 description: 'This is a test issue description',
+                issueType: 'GENERAL',
             }
 
             const result = issueSchema.safeParse(invalidIssue)
@@ -36,6 +38,7 @@ describe('validationSchemas', () => {
         it('should reject issue with missing title', () => {
             const invalidIssue = {
                 description: 'This is a test issue description',
+                issueType: 'GENERAL',
             }
 
             const result = issueSchema.safeParse(invalidIssue)
@@ -46,6 +49,7 @@ describe('validationSchemas', () => {
             const invalidIssue = {
                 title: 'a'.repeat(256),
                 description: 'This is a test issue description',
+                issueType: 'GENERAL',
             }
 
             const result = issueSchema.safeParse(invalidIssue)
@@ -56,6 +60,7 @@ describe('validationSchemas', () => {
             const invalidIssue = {
                 title: 'Test Issue',
                 description: '',
+                issueType: 'GENERAL',
             }
 
             const result = issueSchema.safeParse(invalidIssue)
@@ -70,6 +75,7 @@ describe('validationSchemas', () => {
         it('should reject issue with missing description', () => {
             const invalidIssue = {
                 title: 'Test Issue',
+                issueType: 'GENERAL',
             }
 
             const result = issueSchema.safeParse(invalidIssue)
@@ -80,6 +86,7 @@ describe('validationSchemas', () => {
             const invalidIssue = {
                 title: 'Test Issue',
                 description: 'a'.repeat(65537),
+                issueType: 'GENERAL',
             }
 
             const result = issueSchema.safeParse(invalidIssue)
@@ -90,6 +97,7 @@ describe('validationSchemas', () => {
             const validIssue = {
                 title: 'A',
                 description: 'A',
+                issueType: 'GENERAL',
             }
 
             const result = issueSchema.safeParse(validIssue)
@@ -100,6 +108,7 @@ describe('validationSchemas', () => {
             const validIssue = {
                 title: 'a'.repeat(255),
                 description: 'a'.repeat(65536),
+                issueType: 'GENERAL',
             }
 
             const result = issueSchema.safeParse(validIssue)

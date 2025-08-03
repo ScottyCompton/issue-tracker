@@ -8,7 +8,7 @@ import {
 import { client as graphqlClient } from '@/app/lib/graphql-client'
 import { issueSchema } from '@/app/schemas/validationSchemas'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Button, Callout, Spinner, TextField } from '@radix-ui/themes'
+import { Button, Callout, Select, Spinner, TextField } from '@radix-ui/themes'
 import 'easymde/dist/easymde.min.css'
 import dynamic from 'next/dynamic'
 import { useRouter } from 'next/navigation'
@@ -35,6 +35,9 @@ const IssueForm: React.FC<Props> = ({ issue }: Props) => {
         formState: { errors },
     } = useForm<IssueFormData>({
         resolver: zodResolver(issueSchema),
+        defaultValues: {
+            issueType: issue?.issueType || 'GENERAL',
+        },
     })
     const router = useRouter()
     const [apiError, setApiError] = useState('')
@@ -88,6 +91,43 @@ const IssueForm: React.FC<Props> = ({ issue }: Props) => {
                     {...register('title')}
                 />
                 <ErrorMessage>{errors.title?.message}</ErrorMessage>
+
+                <div>
+                    <Controller
+                        name="issueType"
+                        control={control}
+                        render={({ field }) => (
+                            <>
+                                <Select.Root
+                                    value={field.value}
+                                    onValueChange={field.onChange}
+                                >
+                                    <Select.Trigger placeholder="Select Issue Type" />
+                                    <Select.Content>
+                                        <Select.Item value="GENERAL">
+                                            General
+                                        </Select.Item>
+                                        <Select.Item value="BUG">
+                                            Bug
+                                        </Select.Item>
+                                        <Select.Item value="SPIKE">
+                                            Spike
+                                        </Select.Item>
+                                        <Select.Item value="TASK">
+                                            Task
+                                        </Select.Item>
+                                        <Select.Item value="SUBTASK">
+                                            Subtask
+                                        </Select.Item>
+                                    </Select.Content>
+                                </Select.Root>
+                                <ErrorMessage>
+                                    {errors.issueType?.message}
+                                </ErrorMessage>
+                            </>
+                        )}
+                    />
+                </div>
 
                 <div>
                     <Controller

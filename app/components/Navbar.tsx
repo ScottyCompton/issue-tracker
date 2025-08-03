@@ -15,6 +15,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import React from 'react'
 import { BsBugFill } from 'react-icons/bs'
+import ThemeToggle from './ThemeToggle'
 
 const Navbar: React.FC = () => {
     return (
@@ -23,7 +24,10 @@ const Navbar: React.FC = () => {
                 <Flex justify="between">
                     <NavLinks />
                     <Box>
-                        <AuthStatus />
+                        <Flex gap="3" align="center">
+                            <ThemeToggle />
+                            <AuthStatus />
+                        </Flex>
                     </Box>
                 </Flex>
             </Container>

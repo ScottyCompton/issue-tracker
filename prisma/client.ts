@@ -1,6 +1,5 @@
 import { PrismaClient } from '@/app/generated/prisma'
 
-
 const prismaClientSingleton = () => {
     return new PrismaClient()
 }
@@ -12,9 +11,10 @@ const globalForPrisma = global as unknown as {
 }
 
 export type Status = 'OPEN' | 'IN_PROGRESS' | 'CLOSED'
+export type IssueType = 'GENERAL' | 'BUG' | 'SPIKE' | 'TASK' | 'SUBTASK'
 
 const prisma = globalForPrisma.prisma ?? prismaClientSingleton()
 
-if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma
+if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma
 
 export default prisma

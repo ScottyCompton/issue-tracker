@@ -1,29 +1,31 @@
 'use client'
 
-import { Status } from '@/app/generated/prisma'
+import { IssueType } from '@/app/generated/prisma'
 import { Select } from '@radix-ui/themes'
 import { useRouter, useSearchParams } from 'next/navigation'
 
-const statusArray: { label: string; value: Status }[] = [
-    { label: 'Open', value: Status.OPEN },
-    { label: 'In-Progress', value: Status.IN_PROGRESS },
-    { label: 'Closed', value: Status.CLOSED },
+const issueTypeArray: { label: string; value: IssueType }[] = [
+    { label: 'General', value: IssueType.GENERAL },
+    { label: 'Bug', value: IssueType.BUG },
+    { label: 'Spike', value: IssueType.SPIKE },
+    { label: 'Task', value: IssueType.TASK },
+    { label: 'Subtask', value: IssueType.SUBTASK },
 ]
 
 interface Props {
-    currStatus?: string
+    currIssueType?: string
 }
 
 // Export the handleSelect function for testing
 export const handleSelect = (
-    status: string,
+    issueType: string,
     searchParams: URLSearchParams,
     router: any
 ) => {
     const params = new URLSearchParams()
-    if (status && status !== '-1') params.append('status', status)
-    if (searchParams.get('issueType'))
-        params.append('issueType', searchParams.get('issueType')!)
+    if (issueType && issueType !== '-1') params.append('issueType', issueType)
+    if (searchParams.get('status'))
+        params.append('status', searchParams.get('status')!)
     if (searchParams.get('sortBy'))
         params.append('sortBy', searchParams.get('sortBy')!)
     if (searchParams.get('sortOrder'))
@@ -40,29 +42,26 @@ export const handleSelect = (
     router.push(`/issues/list${query}`)
 }
 
-const IssueStatusFilter: React.FC<Props> = ({ currStatus }: Props) => {
+const IssueTypeFilter: React.FC<Props> = ({ currIssueType }: Props) => {
     const router = useRouter()
     const searchParams = useSearchParams()
 
     return (
         <Select.Root
             onValueChange={(value) =>
-                handleSelect(value as Status, searchParams, router)
+                handleSelect(value as IssueType, searchParams, router)
             }
-            defaultValue={currStatus}
+            defaultValue={currIssueType}
         >
-            <Select.Trigger
-                placeholder="Filter by status..."
-                className="w-50"
-            />
+            <Select.Trigger placeholder="Filter by type..." className="w-50" />
             <Select.Content className="w-50">
                 <Select.Group>
                     <Select.Item key="-1" value="-1">
                         All
                     </Select.Item>
-                    {statusArray.map((s) => (
-                        <Select.Item key={s.value} value={s.value + ''}>
-                            {s.label}
+                    {issueTypeArray.map((t) => (
+                        <Select.Item key={t.value} value={t.value + ''}>
+                            {t.label}
                         </Select.Item>
                     ))}
                 </Select.Group>
@@ -71,4 +70,4 @@ const IssueStatusFilter: React.FC<Props> = ({ currStatus }: Props) => {
     )
 }
 
-export default IssueStatusFilter
+export default IssueTypeFilter

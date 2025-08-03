@@ -118,6 +118,7 @@ describe('IssueForm', () => {
             return onSubmit({
                 title: 'Test Issue',
                 description: 'Test Description',
+                issueType: 'GENERAL',
             })
         })
 
@@ -149,6 +150,7 @@ describe('IssueForm', () => {
             title: 'Existing Issue',
             description: 'Existing Description',
             status: 'OPEN' as const,
+            issueType: 'GENERAL' as const,
             createdAt: new Date(),
             updatedAt: new Date(),
             assignedToUserId: null,
@@ -185,6 +187,7 @@ describe('IssueForm', () => {
                     input: {
                         title: 'Test Issue',
                         description: 'Test Description',
+                        issueType: 'GENERAL',
                     },
                 },
             })
@@ -202,6 +205,7 @@ describe('IssueForm', () => {
             title: 'Existing Issue',
             description: 'Existing Description',
             status: 'OPEN' as const,
+            issueType: 'GENERAL' as const,
             createdAt: new Date(),
             updatedAt: new Date(),
             assignedToUserId: null,
@@ -226,6 +230,7 @@ describe('IssueForm', () => {
                     input: {
                         title: 'Test Issue',
                         description: 'Test Description',
+                        issueType: 'GENERAL',
                     },
                 },
             })
@@ -319,6 +324,9 @@ describe('IssueForm', () => {
         customRender(<IssueForm />)
 
         expect(mockUseForm).toHaveBeenCalledWith({
+            defaultValues: {
+                issueType: 'GENERAL',
+            },
             resolver: expect.any(Function),
         })
     })

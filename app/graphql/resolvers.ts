@@ -3,7 +3,7 @@ import {
     updateIssueAssigneeSchema,
     updateIssueSchema,
 } from '@/app/schemas/validationSchemas'
-import prisma from '@/prisma/client'
+import prisma, { IssueType } from '@/prisma/client'
 
 export const resolvers = {
     Query: {
@@ -12,6 +12,10 @@ export const resolvers = {
 
             if (args.status) {
                 where.status = args.status
+            }
+
+            if (args.issueType) {
+                where.issueType = args.issueType
             }
 
             if (args.assignedToUserId) {
@@ -43,6 +47,9 @@ export const resolvers = {
             const where: any = {}
             if (args.status) {
                 where.status = args.status
+            }
+            if (args.issueType) {
+                where.issueType = args.issueType
             }
             if (args.assignedToUserId) {
                 where.assignedToUserId = args.assignedToUserId
@@ -112,7 +119,15 @@ export const resolvers = {
     Mutation: {
         createIssue: async (
             _: any,
-            { input }: { input: { title: string; description: string } }
+            {
+                input,
+            }: {
+                input: {
+                    title: string
+                    description: string
+                    issueType?: IssueType
+                }
+            }
         ) => {
             // Validate input
             const validation = issueSchema.safeParse(input)
@@ -124,6 +139,7 @@ export const resolvers = {
                 data: {
                     title: input.title,
                     description: input.description,
+                    issueType: input.issueType || 'GENERAL',
                 },
             })
         },

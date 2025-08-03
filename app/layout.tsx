@@ -1,4 +1,4 @@
-import { Container, Theme } from '@radix-ui/themes'
+import { Container } from '@radix-ui/themes'
 import '@radix-ui/themes/styles.css'
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
@@ -6,6 +6,8 @@ import { Toaster } from 'react-hot-toast'
 import ApolloProvider from './ApolloProvider'
 import AuthProvider from './auth/Provider'
 import Navbar from './components/Navbar'
+import ThemeWrapper from './components/ThemeWrapper'
+import { ThemeProvider } from './contexts/ThemeContext'
 import './globals.css'
 import QueryClientProvider from './QueryClientProvider'
 import './theme-config.css'
@@ -31,15 +33,15 @@ export default function RootLayout({
                 <QueryClientProvider>
                     <ApolloProvider>
                         <AuthProvider>
-                            <Theme>
-                                <>
+                            <ThemeProvider>
+                                <ThemeWrapper>
                                     <Navbar />
                                     <main className="p-5">
                                         <Container>{children}</Container>
                                     </main>
                                     <Toaster />
-                                </>
-                            </Theme>
+                                </ThemeWrapper>
+                            </ThemeProvider>
                         </AuthProvider>
                     </ApolloProvider>
                 </QueryClientProvider>
