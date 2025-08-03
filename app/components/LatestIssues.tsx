@@ -1,8 +1,10 @@
+'use client'
+
 import { client as graphqlClient } from '@/app/lib/graphql-client'
 import { Status } from '@/prisma/client'
 import { Avatar, Card, Flex, Heading, Tooltip } from '@radix-ui/themes'
 import Link from 'next/link'
-import { Suspense } from 'react'
+import { useEffect, useState } from 'react'
 import { GET_LATEST_ISSUES_QUERY } from '../graphql/queries'
 import IssueStatusBadge from './IssueStatusBadge'
 import LatestIssuesSkeleton from './LatestIssuesSkeleton'
@@ -25,16 +27,35 @@ interface LatestIssues {
     latestIssues: LatestIssue[]
 }
 
-export const LatestIssuesContent = async () => {
-    // Add artificial delay to see the skeleton
-    await new Promise((resolve) => setTimeout(resolve, 1000))
+const LatestIssues = () => {
+    const [latestIssues, setLatestIssues] = useState<LatestIssue[]>([])
+    const [loading, setLoading] = useState(true)
 
-    const { data } = await graphqlClient.query<LatestIssues>({
-        query: GET_LATEST_ISSUES_QUERY,
-        fetchPolicy: 'network-only', // Always fetch fresh data
-    })
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                // Add artificial delay to see the skeleton
+                await new Promise((resolve) => setTimeout(resolve, 1000))
 
-    const { latestIssues } = data
+                const { data } = await graphqlClient.query<LatestIssues>({
+                    query: GET_LATEST_ISSUES_QUERY,
+                    fetchPolicy: 'network-only', // Always fetch fresh data
+                })
+
+                setLatestIssues(data.latestIssues)
+            } catch (error) {
+                console.error('Error fetching latest issues:', error)
+            } finally {
+                setLoading(false)
+            }
+        }
+
+        fetchData()
+    }, [])
+
+    if (loading) {
+        return <LatestIssuesSkeleton />
+    }
 
     return (
         <Flex direction="column" className="w-full">
@@ -92,14 +113,6 @@ export const LatestIssuesContent = async () => {
                 </Flex>
             </Card>
         </Flex>
-    )
-}
-
-const LatestIssues = () => {
-    return (
-        <Suspense fallback={<LatestIssuesSkeleton />}>
-            <LatestIssuesContent />
-        </Suspense>
     )
 }
 
