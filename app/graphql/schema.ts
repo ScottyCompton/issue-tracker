@@ -43,7 +43,7 @@ export const typeDefs = gql`
         createdAt: String!
         updatedAt: String!
         assignedToUserId: String
-        assignedToUser: User
+        user: User
         projectId: String
         project: Project
     }
@@ -100,6 +100,15 @@ export const typeDefs = gql`
         projectId: String
     }
 
+    input UpdateIssueInput {
+        title: String
+        description: String
+        status: Status
+        issueType: IssueType
+        assignedToUserId: String
+        projectId: String
+    }
+
     input CreateProjectInput {
         name: String!
         description: String
@@ -111,40 +120,26 @@ export const typeDefs = gql`
     }
 
     input IssueOrderBy {
-        title: SortOrder
-        status: SortOrder
-        createdAt: SortOrder
-        issueType: SortOrder
+        field: String!
+        order: SortOrder!
     }
 
     input IssuePaging {
-        skip: Int
-        take: Int
-    }
-
-    input UpdateIssueInput {
-        title: String
-        description: String
-        status: Status
-        issueType: IssueType
-        assignedToUserId: String
-        projectId: String
-    }
-
-    input UpdateIssueAssigneeInput {
-        assignedToUserId: String
+        skip: Int!
+        take: Int!
     }
 
     type Mutation {
         createIssue(input: CreateIssueInput!): Issue!
         updateIssue(id: ID!, input: UpdateIssueInput!): Issue!
-        updateIssueAssignee(
-            id: ID!
-            input: UpdateIssueAssigneeInput!
-        ): IssueAssignee!
         deleteIssue(id: ID!): Boolean!
+        updateIssueAssignee(id: ID!, input: UpdateIssueAssigneeInput!): Issue!
         createProject(input: CreateProjectInput!): Project!
         updateProject(id: ID!, input: UpdateProjectInput!): Project!
         deleteProject(id: ID!): Boolean!
+    }
+
+    input UpdateIssueAssigneeInput {
+        assignedToUserId: String
     }
 `

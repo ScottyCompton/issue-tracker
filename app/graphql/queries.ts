@@ -53,7 +53,7 @@ const GET_LATEST_ISSUES_QUERY = gql`
                 id
                 name
             }
-            assignedToUser {
+            user {
                 id
                 name
                 email

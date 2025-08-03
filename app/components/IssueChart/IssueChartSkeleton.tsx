@@ -25,6 +25,7 @@ import { Card, Skeleton } from '@radix-ui/themes'
  * {isLoading ? <IssueChartSkeleton /> : <IssueChart />}
  * ```
  */
+const skeletonHeights = ['60%', '80%', '50%']
 const IssueChartSkeleton = () => {
     return (
         <Card className="mt-5">
@@ -48,7 +49,7 @@ const IssueChartSkeleton = () => {
                                 <Skeleton
                                     className="w-12 mb-2"
                                     style={{
-                                        height: `${Math.random() * 60 + 40}%`,
+                                        height: skeletonHeights[index - 1],
                                         minHeight: '40px',
                                     }}
                                 />

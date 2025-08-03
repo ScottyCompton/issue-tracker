@@ -2,7 +2,7 @@
 
 import { client as graphqlClient } from '@/app/lib/graphql-client'
 import { Status } from '@/prisma/client'
-import { Avatar, Card, Flex, Heading, Tooltip } from '@radix-ui/themes'
+import { Avatar, Card, Flex, Heading, Text, Tooltip } from '@radix-ui/themes'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { useProject } from '../contexts/ProjectContext'
@@ -27,7 +27,7 @@ interface LatestIssue {
         id: string
         name: string
     }
-    assignedToUser: AssignedToUser
+    user?: AssignedToUser | null
 }
 
 interface LatestIssues {
@@ -53,9 +53,13 @@ const LatestIssues = () => {
                     fetchPolicy: 'network-only', // Always fetch fresh data
                 })
 
-                setLatestIssues(data.latestIssues)
+                console.log('LatestIssues data:', data)
+                console.log('Selected project ID:', selectedProjectId)
+
+                setLatestIssues(data?.latestIssues ?? [])
             } catch (error) {
                 console.error('Error fetching latest issues:', error)
+                setLatestIssues([])
             } finally {
                 setLoading(false)
             }
@@ -75,7 +79,7 @@ const LatestIssues = () => {
             </Heading>
             <Card>
                 <Flex direction="column" className="w-full">
-                    {latestIssues &&
+                    {latestIssues && latestIssues.length > 0 ? (
                         latestIssues.map(
                             (issue: LatestIssue, index: number) => (
                                 <Flex
@@ -104,14 +108,10 @@ const LatestIssues = () => {
                                             status={issue.status}
                                         />
                                     </Flex>
-                                    {issue.assignedToUser && (
-                                        <Tooltip
-                                            content={issue.assignedToUser.name}
-                                        >
+                                    {issue.user && (
+                                        <Tooltip content={issue.user.name}>
                                             <Avatar
-                                                src={
-                                                    issue.assignedToUser.image!
-                                                }
+                                                src={issue.user.image!}
                                                 fallback="?"
                                                 size="2"
                                                 radius="full"
@@ -120,7 +120,16 @@ const LatestIssues = () => {
                                     )}
                                 </Flex>
                             )
-                        )}
+                        )
+                    ) : (
+                        <Flex justify="center" align="center" className="p-8">
+                            <Text color="gray">
+                                {selectedProjectId
+                                    ? 'No issues found for the selected project.'
+                                    : 'No issues found.'}
+                            </Text>
+                        </Flex>
+                    )}
                 </Flex>
             </Card>
         </Flex>

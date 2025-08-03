@@ -4,13 +4,7 @@ import { Skeleton } from '@/app/components'
 import { useProject } from '@/app/contexts/ProjectContext'
 import { GET_PROJECTS_QUERY } from '@/app/graphql/queries'
 import { useQuery } from '@apollo/client'
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from '@radix-ui/themes'
+import { Select } from '@radix-ui/themes'
 import React from 'react'
 
 interface Project {
@@ -25,7 +19,13 @@ interface ProjectsData {
     projects: Project[]
 }
 
-const ProjectSelector: React.FC = () => {
+interface ProjectSelectorProps {
+    disabled?: boolean
+}
+
+const ProjectSelector: React.FC<ProjectSelectorProps> = ({
+    disabled = false,
+}) => {
     const { selectedProjectId, setSelectedProjectId } = useProject()
 
     const { data, loading, error } = useQuery<ProjectsData>(GET_PROJECTS_QUERY)
@@ -40,26 +40,26 @@ const ProjectSelector: React.FC = () => {
     const projects = data?.projects || []
 
     const handleProjectChange = (projectId: string) => {
+        if (disabled) return
         setSelectedProjectId(projectId === 'all' ? null : projectId)
     }
 
     return (
-        <Select
+        <Select.Root
             value={selectedProjectId || 'all'}
             onValueChange={handleProjectChange}
+            disabled={disabled}
         >
-            <SelectTrigger className="w-40">
-                <SelectValue placeholder="Select Project" />
-            </SelectTrigger>
-            <SelectContent>
-                <SelectItem value="all">All Projects</SelectItem>
+            <Select.Trigger className="w-40" placeholder="Select Project" />
+            <Select.Content>
+                <Select.Item value="all">All Projects</Select.Item>
                 {projects.map((project) => (
-                    <SelectItem key={project.id} value={project.id}>
+                    <Select.Item key={project.id} value={project.id}>
                         {project.name}
-                    </SelectItem>
+                    </Select.Item>
                 ))}
-            </SelectContent>
-        </Select>
+            </Select.Content>
+        </Select.Root>
     )
 }
 

@@ -15,6 +15,7 @@ vi.mock('@/app/lib/graphql-client', () => ({
 vi.mock('@/app/graphql/queries', () => ({
     CREATE_ISSUE_MUTATION: { mutation: 'CREATE_ISSUE_MUTATION' },
     UPDATE_ISSUE_MUTATION: { mutation: 'UPDATE_ISSUE_MUTATION' },
+    GET_PROJECTS_QUERY: { query: 'GET_PROJECTS_QUERY' },
 }))
 
 // Mock next/navigation
@@ -74,6 +75,21 @@ vi.mock('react-icons/bs', () => ({
 vi.mock('@/app/components/ErrorMessage', () => ({
     default: ({ children }: { children: React.ReactNode }) => (
         <div data-testid="error-message">{children}</div>
+    ),
+}))
+
+// Mock ProjectSelect component
+vi.mock('@/app/issues/_components/ProjectSelect', () => ({
+    default: ({ name, control, defaultValue, placeholder }: any) => (
+        <select
+            data-testid="project-select"
+            name={name}
+            defaultValue={defaultValue}
+        >
+            <option value="">No Project</option>
+            <option value="1">Project 1</option>
+            <option value="2">Project 2</option>
+        </select>
     ),
 }))
 
@@ -326,6 +342,7 @@ describe('IssueForm', () => {
         expect(mockUseForm).toHaveBeenCalledWith({
             defaultValues: {
                 issueType: 'GENERAL',
+                projectId: '',
             },
             resolver: expect.any(Function),
         })

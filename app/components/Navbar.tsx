@@ -55,6 +55,11 @@ const NavLinks = () => {
         return false
     }
 
+    // Check if we're on edit issue page or issue details page
+    const isEditIssuePage = currentPath.startsWith('/issues/edit/')
+    const isIssueDetailsPage = currentPath.match(/^\/issues\/\d+$/) !== null
+    const shouldDisableProjectSelector = isEditIssuePage || isIssueDetailsPage
+
     return (
         <Flex gap="6" align="center">
             <Link href="/">
@@ -81,7 +86,7 @@ const NavLinks = () => {
                     )
                 })}
             </ul>
-            <ProjectSelector />
+            <ProjectSelector disabled={shouldDisableProjectSelector} />
         </Flex>
     )
 }

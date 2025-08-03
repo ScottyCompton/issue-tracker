@@ -16,6 +16,7 @@ import { useState } from 'react'
 import { Controller, SubmitHandler, useForm } from 'react-hook-form'
 import { BsExclamationTriangle } from 'react-icons/bs'
 import { z } from 'zod'
+import ProjectSelect from './ProjectSelect'
 
 const SimpleMDE = dynamic(() => import('react-simplemde-editor'), {
     ssr: false,
@@ -37,6 +38,7 @@ const IssueForm: React.FC<Props> = ({ issue }: Props) => {
         resolver: zodResolver(issueSchema),
         defaultValues: {
             issueType: issue?.issueType || 'GENERAL',
+            projectId: issue?.projectId?.toString() || '',
         },
     })
     const router = useRouter()
@@ -127,6 +129,16 @@ const IssueForm: React.FC<Props> = ({ issue }: Props) => {
                             </>
                         )}
                     />
+                </div>
+
+                <div>
+                    <ProjectSelect
+                        name="projectId"
+                        control={control}
+                        defaultValue={issue?.projectId?.toString() || ''}
+                        placeholder="Select Project"
+                    />
+                    <ErrorMessage>{errors.projectId?.message}</ErrorMessage>
                 </div>
 
                 <div>

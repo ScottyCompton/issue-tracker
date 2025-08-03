@@ -5,7 +5,7 @@ import {
     updateIssueSchema,
     updateProjectSchema,
 } from '@/app/schemas/validationSchemas'
-import prisma, { IssueType } from '@/prisma/client'
+import prisma from '@/prisma/client'
 
 export const resolvers = {
     Query: {
@@ -38,7 +38,7 @@ export const resolvers = {
                 take: take,
                 include: {
                     project: true,
-                    assignedToUser: true,
+                    user: true,
                 },
             })
         },
@@ -50,15 +50,21 @@ export const resolvers = {
                 where.projectId = parseInt(args.projectId)
             }
 
-            return await prisma.issue.findMany({
+            console.log('latestIssues resolver - args:', args)
+            console.log('latestIssues resolver - where clause:', where)
+
+            const result = await prisma.issue.findMany({
                 where,
                 orderBy: { createdAt: 'desc' },
                 take: 5,
                 include: {
-                    assignedToUser: true,
+                    user: true,
                     project: true,
                 },
             })
+
+            console.log('latestIssues resolver - result:', result)
+            return result
         },
 
         issuesCount: async (_: any, args: any) => {
@@ -138,7 +144,7 @@ export const resolvers = {
                 where: { id: parseInt(id) },
                 include: {
                     project: true,
-                    assignedToUser: true,
+                    user: true,
                 },
             })
         },
@@ -184,10 +190,7 @@ export const resolvers = {
     },
 
     Mutation: {
-        createIssue: async (
-            _: any,
-            { input }: { input: any }
-        ) => {
+        createIssue: async (_: any, { input }: { input: any }) => {
             // Validate input
             const validation = issueSchema.safeParse(input)
             if (!validation.success) {
@@ -225,7 +228,7 @@ export const resolvers = {
                 data,
                 include: {
                     project: true,
-                    assignedToUser: true,
+                    user: true,
                 },
             })
         },
@@ -264,7 +267,7 @@ export const resolvers = {
                 data: input,
                 include: {
                     project: true,
-                    assignedToUser: true,
+                    user: true,
                 },
             })
         },
@@ -288,7 +291,7 @@ export const resolvers = {
             }
 
             const { assignedToUserId, projectId } = input
-            
+
             // Validate assignedToUserId if provided
             if (assignedToUserId) {
                 const user = await prisma.user.findUnique({
@@ -327,7 +330,7 @@ export const resolvers = {
                 data: updateData,
                 include: {
                     project: true,
-                    assignedToUser: true,
+                    user: true,
                 },
             })
         },
@@ -365,7 +368,9 @@ export const resolvers = {
             })
 
             if (existingProject) {
-                throw new Error(`A project with the name "${input.name.trim()}" already exists`)
+                throw new Error(
+                    `A project with the name "${input.name.trim()}" already exists`
+                )
             }
 
             return await prisma.project.create({
@@ -408,7 +413,9 @@ export const resolvers = {
                 })
 
                 if (existingProject) {
-                    throw new Error(`A project with the name "${input.name.trim()}" already exists`)
+                    throw new Error(
+                        `A project with the name "${input.name.trim()}" already exists`
+                    )
                 }
             }
 
