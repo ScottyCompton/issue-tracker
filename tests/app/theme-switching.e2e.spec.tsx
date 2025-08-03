@@ -1,7 +1,7 @@
 import ThemeToggle from '@/app/components/ThemeToggle'
 import ThemeWrapper from '@/app/components/ThemeWrapper'
 import { ThemeProvider } from '@/app/contexts/ThemeContext'
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 // Mock react-icons
@@ -130,7 +130,9 @@ describe('Theme Switching E2E', () => {
             'data-appearance',
             'light'
         )
-        expect(screen.getByTestId('dropdown-trigger')).toHaveTextContent('System')
+        expect(screen.getByTestId('dropdown-trigger')).toHaveTextContent(
+            'System'
+        )
         expect(screen.getAllByTestId('display-icon')[0]).toBeInTheDocument()
 
         // Test that the component renders correctly
@@ -201,7 +203,7 @@ describe('Theme Switching E2E', () => {
     it('should handle multiple theme switches', async () => {
         // Clear localStorage to start with default theme
         localStorageMock.getItem.mockReturnValue(null)
-        
+
         render(<TestApp />)
 
         // Test initial state (system theme detection is mocked to return dark)

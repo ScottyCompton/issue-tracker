@@ -1,9 +1,9 @@
 import Navbar from '@/app/components/Navbar'
 import { ThemeProvider } from '@/app/contexts/ThemeContext'
+import { Theme } from '@radix-ui/themes'
 import { render, screen } from '@testing-library/react'
 import React from 'react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { Theme } from '@radix-ui/themes'
 
 // Mock react-icons
 vi.mock('react-icons/bs', () => ({
@@ -76,9 +76,7 @@ Object.defineProperty(window, 'matchMedia', {
 const renderWithTheme = (component: React.ReactElement) => {
     return render(
         <ThemeProvider>
-            <Theme appearance="light">
-                {component}
-            </Theme>
+            <Theme appearance="light">{component}</Theme>
         </ThemeProvider>
     )
 }
@@ -104,7 +102,9 @@ describe('Navbar with Theme Toggle', () => {
         expect(screen.getByTestId('display-icon')).toBeInTheDocument()
 
         // Should have auth status (avatar)
-        const avatar = document.querySelector('[class*="Avatar"]') as HTMLElement
+        const avatar = document.querySelector(
+            '[class*="Avatar"]'
+        ) as HTMLElement
         expect(avatar).toBeInTheDocument()
     })
 
@@ -113,7 +113,9 @@ describe('Navbar with Theme Toggle', () => {
 
         const navbar = screen.getByRole('navigation')
         const themeToggle = screen.getByText('System')
-        const avatar = document.querySelector('[class*="Avatar"]') as HTMLElement
+        const avatar = document.querySelector(
+            '[class*="Avatar"]'
+        ) as HTMLElement
 
         // Both should be in the right side of the navbar
         expect(navbar).toContainElement(themeToggle)
@@ -144,7 +146,9 @@ describe('Navbar with Theme Toggle', () => {
         renderWithTheme(<Navbar />)
 
         const themeToggle = screen.getByText('System')
-        const avatar = document.querySelector('[class*="Avatar"]') as HTMLElement
+        const avatar = document.querySelector(
+            '[class*="Avatar"]'
+        ) as HTMLElement
 
         // Both should be in a flex container with gap
         const flexContainer = themeToggle.closest('[class*="rt-Flex"]')
@@ -154,7 +158,9 @@ describe('Navbar with Theme Toggle', () => {
     it('should have theme toggle with proper styling', () => {
         renderWithTheme(<Navbar />)
 
-        const themeToggle = screen.getByText('System').closest('[type="button"]')
+        const themeToggle = screen
+            .getByText('System')
+            .closest('[type="button"]')
         expect(themeToggle).toHaveClass(
             'px-3',
             'py-2',
@@ -167,7 +173,9 @@ describe('Navbar with Theme Toggle', () => {
     it('should have theme toggle with accessibility attributes', () => {
         renderWithTheme(<Navbar />)
 
-        const themeToggle = screen.getByText('System').closest('[type="button"]')
+        const themeToggle = screen
+            .getByText('System')
+            .closest('[type="button"]')
         expect(themeToggle).toHaveAttribute('aria-haspopup', 'menu')
         expect(themeToggle).toHaveAttribute('aria-expanded', 'false')
     })
