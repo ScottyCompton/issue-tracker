@@ -7,6 +7,7 @@ import ApolloProvider from './ApolloProvider'
 import AuthProvider from './auth/Provider'
 import Navbar from './components/Navbar'
 import ThemeWrapper from './components/ThemeWrapper'
+import { ProjectProvider } from './contexts/ProjectContext'
 import { ThemeProvider } from './contexts/ThemeContext'
 import './globals.css'
 import QueryClientProvider from './QueryClientProvider'
@@ -34,13 +35,15 @@ export default function RootLayout({
                     <ApolloProvider>
                         <AuthProvider>
                             <ThemeProvider>
-                                <ThemeWrapper>
-                                    <Navbar />
-                                    <main className="p-5">
-                                        <Container>{children}</Container>
-                                    </main>
-                                    <Toaster />
-                                </ThemeWrapper>
+                                <ProjectProvider>
+                                    <ThemeWrapper>
+                                        <Navbar />
+                                        <main className="p-5">
+                                            <Container>{children}</Container>
+                                        </main>
+                                        <Toaster />
+                                    </ThemeWrapper>
+                                </ProjectProvider>
                             </ThemeProvider>
                         </AuthProvider>
                     </ApolloProvider>

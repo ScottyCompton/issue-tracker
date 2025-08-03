@@ -11,6 +11,11 @@ vi.mock('@/app/components', () => ({
         <span data-testid="status-badge">{status}</span>
     )),
     Link: vi.fn(({ children, href }) => <a href={href}>{children}</a>),
+    ProjectBadge: vi.fn(({ project, variant }) => (
+        <span data-testid="project-badge" data-variant={variant}>
+            {project?.name || 'No Project'}
+        </span>
+    )),
 }))
 vi.mock('@/app/lib/utils', () => ({
     formatDate: vi.fn((date) =>

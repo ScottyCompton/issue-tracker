@@ -1,6 +1,6 @@
 'use client'
 
-import { Status } from '@/app/generated/prisma'
+import { issue_status } from '@/app/generated/prisma'
 import { UPDATE_ISSUE_MUTATION } from '@/app/graphql/queries'
 import { toProperCase } from '@/app/lib/utils'
 import { useMutation } from '@apollo/client'
@@ -10,8 +10,8 @@ import { toast } from 'react-hot-toast'
 
 interface Props {
     issueId: string
-    currentStatus: Status
-    onStatusChange?: (newStatus: Status) => void
+    currentStatus: issue_status
+    onStatusChange?: (newStatus: issue_status) => void
 }
 
 const StatusSelect: React.FC<Props> = ({

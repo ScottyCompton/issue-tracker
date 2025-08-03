@@ -1,5 +1,8 @@
 import Navbar from '@/app/components/Navbar'
+import { ProjectProvider } from '@/app/contexts/ProjectContext'
 import { ThemeProvider } from '@/app/contexts/ThemeContext'
+import { GET_PROJECTS_QUERY } from '@/app/graphql/queries'
+import { MockedProvider } from '@apollo/client/testing'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { render, screen } from '../../utils/test-utils'
 
@@ -26,10 +29,26 @@ vi.mock('next-auth/react', () => ({
 
 // Mock react-icons
 vi.mock('react-icons/bs', () => ({
-    BsBugFill: ({ size }: { size: number }) => <div data-testid="bug-icon" data-size={size}>Bug</div>,
-    BsSun: ({ size }: { size: number }) => <div data-testid="sun-icon" data-size={size}>Sun</div>,
-    BsMoon: ({ size }: { size: number }) => <div data-testid="moon-icon" data-size={size}>Moon</div>,
-    BsDisplay: ({ size }: { size: number }) => <div data-testid="display-icon" data-size={size}>Display</div>,
+    BsBugFill: ({ size }: { size: number }) => (
+        <div data-testid="bug-icon" data-size={size}>
+            Bug
+        </div>
+    ),
+    BsSun: ({ size }: { size: number }) => (
+        <div data-testid="sun-icon" data-size={size}>
+            Sun
+        </div>
+    ),
+    BsMoon: ({ size }: { size: number }) => (
+        <div data-testid="moon-icon" data-size={size}>
+            Moon
+        </div>
+    ),
+    BsDisplay: ({ size }: { size: number }) => (
+        <div data-testid="display-icon" data-size={size}>
+            Display
+        </div>
+    ),
 }))
 
 // Mock localStorage
@@ -58,11 +77,26 @@ Object.defineProperty(window, 'matchMedia', {
     })),
 })
 
+const mocks = [
+    {
+        request: {
+            query: GET_PROJECTS_QUERY,
+        },
+        result: {
+            data: {
+                projects: [],
+            },
+        },
+    },
+]
+
 const renderWithTheme = (component: React.ReactElement) => {
     return render(
-        <ThemeProvider>
-            {component}
-        </ThemeProvider>
+        <MockedProvider mocks={mocks} addTypename={false}>
+            <ThemeProvider>
+                <ProjectProvider>{component}</ProjectProvider>
+            </ThemeProvider>
+        </MockedProvider>
     )
 }
 
@@ -196,8 +230,18 @@ describe('Navbar', () => {
         const issuesLink = screen.getByText('Issues')
 
         // Check for base classes that are always present
-        expect(dashboardLink).toHaveClass('px-3', 'py-2', 'rounded-md', 'transition-colors')
-        expect(issuesLink).toHaveClass('px-3', 'py-2', 'rounded-md', 'transition-colors')
+        expect(dashboardLink).toHaveClass(
+            'px-3',
+            'py-2',
+            'rounded-md',
+            'transition-colors'
+        )
+        expect(issuesLink).toHaveClass(
+            'px-3',
+            'py-2',
+            'rounded-md',
+            'transition-colors'
+        )
     })
 
     it('renders with correct container structure', () => {
@@ -233,9 +277,13 @@ describe('Navbar', () => {
         })
 
         rerender(
-            <ThemeProvider>
-                <Navbar />
-            </ThemeProvider>
+            <MockedProvider mocks={mocks} addTypename={false}>
+                <ThemeProvider>
+                    <ProjectProvider>
+                        <Navbar />
+                    </ProjectProvider>
+                </ThemeProvider>
+            </MockedProvider>
         )
 
         expect(screen.queryByText('Login')).not.toBeInTheDocument()

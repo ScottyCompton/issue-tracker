@@ -1,13 +1,13 @@
 'use client'
 
-import { Status } from '@/app/generated/prisma'
+import { Status } from '@/prisma/client'
 import { Select } from '@radix-ui/themes'
 import { useRouter, useSearchParams } from 'next/navigation'
 
 const statusArray: { label: string; value: Status }[] = [
-    { label: 'Open', value: Status.OPEN },
-    { label: 'In-Progress', value: Status.IN_PROGRESS },
-    { label: 'Closed', value: Status.CLOSED },
+    { label: 'Open', value: 'OPEN' },
+    { label: 'In-Progress', value: 'IN_PROGRESS' },
+    { label: 'Closed', value: 'CLOSED' },
 ]
 
 interface Props {
@@ -36,7 +36,6 @@ export const handleSelect = (
         params.append('userId', searchParams.get('userId')!)
 
     const query = params.size ? '?' + params.toString() : ''
-    console.log(query)
     router.push(`/issues/list${query}`)
 }
 

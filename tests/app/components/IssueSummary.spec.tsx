@@ -9,6 +9,12 @@ vi.mock('@/app/lib/graphql-client', () => ({
     },
 }))
 
+// Mock the ProjectContext
+const mockUseProject = vi.fn()
+vi.mock('@/app/contexts/ProjectContext', () => ({
+    useProject: mockUseProject,
+}))
+
 // Mock the GraphQL query
 vi.mock('@/app/graphql/queries', () => ({
     GET_ISSUES_STATUS_COUNT_QUERY: 'GET_ISSUES_STATUS_COUNT_QUERY',
@@ -60,6 +66,7 @@ describe('IssueSummary', () => {
     beforeEach(() => {
         vi.clearAllMocks()
         vi.useFakeTimers()
+        mockUseProject.mockReturnValue({ selectedProjectId: null })
     })
 
     afterEach(() => {
@@ -614,6 +621,30 @@ describe('IssueSummary', () => {
 
         // Test that the component is properly structured
         expect(IssueSummary).toBeInstanceOf(Function)
+    })
+
+    it('uses project context for filtering', async () => {
+        const mockData = {
+            issueStatusCount: [
+                {
+                    label: 'Open',
+                    status: 'OPEN',
+                    count: 5,
+                },
+            ],
+        }
+
+        mockQuery.mockResolvedValueOnce({ data: mockData })
+        mockUseProject.mockReturnValue({ selectedProjectId: '123' })
+
+        // Import and render the component to test project context usage
+        const { default: IssueSummary } = await import(
+            '@/app/components/IssueSummary'
+        )
+        customRender(<IssueSummary />)
+
+        // Verify that the project context is used
+        expect(mockUseProject).toHaveBeenCalled()
     })
 
     it('tests the error handling in async component', async () => {

@@ -6,6 +6,7 @@ const GET_ISSUES_QUERY = gql`
         $status: Status
         $issueType: IssueType
         $assignedToUserId: String
+        $projectId: String
         $paging: IssuePaging
     ) {
         issues(
@@ -13,6 +14,7 @@ const GET_ISSUES_QUERY = gql`
             status: $status
             issueType: $issueType
             assignedToUserId: $assignedToUserId
+            projectId: $projectId
             paging: $paging
         ) {
             id
@@ -20,13 +22,18 @@ const GET_ISSUES_QUERY = gql`
             status
             issueType
             createdAt
+            projectId
+            project {
+                id
+                name
+            }
         }
     }
 `
 
 const GET_ISSUES_STATUS_COUNT_QUERY = gql`
-    query IssueStatusCount($includeAll: Boolean = false) {
-        issueStatusCount(includeAll: $includeAll) {
+    query IssueStatusCount($includeAll: Boolean = false, $projectId: String) {
+        issueStatusCount(includeAll: $includeAll, projectId: $projectId) {
             label
             status
             count
@@ -35,13 +42,18 @@ const GET_ISSUES_STATUS_COUNT_QUERY = gql`
 `
 
 const GET_LATEST_ISSUES_QUERY = gql`
-    query GetLatestIssues {
-        latestIssues {
+    query GetLatestIssues($projectId: String) {
+        latestIssues(projectId: $projectId) {
             id
             title
             status
             issueType
-            assignedToUser {
+            projectId
+            project {
+                id
+                name
+            }
+            user {
                 id
                 name
                 email
@@ -56,11 +68,13 @@ const GET_ISSUES_COUNT_QUERY = gql`
         $status: Status
         $issueType: IssueType
         $assignedToUserId: String
+        $projectId: String
     ) {
         issuesCount(
             status: $status
             issueType: $issueType
             assignedToUserId: $assignedToUserId
+            projectId: $projectId
         )
     }
 `
@@ -76,6 +90,12 @@ const GET_ISSUE_QUERY = gql`
             createdAt
             updatedAt
             assignedToUserId
+            projectId
+            project {
+                id
+                name
+                description
+            }
         }
     }
 `
@@ -91,6 +111,70 @@ const GET_USERS_QUERY = gql`
     }
 `
 
+const GET_PROJECTS_QUERY = gql`
+    query GetProjects {
+        projects {
+            id
+            name
+            description
+            createdAt
+            updatedAt
+        }
+    }
+`
+
+const GET_PROJECT_QUERY = gql`
+    query GetProject($id: ID!) {
+        project(id: $id) {
+            id
+            name
+            description
+            createdAt
+            updatedAt
+        }
+    }
+`
+
+const GET_PROJECT_SUMMARY_QUERY = gql`
+    query GetProjectSummary {
+        projectSummary {
+            id
+            name
+            issueCount
+        }
+    }
+`
+
+const CREATE_PROJECT_MUTATION = gql`
+    mutation CreateProject($input: CreateProjectInput!) {
+        createProject(input: $input) {
+            id
+            name
+            description
+            createdAt
+            updatedAt
+        }
+    }
+`
+
+const UPDATE_PROJECT_MUTATION = gql`
+    mutation UpdateProject($id: ID!, $input: UpdateProjectInput!) {
+        updateProject(id: $id, input: $input) {
+            id
+            name
+            description
+            createdAt
+            updatedAt
+        }
+    }
+`
+
+const DELETE_PROJECT_MUTATION = gql`
+    mutation DeleteProject($id: ID!) {
+        deleteProject(id: $id)
+    }
+`
+
 const UPDATE_ISSUE_MUTATION = gql`
     mutation UpdateIssue($id: ID!, $input: UpdateIssueInput!) {
         updateIssue(id: $id, input: $input) {
@@ -101,6 +185,11 @@ const UPDATE_ISSUE_MUTATION = gql`
             issueType
             createdAt
             updatedAt
+            projectId
+            project {
+                id
+                name
+            }
         }
     }
 `
@@ -124,6 +213,11 @@ const CREATE_ISSUE_MUTATION = gql`
             issueType
             createdAt
             updatedAt
+            projectId
+            project {
+                id
+                name
+            }
         }
     }
 `
@@ -136,13 +230,19 @@ const DELETE_ISSUE_MUTATION = gql`
 
 export {
     CREATE_ISSUE_MUTATION,
+    CREATE_PROJECT_MUTATION,
     DELETE_ISSUE_MUTATION,
+    DELETE_PROJECT_MUTATION,
     GET_ISSUE_QUERY,
     GET_ISSUES_COUNT_QUERY,
     GET_ISSUES_QUERY,
     GET_ISSUES_STATUS_COUNT_QUERY,
     GET_LATEST_ISSUES_QUERY,
+    GET_PROJECT_QUERY,
+    GET_PROJECT_SUMMARY_QUERY,
+    GET_PROJECTS_QUERY,
     GET_USERS_QUERY,
     UPDATE_ISSUE_ASSIGNEE_MUTATION,
     UPDATE_ISSUE_MUTATION,
+    UPDATE_PROJECT_MUTATION,
 }

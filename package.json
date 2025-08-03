@@ -13,7 +13,8 @@
         "preview-email": "email dev -p 3030",
         "format": "prettier --write \"**/*.{tsx,ts,js,jsx,json,css,md}\"",
         "format:check": "prettier --check \"**/*.{tsx,ts,js,jsx,json,css,md}\"",
-        "format:tsx": "prettier --write \"**/*.tsx\""
+        "format:tsx": "prettier --write \"**/*.tsx\"",
+        "migrate:projects": "node scripts/migrate-projects.js"
     },
     "dependencies": {
         "@apollo/client": "^3.13.8",

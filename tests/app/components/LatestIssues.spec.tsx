@@ -9,6 +9,12 @@ vi.mock('@/app/lib/graphql-client', () => ({
     },
 }))
 
+// Mock the ProjectContext
+const mockUseProject = vi.fn()
+vi.mock('@/app/contexts/ProjectContext', () => ({
+    useProject: mockUseProject,
+}))
+
 // Mock the GraphQL query
 vi.mock('@/app/graphql/queries', () => ({
     GET_LATEST_ISSUES_QUERY: 'GET_LATEST_ISSUES_QUERY',
@@ -132,6 +138,7 @@ describe('LatestIssues', () => {
     beforeEach(() => {
         vi.clearAllMocks()
         vi.useFakeTimers()
+        mockUseProject.mockReturnValue({ selectedProjectId: null })
 
         // Suppress unhandled promise rejection warnings
         process.on('unhandledRejection', () => {})
@@ -200,9 +207,12 @@ describe('LatestIssues', () => {
         // Advance timers to complete the artificial delay
         await vi.advanceTimersByTimeAsync(1000)
 
-        // Check that the query was called
+        // Check that the query was called with project context
         expect(mockQuery).toHaveBeenCalledWith({
             query: 'GET_LATEST_ISSUES_QUERY',
+            variables: {
+                projectId: null,
+            },
             fetchPolicy: 'network-only',
         })
     })
@@ -219,5 +229,53 @@ describe('LatestIssues', () => {
         // Test that the component imports the required dependencies
         const componentModule = await import('@/app/components/LatestIssues')
         expect(componentModule.default).toBeDefined()
+    })
+
+    it('uses project context for filtering', async () => {
+        const mockData = {
+            latestIssues: [
+                {
+                    id: '1',
+                    title: 'Bug in login system',
+                    status: 'OPEN',
+                    issueType: 'BUG',
+                    projectId: '123',
+                    project: {
+                        id: '123',
+                        name: 'Test Project',
+                    },
+                    assignedToUser: {
+                        id: 'user1',
+                        name: 'John Doe',
+                        email: 'john@example.com',
+                        image: 'https://example.com/avatar.jpg',
+                    },
+                },
+            ],
+        }
+
+        mockQuery.mockResolvedValueOnce({ data: mockData })
+        mockUseProject.mockReturnValue({ selectedProjectId: '123' })
+
+        const { default: LatestIssues } = await import(
+            '@/app/components/LatestIssues'
+        )
+
+        render(<LatestIssues />)
+
+        // Advance timers to complete the artificial delay
+        await vi.advanceTimersByTimeAsync(1000)
+
+        // Check that the query was called with project context
+        expect(mockQuery).toHaveBeenCalledWith({
+            query: 'GET_LATEST_ISSUES_QUERY',
+            variables: {
+                projectId: '123',
+            },
+            fetchPolicy: 'network-only',
+        })
+
+        // Verify that the project context is used
+        expect(mockUseProject).toHaveBeenCalled()
     })
 })

@@ -87,7 +87,7 @@ describe('GraphQL Schema', () => {
                 const optionalFields = [
                     'description: String',
                     'assignedToUserId: String',
-                    'assignedToUser: User',
+                    'user: User',
                 ]
                 optionalFields.forEach((field) => {
                     expect(schemaString).toContain(field)
@@ -103,7 +103,7 @@ describe('GraphQL Schema', () => {
                     'createdAt: String!',
                     'updatedAt: String!',
                     'assignedToUserId: String',
-                    'assignedToUser: User',
+                    'user: User',
                 ]
                 issueFields.forEach((field) => {
                     expect(schemaString).toContain(field)
@@ -180,11 +180,7 @@ describe('GraphQL Schema', () => {
             })
 
             it('should have sortable fields', () => {
-                const fields = [
-                    'title: SortOrder',
-                    'status: SortOrder',
-                    'createdAt: SortOrder',
-                ]
+                const fields = ['field: String!', 'order: SortOrder!']
                 fields.forEach((field) => {
                     expect(schemaString).toContain(field)
                 })
@@ -289,7 +285,9 @@ describe('GraphQL Schema', () => {
 
         describe('latestIssues query', () => {
             it('should define latestIssues query', () => {
-                expect(schemaString).toContain('latestIssues: [Issue!]!')
+                expect(schemaString).toContain(
+                    'latestIssues(projectId: String): [Issue!]!'
+                )
             })
         })
 
@@ -360,8 +358,8 @@ describe('GraphQL Schema', () => {
                 )
             })
 
-            it('should return IssueAssignee', () => {
-                expect(schemaString).toContain('): IssueAssignee!')
+            it('should return Issue', () => {
+                expect(schemaString).toContain('): Issue!')
             })
         })
 
@@ -461,7 +459,6 @@ describe('GraphQL Schema', () => {
                 'User',
                 'IssueStatusCount!',
                 'IssueStatusCount',
-                'IssueAssignee!',
             ]
             customTypes.forEach((type) => {
                 expect(schemaString).toContain(type)

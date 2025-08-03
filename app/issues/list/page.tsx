@@ -1,13 +1,12 @@
-import Pagination from '@/app/components/Pagination'
 import {
     GET_ISSUES_COUNT_QUERY,
     GET_ISSUES_QUERY,
     GET_USERS_QUERY,
 } from '@/app/graphql/queries'
 import { client as graphqlClient } from '@/app/lib/graphql-client'
-import { Box } from '@radix-ui/themes'
-import IssuesList, { IssueQuery } from '../_components/IssuesList'
+import { IssueQuery } from '../_components/IssuesList'
 import IssuesToolbar from '../_components/IssuesToolbar'
+import IssuesListWrapper from './IssuesListWrapper'
 
 interface Props {
     searchParams: Promise<IssueQuery>
@@ -35,14 +34,14 @@ const IssuesPage: React.FC<Props> = async ({ searchParams }: Props) => {
         variables: queryVariables,
         fetchPolicy: 'network-only', // Always fetch fresh data
     })
-    const { issues } = data
+    const issues = data?.issues ?? []
 
     const { data: issuesCountData } = await graphqlClient.query({
         query: GET_ISSUES_COUNT_QUERY,
         variables: { status, issueType, assignedToUserId: userId },
         fetchPolicy: 'network-only', // Always fetch fresh data
     })
-    const { issuesCount } = issuesCountData
+    const issuesCount = issuesCountData?.issuesCount ?? 0
 
     // Fetch current user information if filtering by user
     let currentUser = null
@@ -52,9 +51,9 @@ const IssuesPage: React.FC<Props> = async ({ searchParams }: Props) => {
                 query: GET_USERS_QUERY,
                 fetchPolicy: 'network-only',
             })
-            currentUser = usersData.users.find(
-                (user: any) => user.id === userId
-            )
+            currentUser =
+                usersData?.users?.find((user: any) => user.id === userId) ??
+                null
         } catch (error) {
             console.error('Error fetching user information:', error)
         }
@@ -67,23 +66,18 @@ const IssuesPage: React.FC<Props> = async ({ searchParams }: Props) => {
                 currIssueType={issueType}
                 currUserId={userId}
             />
-            {
-                <IssuesList
-                    searchParams={searchParams}
-                    issues={issues}
-                    currentUser={currentUser}
-                />
-            }
-            <Box className="text-center w-full">
-                <Pagination
-                    pageSize={currentPageSize}
-                    itemCount={issuesCount}
-                    currentPage={currentPage}
-                />
-            </Box>
+            <IssuesListWrapper
+                searchParams={searchParams}
+                initialIssues={issues}
+                initialIssuesCount={issuesCount}
+                currentUser={currentUser}
+                currentPage={currentPage}
+                currentPageSize={currentPageSize}
+            />
         </div>
     )
 }
+
 export const metadata = {
     title: 'Issue Tracker - Issues List',
     description: 'View all project issues',

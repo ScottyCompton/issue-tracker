@@ -4,6 +4,7 @@ import { client as graphqlClient } from '@/app/lib/graphql-client'
 import { Card, Flex, Heading, Text } from '@radix-ui/themes'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
+import { useProject } from '../contexts/ProjectContext'
 import { GET_ISSUES_STATUS_COUNT_QUERY } from '../graphql/queries'
 import IssueSummarySkeleton from './IssueSummarySkeleton'
 
@@ -14,6 +15,7 @@ interface IssueStatusCount {
 }
 
 const IssueSummary = () => {
+    const { selectedProjectId } = useProject()
     const [issueStatusCount, setIssueStatusCount] = useState<
         IssueStatusCount[]
     >([])
@@ -29,6 +31,7 @@ const IssueSummary = () => {
                     query: GET_ISSUES_STATUS_COUNT_QUERY,
                     variables: {
                         includeAll: true,
+                        projectId: selectedProjectId,
                     },
                     fetchPolicy: 'network-only', // Always fetch fresh data
                 })
@@ -42,7 +45,7 @@ const IssueSummary = () => {
         }
 
         fetchData()
-    }, [])
+    }, [selectedProjectId])
 
     if (loading) {
         return <IssueSummarySkeleton />

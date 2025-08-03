@@ -12,7 +12,7 @@ export interface IssueQuery {
 }
 
 interface Props {
-    searchParams: Promise<IssueQuery>
+    searchParams: IssueQuery
     issues: Issue[]
     currentUser?: {
         id: string
@@ -48,13 +48,12 @@ const formatIssueType = (issueType: string) => {
     return issueType.charAt(0) + issueType.slice(1).toLowerCase()
 }
 
-const IssuesList: React.FC<Props> = async ({
+const IssuesList: React.FC<Props> = ({
     searchParams,
     issues,
     currentUser,
 }: Props) => {
-    const { status, sortBy, sortOrder, page, pageSize, userId } =
-        await searchParams
+    const { status, sortBy, sortOrder, page, pageSize, userId } = searchParams
 
     return (
         <IssuesListTable
