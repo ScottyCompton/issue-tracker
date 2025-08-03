@@ -11,6 +11,7 @@ vi.mock('next-auth', () => ({
 const mockPrisma = {
     project: {
         findUnique: vi.fn(),
+        findFirst: vi.fn(),
         update: vi.fn(),
         delete: vi.fn(),
     },
@@ -164,6 +165,9 @@ describe('PUT /api/projects/[id]', () => {
         // Mock project exists
         mockPrisma.project.findUnique.mockResolvedValue(mockUpdatedProject)
 
+        // Mock no duplicate project found
+        mockPrisma.project.findFirst.mockResolvedValue(null)
+
         // Mock successful database update
         mockPrisma.project.update.mockResolvedValue(mockUpdatedProject)
 
@@ -176,6 +180,14 @@ describe('PUT /api/projects/[id]', () => {
 
         const responseData = await response.json()
         expect(responseData).toEqual(mockUpdatedProject)
+        expect(mockPrisma.project.findFirst).toHaveBeenCalledWith({
+            where: {
+                name: mockValidProject.name,
+                id: {
+                    not: 1,
+                },
+            },
+        })
         expect(mockPrisma.project.update).toHaveBeenCalledWith({
             where: { id: 1 },
             data: {
@@ -351,7 +363,7 @@ describe('DELETE /api/projects/[id]', () => {
 
         const responseData = await response.json()
         expect(responseData).toEqual({
-            error: 'Cannot delete project with assigned issues. Please reassign issues first.'
+            error: 'Cannot delete project "Test Project". It has 3 assigned issue(s). Please reassign all issues to another project before deleting this project.'
         })
         expect(mockPrisma.issue.count).toHaveBeenCalledWith({
             where: { projectId: 1 }

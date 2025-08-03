@@ -17,11 +17,33 @@ export async function POST(request: NextRequest) {
         return NextResponse.json(validation.error.format(), { status: 400 })
     }
 
+    // Default project assignment logic
+    let projectId = null
+    if (body.projectId) {
+        // Validate that the specified project exists
+        const project = await prisma.project.findUnique({
+            where: { id: parseInt(body.projectId) },
+        })
+        if (!project) {
+            return NextResponse.json({ error: 'Invalid projectId' }, { status: 400 })
+        }
+        projectId = parseInt(body.projectId)
+    } else {
+        // Assign to default project (first project) if no project specified
+        const defaultProject = await prisma.project.findFirst({
+            orderBy: { id: 'asc' },
+        })
+        if (defaultProject) {
+            projectId = defaultProject.id
+        }
+        // If no projects exist, projectId remains null (unassigned)
+    }
+
     const newIssue = await prisma.issue.create({
         data: {
             title: body.title,
             description: body.description,
-            projectId: body.projectId ? parseInt(body.projectId) : null,
+            projectId: projectId,
         },
     })
 

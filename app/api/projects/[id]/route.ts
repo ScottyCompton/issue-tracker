@@ -54,12 +54,31 @@ export async function PUT(request: NextRequest, { params }: Props) {
         return NextResponse.json({ error: 'Project not found' }, { status: 404 })
     }
 
+    // Check for duplicate project name if name is being updated
+    if (body.name !== undefined) {
+        const duplicateProject = await prisma.project.findFirst({
+            where: {
+                name: body.name.trim(),
+                id: {
+                    not: parseInt(id), // Exclude current project from check
+                },
+            },
+        })
+
+        if (duplicateProject) {
+            return NextResponse.json(
+                { error: `A project with the name "${body.name.trim()}" already exists` },
+                { status: 400 }
+            )
+        }
+    }
+
     // Update the project
     const updatedProject = await prisma.project.update({
         where: { id: parseInt(id) },
         data: {
-            name: body.name,
-            description: body.description,
+            name: body.name?.trim() || existingProject.name,
+            description: body.description?.trim() || existingProject.description,
         }
     })
 
@@ -95,7 +114,9 @@ export async function DELETE(request: NextRequest, { params }: Props) {
 
     if (issuesCount > 0) {
         return NextResponse.json(
-            { error: 'Cannot delete project with assigned issues. Please reassign issues first.' },
+            { 
+                error: `Cannot delete project "${project.name}". It has ${issuesCount} assigned issue(s). Please reassign all issues to another project before deleting this project.` 
+            },
             { status: 400 }
         )
     }

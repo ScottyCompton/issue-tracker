@@ -34,10 +34,24 @@ export async function POST(request: NextRequest) {
         return NextResponse.json(validation.error.format(), { status: 400 })
     }
 
+    // Check for duplicate project name
+    const existingProject = await prisma.project.findFirst({
+        where: {
+            name: body.name.trim(),
+        },
+    })
+
+    if (existingProject) {
+        return NextResponse.json(
+            { error: `A project with the name "${body.name.trim()}" already exists` },
+            { status: 400 }
+        )
+    }
+
     const newProject = await prisma.project.create({
         data: {
-            name: body.name,
-            description: body.description,
+            name: body.name.trim(),
+            description: body.description?.trim() || null,
         },
     })
 

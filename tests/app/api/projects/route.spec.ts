@@ -11,6 +11,7 @@ vi.mock('next-auth', () => ({
 const mockPrisma = {
     project: {
         findMany: vi.fn(),
+        findFirst: vi.fn(),
         create: vi.fn(),
     },
 }
@@ -145,6 +146,9 @@ describe('POST /api/projects', () => {
             data: mockValidProject,
         })
 
+        // Mock no duplicate project found
+        mockPrisma.project.findFirst.mockResolvedValue(null)
+
         // Mock successful database creation
         mockPrisma.project.create.mockResolvedValue(mockCreatedProject)
 
@@ -156,6 +160,11 @@ describe('POST /api/projects', () => {
 
         const responseData = await response.json()
         expect(responseData).toEqual(mockCreatedProject)
+        expect(mockPrisma.project.findFirst).toHaveBeenCalledWith({
+            where: {
+                name: mockValidProject.name,
+            },
+        })
         expect(mockPrisma.project.create).toHaveBeenCalledWith({
             data: {
                 name: mockValidProject.name,
@@ -214,6 +223,9 @@ describe('POST /api/projects', () => {
             data: projectWithoutDescription,
         })
 
+        // Mock no duplicate project found
+        mockPrisma.project.findFirst.mockResolvedValue(null)
+
         // Mock successful database creation
         mockPrisma.project.create.mockResolvedValue({
             ...mockCreatedProject,
@@ -226,10 +238,15 @@ describe('POST /api/projects', () => {
         expect(response).toBeInstanceOf(NextResponse)
         expect(response.status).toBe(201)
 
+        expect(mockPrisma.project.findFirst).toHaveBeenCalledWith({
+            where: {
+                name: projectWithoutDescription.name,
+            },
+        })
         expect(mockPrisma.project.create).toHaveBeenCalledWith({
             data: {
                 name: projectWithoutDescription.name,
-                description: undefined,
+                description: null,
             },
         })
     })

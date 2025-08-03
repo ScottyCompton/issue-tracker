@@ -78,6 +78,27 @@ export async function PATCH(request: NextRequest, {params}: Props)  {
         return NextResponse.json({error: 'Invalid Issue'}, {status: 404})
     }
 
+    // Enhanced project validation
+    let validatedProjectId = null
+    if (projectId !== undefined) {
+        if (projectId === null) {
+            // Allow unassigning from project (setting to null)
+            validatedProjectId = null
+        } else {
+            // Validate that the specified project exists
+            const project = await prisma.project.findUnique({
+                where: { id: parseInt(projectId) },
+            })
+            if (!project) {
+                return NextResponse.json({error: 'Invalid projectId'}, {status: 400})
+            }
+            validatedProjectId = parseInt(projectId)
+        }
+    } else {
+        // Keep existing projectId if not provided in update
+        validatedProjectId = issue.projectId
+    }
+
     // update the issue
     const updatedIssue = await prisma.issue.update({
         where: {id: parseInt(id)},
@@ -85,7 +106,7 @@ export async function PATCH(request: NextRequest, {params}: Props)  {
             title, 
             description, 
             assignedToUserId,
-            projectId: projectId ? parseInt(projectId) : null,
+            projectId: validatedProjectId,
         }
     })
 

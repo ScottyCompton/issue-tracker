@@ -37,6 +37,7 @@ vi.mock('@/prisma/client', () => ({
         project: {
             findMany: vi.fn(),
             findUnique: vi.fn(),
+            findFirst: vi.fn(),
             create: vi.fn(),
             update: vi.fn(),
             delete: vi.fn(),
@@ -392,11 +393,13 @@ describe('GraphQL Resolvers', () => {
                     description: 'New Description',
                     status: 'OPEN',
                 }
+                const mockDefaultProject = { id: 1, name: 'Default Project' }
 
                 ;(issueSchema.safeParse as any).mockReturnValue({
                     success: true,
                     data: input,
                 })
+                mockPrisma.project.findFirst.mockResolvedValue(mockDefaultProject)
                 mockPrisma.issue.create.mockResolvedValue(mockCreatedIssue)
 
                 const result = await resolvers.Mutation.createIssue(
@@ -406,11 +409,15 @@ describe('GraphQL Resolvers', () => {
 
                 expect(result).toEqual(mockCreatedIssue)
                 expect(issueSchema.safeParse).toHaveBeenCalledWith(input)
+                expect(mockPrisma.project.findFirst).toHaveBeenCalledWith({
+                    orderBy: { id: 'asc' },
+                })
                 expect(mockPrisma.issue.create).toHaveBeenCalledWith({
                     data: {
                         title: 'New Issue',
                         description: 'New Description',
                         issueType: 'GENERAL',
+                        projectId: 1,
                     },
                     include: {
                         assignedToUser: true,
@@ -664,6 +671,7 @@ describe('GraphQL Resolvers', () => {
                     success: true,
                     data: input,
                 })
+                mockPrisma.project.findFirst.mockResolvedValue(null) // No duplicate found
                 mockPrisma.project.create.mockResolvedValue(mockCreatedProject)
 
                 const result = await resolvers.Mutation.createProject(
@@ -675,6 +683,11 @@ describe('GraphQL Resolvers', () => {
                 expect(createProjectSchema.safeParse).toHaveBeenCalledWith(
                     input
                 )
+                expect(mockPrisma.project.findFirst).toHaveBeenCalledWith({
+                    where: {
+                        name: 'New Project',
+                    },
+                })
                 expect(mockPrisma.project.create).toHaveBeenCalledWith({
                     data: {
                         name: 'New Project',
@@ -712,6 +725,7 @@ describe('GraphQL Resolvers', () => {
                     success: true,
                     data: input,
                 })
+                mockPrisma.project.findFirst.mockResolvedValue(null) // No duplicate found
                 mockPrisma.project.create.mockResolvedValue(mockCreatedProject)
 
                 const result = await resolvers.Mutation.createProject(
@@ -723,6 +737,11 @@ describe('GraphQL Resolvers', () => {
                 expect(createProjectSchema.safeParse).toHaveBeenCalledWith(
                     input
                 )
+                expect(mockPrisma.project.findFirst).toHaveBeenCalledWith({
+                    where: {
+                        name: 'New Project',
+                    },
+                })
                 expect(mockPrisma.project.create).toHaveBeenCalledWith({
                     data: {
                         name: 'New Project',
@@ -746,6 +765,7 @@ describe('GraphQL Resolvers', () => {
                     data: input,
                 })
                 mockPrisma.project.findUnique.mockResolvedValue(mockProject)
+                mockPrisma.project.findFirst.mockResolvedValue(null) // No duplicate found
                 mockPrisma.project.update.mockResolvedValue(mockUpdatedProject)
 
                 const result = await resolvers.Mutation.updateProject(
@@ -759,6 +779,14 @@ describe('GraphQL Resolvers', () => {
                 )
                 expect(mockPrisma.project.findUnique).toHaveBeenCalledWith({
                     where: { id: 1 },
+                })
+                expect(mockPrisma.project.findFirst).toHaveBeenCalledWith({
+                    where: {
+                        name: 'Updated Project',
+                        id: {
+                            not: 1,
+                        },
+                    },
                 })
                 expect(mockPrisma.project.update).toHaveBeenCalledWith({
                     where: { id: 1 },
@@ -859,7 +887,7 @@ describe('GraphQL Resolvers', () => {
                 await expect(
                     resolvers.Mutation.deleteProject({}, { id: '1' })
                 ).rejects.toThrow(
-                    'Cannot delete project. It has 5 assigned issue(s). Please reassign issues to another project first.'
+                    'Cannot delete project "Test Project". It has 5 assigned issue(s). Please reassign all issues to another project before deleting this project.'
                 )
 
                 expect(mockPrisma.project.findUnique).toHaveBeenCalledWith({
@@ -941,6 +969,7 @@ describe('GraphQL Resolvers', () => {
                 success: true,
                 data: input,
             })
+            mockPrisma.project.findFirst.mockResolvedValue({ id: 1, name: 'Default Project' })
             mockPrisma.issue.create.mockResolvedValue({ id: 1, ...input })
 
             const result = await resolvers.Mutation.createIssue({}, { input })

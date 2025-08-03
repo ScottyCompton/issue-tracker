@@ -186,16 +186,7 @@ export const resolvers = {
     Mutation: {
         createIssue: async (
             _: any,
-            {
-                input,
-            }: {
-                input: {
-                    title: string
-                    description: string
-                    issueType?: IssueType
-                    projectId?: string
-                }
-            }
+            { input }: { input: any }
         ) => {
             // Validate input
             const validation = issueSchema.safeParse(input)
@@ -209,8 +200,25 @@ export const resolvers = {
                 issueType: input.issueType || 'GENERAL',
             }
 
+            // Default project assignment logic
             if (input.projectId) {
+                // Validate that the specified project exists
+                const project = await prisma.project.findUnique({
+                    where: { id: parseInt(input.projectId) },
+                })
+                if (!project) {
+                    throw new Error('Invalid projectId')
+                }
                 data.projectId = parseInt(input.projectId)
+            } else {
+                // Assign to default project (first project) if no project specified
+                const defaultProject = await prisma.project.findFirst({
+                    orderBy: { id: 'asc' },
+                })
+                if (defaultProject) {
+                    data.projectId = defaultProject.id
+                }
+                // If no projects exist, projectId remains null (unassigned)
             }
 
             return await prisma.issue.create({
@@ -275,7 +283,13 @@ export const resolvers = {
                 where: { id: parseInt(id) },
             })
 
+            if (!issue) {
+                throw new Error('Issue not found')
+            }
+
             const { assignedToUserId, projectId } = input
+            
+            // Validate assignedToUserId if provided
             if (assignedToUserId) {
                 const user = await prisma.user.findUnique({
                     where: { id: assignedToUserId },
@@ -286,23 +300,26 @@ export const resolvers = {
                 }
             }
 
-            if (projectId) {
-                const project = await prisma.project.findUnique({
-                    where: { id: parseInt(projectId) },
-                })
+            // Enhanced project validation
+            if (projectId !== undefined) {
+                if (projectId === null) {
+                    // Allow unassigning from project (setting to null)
+                    // No validation needed
+                } else {
+                    // Validate that the specified project exists
+                    const project = await prisma.project.findUnique({
+                        where: { id: parseInt(projectId) },
+                    })
 
-                if (!project) {
-                    throw new Error('Invalid projectId')
+                    if (!project) {
+                        throw new Error('Invalid projectId')
+                    }
                 }
             }
 
-            if (!issue) {
-                throw new Error('Issue not found')
-            }
-
             const updateData: any = { ...input }
-            if (projectId) {
-                updateData.projectId = parseInt(projectId)
+            if (projectId !== undefined) {
+                updateData.projectId = projectId ? parseInt(projectId) : null
             }
 
             return await prisma.issue.update({
@@ -340,6 +357,17 @@ export const resolvers = {
                 throw new Error('Invalid project data')
             }
 
+            // Check for duplicate project name
+            const existingProject = await prisma.project.findFirst({
+                where: {
+                    name: input.name.trim(),
+                },
+            })
+
+            if (existingProject) {
+                throw new Error(`A project with the name "${input.name.trim()}" already exists`)
+            }
+
             return await prisma.project.create({
                 data: {
                     name: input.name.trim(),
@@ -366,6 +394,22 @@ export const resolvers = {
 
             if (!project) {
                 throw new Error('Project not found')
+            }
+
+            // Check for duplicate project name if name is being updated
+            if (input.name !== undefined) {
+                const existingProject = await prisma.project.findFirst({
+                    where: {
+                        name: input.name.trim(),
+                        id: {
+                            not: parseInt(id), // Exclude current project from check
+                        },
+                    },
+                })
+
+                if (existingProject) {
+                    throw new Error(`A project with the name "${input.name.trim()}" already exists`)
+                }
             }
 
             const updateData: any = {}
@@ -399,7 +443,7 @@ export const resolvers = {
 
             if (issueCount > 0) {
                 throw new Error(
-                    `Cannot delete project. It has ${issueCount} assigned issue(s). Please reassign issues to another project first.`
+                    `Cannot delete project "${project.name}". It has ${issueCount} assigned issue(s). Please reassign all issues to another project before deleting this project.`
                 )
             }
 
