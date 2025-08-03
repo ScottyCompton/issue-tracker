@@ -21,6 +21,7 @@ export async function POST(request: NextRequest) {
         data: {
             title: body.title,
             description: body.description,
+            projectId: body.projectId ? parseInt(body.projectId) : null,
         },
     })
 

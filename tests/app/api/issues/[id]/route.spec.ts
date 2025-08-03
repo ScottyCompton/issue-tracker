@@ -61,6 +61,7 @@ describe('PATCH /api/issues/[id]', () => {
     const mockValidUpdateData = {
         title: 'Updated Issue',
         description: 'Updated description',
+        projectId: '2',
     }
 
     const mockExistingIssue = {
@@ -277,6 +278,74 @@ describe('PATCH /api/issues/[id]', () => {
 
         const responseData = await response.json()
         expect(responseData).toEqual(updatedIssueWithAssignee)
+    })
+
+    it('updates issue with projectId successfully', async () => {
+        // Mock successful authentication
+        mockGetServerSession.mockResolvedValue({ user: { id: '1' } })
+
+        // Mock successful validation
+        mockUpdateIssueSchema.safeParse.mockReturnValue({
+            success: true,
+            data: { ...mockValidUpdateData, projectId: '3' },
+        })
+
+        // Mock existing issue
+        mockPrisma.issue.findUnique.mockResolvedValue(mockExistingIssue)
+
+        // Mock successful update
+        const updatedIssueWithProject = {
+            ...mockUpdatedIssue,
+            projectId: 3,
+        }
+        mockPrisma.issue.update.mockResolvedValue(updatedIssueWithProject)
+
+        const request = mockRequest({
+            ...mockValidUpdateData,
+            projectId: '3',
+        })
+        const response = await PATCH(request, {
+            params: Promise.resolve(mockParams),
+        })
+
+        expect(response.status).toBe(200)
+
+        const responseData = await response.json()
+        expect(responseData).toEqual(updatedIssueWithProject)
+    })
+
+    it('updates issue without projectId (sets to null)', async () => {
+        // Mock successful authentication
+        mockGetServerSession.mockResolvedValue({ user: { id: '1' } })
+
+        // Mock successful validation
+        mockUpdateIssueSchema.safeParse.mockReturnValue({
+            success: true,
+            data: { ...mockValidUpdateData, projectId: null },
+        })
+
+        // Mock existing issue
+        mockPrisma.issue.findUnique.mockResolvedValue(mockExistingIssue)
+
+        // Mock successful update
+        const updatedIssueWithoutProject = {
+            ...mockUpdatedIssue,
+            projectId: null,
+        }
+        mockPrisma.issue.update.mockResolvedValue(updatedIssueWithoutProject)
+
+        const request = mockRequest({
+            ...mockValidUpdateData,
+            projectId: null,
+        })
+        const response = await PATCH(request, {
+            params: Promise.resolve(mockParams),
+        })
+
+        expect(response.status).toBe(200)
+
+        const responseData = await response.json()
+        expect(responseData).toEqual(updatedIssueWithoutProject)
     })
 
     it('handles partial updates correctly', async () => {

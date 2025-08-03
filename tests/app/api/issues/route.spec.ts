@@ -49,6 +49,7 @@ describe('POST /api/issues', () => {
     const mockValidIssue = {
         title: 'Test Issue',
         description: 'Test description',
+        projectId: '1',
     }
 
     const mockCreatedIssue = {
@@ -87,6 +88,13 @@ describe('POST /api/issues', () => {
 
         const responseData = await response.json()
         expect(responseData).toEqual(mockCreatedIssue)
+        expect(mockPrisma.issue.create).toHaveBeenCalledWith({
+            data: {
+                title: mockValidIssue.title,
+                description: mockValidIssue.description,
+                projectId: 1,
+            },
+        })
     })
 
     it('returns 401 when user is not authenticated', async () => {
@@ -167,6 +175,42 @@ describe('POST /api/issues', () => {
         expect(responseData).toEqual(validationErrors)
     })
 
+    it('creates issue without projectId', async () => {
+        // Mock successful authentication
+        mockGetServerSession.mockResolvedValue({ user: { id: '1' } })
+
+        const issueWithoutProject = {
+            title: 'Test Issue',
+            description: 'Test description',
+        }
+
+        // Mock successful validation
+        mockIssueSchema.safeParse.mockReturnValue({
+            success: true,
+            data: issueWithoutProject,
+        })
+
+        // Mock successful database creation
+        mockPrisma.issue.create.mockResolvedValue({
+            ...mockCreatedIssue,
+            projectId: null,
+        })
+
+        const request = mockRequest(issueWithoutProject)
+        const response = await POST(request)
+
+        expect(response).toBeInstanceOf(NextResponse)
+        expect(response.status).toBe(201)
+
+        expect(mockPrisma.issue.create).toHaveBeenCalledWith({
+            data: {
+                title: issueWithoutProject.title,
+                description: issueWithoutProject.description,
+                projectId: null,
+            },
+        })
+    })
+
     it('handles empty request body', async () => {
         // Mock successful authentication
         mockGetServerSession.mockResolvedValue({ user: { id: '1' } })
@@ -240,6 +284,7 @@ describe('POST /api/issues', () => {
             data: {
                 title: mockValidIssue.title,
                 description: mockValidIssue.description,
+                projectId: 1,
             },
         })
     })
