@@ -1,7 +1,9 @@
+'use client'
+
 import { client as graphqlClient } from '@/app/lib/graphql-client'
 import { Card, Flex, Heading, Text } from '@radix-ui/themes'
 import Link from 'next/link'
-import { Suspense } from 'react'
+import { useEffect, useState } from 'react'
 import { GET_ISSUES_STATUS_COUNT_QUERY } from '../graphql/queries'
 import IssueSummarySkeleton from './IssueSummarySkeleton'
 
@@ -11,19 +13,40 @@ interface IssueStatusCount {
     count: number
 }
 
-export const IssueSummaryContent = async () => {
-    // Add artificial delay to see the skeleton
-    await new Promise((resolve) => setTimeout(resolve, 1000))
+const IssueSummary = () => {
+    const [issueStatusCount, setIssueStatusCount] = useState<
+        IssueStatusCount[]
+    >([])
+    const [loading, setLoading] = useState(true)
 
-    const { data } = await graphqlClient.query({
-        query: GET_ISSUES_STATUS_COUNT_QUERY,
-        variables: {
-            includeAll: true,
-        },
-        fetchPolicy: 'network-only', // Always fetch fresh data
-    })
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                // Add artificial delay to see the skeleton
+                await new Promise((resolve) => setTimeout(resolve, 1000))
 
-    const { issueStatusCount } = data
+                const { data } = await graphqlClient.query({
+                    query: GET_ISSUES_STATUS_COUNT_QUERY,
+                    variables: {
+                        includeAll: true,
+                    },
+                    fetchPolicy: 'network-only', // Always fetch fresh data
+                })
+
+                setIssueStatusCount(data.issueStatusCount)
+            } catch (error) {
+                console.error('Error fetching issue status count:', error)
+            } finally {
+                setLoading(false)
+            }
+        }
+
+        fetchData()
+    }, [])
+
+    if (loading) {
+        return <IssueSummarySkeleton />
+    }
 
     return (
         <Flex direction="column" className="w-full">
@@ -52,14 +75,6 @@ export const IssueSummaryContent = async () => {
                 ))}
             </Flex>
         </Flex>
-    )
-}
-
-const IssueSummary = () => {
-    return (
-        <Suspense fallback={<IssueSummarySkeleton />}>
-            <IssueSummaryContent />
-        </Suspense>
     )
 }
 

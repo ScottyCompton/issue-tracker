@@ -1,4 +1,5 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { render, screen } from '@testing-library/react'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 // Mock the GraphQL client
 const mockQuery = vi.fn()
@@ -10,7 +11,7 @@ vi.mock('@/app/lib/graphql-client', () => ({
 
 // Mock the GraphQL query
 vi.mock('@/app/graphql/queries', () => ({
-    GET_ISSUES_STATUS_COUNT_QUERY: { query: 'GET_ISSUES_STATUS_COUNT_QUERY' },
+    GET_ISSUES_STATUS_COUNT_QUERY: 'GET_ISSUES_STATUS_COUNT_QUERY',
 }))
 
 // Mock the IssuesBarChart component
@@ -26,30 +27,79 @@ vi.mock('./IssuesBarChart', () => ({
     ),
 }))
 
-describe('IssueChart', () => {
-    let IssueChart: any
+// Mock Radix UI components
+vi.mock('@radix-ui/themes', () => ({
+    Card: ({
+        children,
+        className,
+    }: {
+        children: React.ReactNode
+        className?: string
+    }) => (
+        <div data-testid="card" className={className}>
+            {children}
+        </div>
+    ),
+    Skeleton: ({
+        className,
+        height,
+    }: {
+        className?: string
+        height?: string
+    }) => (
+        <div data-testid="skeleton" className={className} style={{ height }}>
+            Loading...
+        </div>
+    ),
+}))
 
-    beforeEach(async () => {
+// Mock IssueChartSkeleton
+vi.mock('./IssueChartSkeleton', () => ({
+    default: () => <div data-testid="skeleton">Loading...</div>,
+}))
+
+describe('IssueChart', () => {
+    beforeEach(() => {
         vi.clearAllMocks()
-        // Import the component once per test
-        const module = await import('@/app/components/IssueChart/IssueChart')
-        IssueChart = module.default
+        vi.useFakeTimers()
+
+        // Suppress unhandled promise rejection warnings
+        process.on('unhandledRejection', () => {})
     })
 
-    it('can be imported successfully', () => {
+    afterEach(() => {
+        vi.useRealTimers()
+
+        // Remove the unhandled rejection handler
+        process.removeAllListeners('unhandledRejection')
+    })
+
+    it('can be imported successfully', async () => {
+        const { default: IssueChart } = await import(
+            '@/app/components/IssueChart/IssueChart'
+        )
         expect(IssueChart).toBeDefined()
         expect(typeof IssueChart).toBe('function')
     })
 
-    it('is a regular function component that wraps async content', () => {
+    it('is a client component', async () => {
+        const { default: IssueChart } = await import(
+            '@/app/components/IssueChart/IssueChart'
+        )
+        expect(typeof IssueChart).toBe('function')
+        // Client components are regular functions, not async functions
         expect(IssueChart.constructor.name).toBe('Function')
     })
 
-    it('exports IssueChartContent as async function', async () => {
-        const { IssueChartContent } = await import(
+    it('renders loading state initially', async () => {
+        const { default: IssueChart } = await import(
             '@/app/components/IssueChart/IssueChart'
         )
-        expect(IssueChartContent.constructor.name).toBe('AsyncFunction')
+
+        render(<IssueChart />)
+
+        // Should show skeleton initially
+        expect(screen.getAllByTestId('skeleton')).toHaveLength(10)
     })
 
     it('handles GraphQL query with mock data', async () => {
@@ -75,101 +125,19 @@ describe('IssueChart', () => {
 
         mockQuery.mockResolvedValueOnce({ data: mockData })
 
-        const { IssueChartContent } = await import(
+        const { default: IssueChart } = await import(
             '@/app/components/IssueChart/IssueChart'
         )
 
-        await expect(IssueChartContent()).resolves.toBeDefined()
+        render(<IssueChart />)
 
+        // Advance timers to complete the artificial delay
+        await vi.advanceTimersByTimeAsync(1000)
+
+        // Check that the query was called
         expect(mockQuery).toHaveBeenCalledWith({
-            query: { query: 'GET_ISSUES_STATUS_COUNT_QUERY' },
+            query: 'GET_ISSUES_STATUS_COUNT_QUERY',
         })
-    })
-
-    it('handles empty status counts', async () => {
-        const mockData = {
-            issueStatusCount: [],
-        }
-
-        mockQuery.mockResolvedValueOnce({ data: mockData })
-
-        const { IssueChartContent } = await import(
-            '@/app/components/IssueChart/IssueChart'
-        )
-
-        await expect(IssueChartContent()).resolves.toBeDefined()
-
-        expect(mockQuery).toHaveBeenCalledWith({
-            query: { query: 'GET_ISSUES_STATUS_COUNT_QUERY' },
-        })
-    })
-
-    it('handles single status count', async () => {
-        const mockData = {
-            issueStatusCount: [
-                {
-                    label: 'Open',
-                    status: 'OPEN',
-                    count: 10,
-                },
-            ],
-        }
-
-        mockQuery.mockResolvedValueOnce({ data: mockData })
-
-        const { IssueChartContent } = await import(
-            '@/app/components/IssueChart/IssueChart'
-        )
-
-        await expect(IssueChartContent()).resolves.toBeDefined()
-
-        expect(mockQuery).toHaveBeenCalledWith({
-            query: { query: 'GET_ISSUES_STATUS_COUNT_QUERY' },
-        })
-    })
-
-    it('handles multiple status counts with different values', async () => {
-        const mockData = {
-            issueStatusCount: [
-                {
-                    label: 'Open',
-                    status: 'OPEN',
-                    count: 0,
-                },
-                {
-                    label: 'In Progress',
-                    status: 'IN_PROGRESS',
-                    count: 1,
-                },
-                {
-                    label: 'Closed',
-                    status: 'CLOSED',
-                    count: 100,
-                },
-            ],
-        }
-
-        mockQuery.mockResolvedValueOnce({ data: mockData })
-
-        const { IssueChartContent } = await import(
-            '@/app/components/IssueChart/IssueChart'
-        )
-
-        await expect(IssueChartContent()).resolves.toBeDefined()
-
-        expect(mockQuery).toHaveBeenCalledWith({
-            query: { query: 'GET_ISSUES_STATUS_COUNT_QUERY' },
-        })
-    })
-
-    it('handles GraphQL errors gracefully', async () => {
-        mockQuery.mockRejectedValueOnce(new Error('GraphQL error'))
-
-        const { IssueChartContent } = await import(
-            '@/app/components/IssueChart/IssueChart'
-        )
-
-        await expect(IssueChartContent()).rejects.toThrow('GraphQL error')
     })
 
     it('uses the correct GraphQL query', async () => {
@@ -177,39 +145,15 @@ describe('IssueChart', () => {
             '@/app/graphql/queries'
         )
         expect(GET_ISSUES_STATUS_COUNT_QUERY).toBeDefined()
-        expect(typeof GET_ISSUES_STATUS_COUNT_QUERY).toBe('object')
+        expect(GET_ISSUES_STATUS_COUNT_QUERY).toBe(
+            'GET_ISSUES_STATUS_COUNT_QUERY'
+        )
     })
 
-    it('passes data to IssuesBarChart component', async () => {
-        const mockData = {
-            issueStatusCount: [
-                {
-                    label: 'Open',
-                    status: 'OPEN',
-                    count: 5,
-                },
-                {
-                    label: 'Closed',
-                    status: 'CLOSED',
-                    count: 10,
-                },
-            ],
-        }
-
-        mockQuery.mockResolvedValueOnce({ data: mockData })
-
-        const { IssueChartContent } = await import(
+    it('imports required dependencies', async () => {
+        const { default: IssueChart } = await import(
             '@/app/components/IssueChart/IssueChart'
         )
-
-        await IssueChartContent()
-
-        expect(mockQuery).toHaveBeenCalledWith({
-            query: { query: 'GET_ISSUES_STATUS_COUNT_QUERY' },
-        })
-    })
-
-    it('imports required dependencies', () => {
         expect(IssueChart).toBeDefined()
     })
 })

@@ -680,9 +680,6 @@ describe('IssueSummary', () => {
             '@/app/components/IssueSummary'
         )
 
-        // Test that the component returns JSX with Suspense
-        const component = IssueSummary()
-
         // The component should be a function that returns JSX
         expect(IssueSummary).toBeDefined()
         expect(typeof IssueSummary).toBe('function')
