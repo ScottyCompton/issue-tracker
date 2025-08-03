@@ -20,6 +20,20 @@ export const typeDefs = gql`
         desc
     }
 
+    type Project {
+        id: ID!
+        name: String!
+        description: String
+        createdAt: String!
+        updatedAt: String!
+    }
+
+    type ProjectSummary {
+        id: ID!
+        name: String!
+        issueCount: Int!
+    }
+
     type Issue {
         id: ID!
         title: String!
@@ -30,6 +44,8 @@ export const typeDefs = gql`
         updatedAt: String!
         assignedToUserId: String
         assignedToUser: User
+        projectId: String
+        project: Project
     }
 
     type IssueStatusCount {
@@ -56,23 +72,42 @@ export const typeDefs = gql`
             status: Status
             issueType: IssueType
             assignedToUserId: String
+            projectId: String
             paging: IssuePaging
         ): [Issue!]!
-        issueStatusCount(includeAll: Boolean = false): [IssueStatusCount!]!
+        issueStatusCount(
+            includeAll: Boolean = false
+            projectId: String
+        ): [IssueStatusCount!]!
         issuesCount(
             status: Status
             issueType: IssueType
             assignedToUserId: String
+            projectId: String
         ): Int!
-        latestIssues: [Issue!]!
+        latestIssues(projectId: String): [Issue!]!
         issue(id: ID!): Issue
         users: [User!]!
+        projects: [Project!]!
+        project(id: ID!): Project
+        projectSummary: [ProjectSummary!]!
     }
 
     input CreateIssueInput {
         title: String!
         description: String!
         issueType: IssueType
+        projectId: String
+    }
+
+    input CreateProjectInput {
+        name: String!
+        description: String
+    }
+
+    input UpdateProjectInput {
+        name: String
+        description: String
     }
 
     input IssueOrderBy {
@@ -93,6 +128,7 @@ export const typeDefs = gql`
         status: Status
         issueType: IssueType
         assignedToUserId: String
+        projectId: String
     }
 
     input UpdateIssueAssigneeInput {
@@ -107,5 +143,8 @@ export const typeDefs = gql`
             input: UpdateIssueAssigneeInput!
         ): IssueAssignee!
         deleteIssue(id: ID!): Boolean!
+        createProject(input: CreateProjectInput!): Project!
+        updateProject(id: ID!, input: UpdateProjectInput!): Project!
+        deleteProject(id: ID!): Boolean!
     }
 `

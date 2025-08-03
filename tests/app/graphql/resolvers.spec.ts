@@ -11,6 +11,12 @@ vi.mock('@/app/schemas/validationSchemas', () => ({
     updateIssueAssigneeSchema: {
         safeParse: vi.fn(),
     },
+    createProjectSchema: {
+        safeParse: vi.fn(),
+    },
+    updateProjectSchema: {
+        safeParse: vi.fn(),
+    },
 }))
 
 // Mock Prisma client
@@ -28,15 +34,25 @@ vi.mock('@/prisma/client', () => ({
             findMany: vi.fn(),
             findUnique: vi.fn(),
         },
+        project: {
+            findMany: vi.fn(),
+            findUnique: vi.fn(),
+            create: vi.fn(),
+            update: vi.fn(),
+            delete: vi.fn(),
+            count: vi.fn(),
+        },
     },
 }))
 
 // Import after mocks are set up
 import { resolvers } from '@/app/graphql/resolvers'
 import {
+    createProjectSchema,
     issueSchema,
     updateIssueAssigneeSchema,
     updateIssueSchema,
+    updateProjectSchema,
 } from '@/app/schemas/validationSchemas'
 import prisma from '@/prisma/client'
 
@@ -72,6 +88,10 @@ describe('GraphQL Resolvers', () => {
                     orderBy: { createdAt: 'desc' },
                     skip: 0,
                     take: 10,
+                    include: {
+                        assignedToUser: true,
+                        project: true,
+                    },
                 })
             })
 
@@ -96,6 +116,10 @@ describe('GraphQL Resolvers', () => {
                     orderBy: undefined,
                     skip: 0,
                     take: 10,
+                    include: {
+                        assignedToUser: true,
+                        project: true,
+                    },
                 })
             })
         })
@@ -123,14 +147,16 @@ describe('GraphQL Resolvers', () => {
 
                 mockPrisma.issue.findMany.mockResolvedValue(mockIssues)
 
-                const result = await resolvers.Query.latestIssues()
+                const result = await resolvers.Query.latestIssues({}, {})
 
                 expect(result).toEqual(mockIssues)
                 expect(mockPrisma.issue.findMany).toHaveBeenCalledWith({
+                    where: {},
                     orderBy: { createdAt: 'desc' },
                     take: 5,
                     include: {
                         assignedToUser: true,
+                        project: true,
                     },
                 })
             })
@@ -223,6 +249,10 @@ describe('GraphQL Resolvers', () => {
                 expect(result).toEqual(mockIssue)
                 expect(mockPrisma.issue.findUnique).toHaveBeenCalledWith({
                     where: { id: 1 },
+                    include: {
+                        assignedToUser: true,
+                        project: true,
+                    },
                 })
             })
 
@@ -234,6 +264,10 @@ describe('GraphQL Resolvers', () => {
                 expect(result).toBeNull()
                 expect(mockPrisma.issue.findUnique).toHaveBeenCalledWith({
                     where: { id: 999 },
+                    include: {
+                        assignedToUser: true,
+                        project: true,
+                    },
                 })
             })
         })
@@ -259,6 +293,88 @@ describe('GraphQL Resolvers', () => {
 
                 expect(result).toEqual(mockUsers)
                 expect(mockPrisma.user.findMany).toHaveBeenCalledWith()
+            })
+        })
+
+        describe('projects', () => {
+            it('should return all projects', async () => {
+                const mockProjects = [
+                    {
+                        id: 1,
+                        name: 'Project 1',
+                        description: 'Description 1',
+                    },
+                    {
+                        id: 2,
+                        name: 'Project 2',
+                        description: 'Description 2',
+                    },
+                ]
+
+                mockPrisma.project.findMany.mockResolvedValue(mockProjects)
+
+                const result = await resolvers.Query.projects()
+
+                expect(result).toEqual(mockProjects)
+                expect(mockPrisma.project.findMany).toHaveBeenCalledWith({
+                    orderBy: { name: 'asc' },
+                })
+            })
+        })
+
+        describe('project', () => {
+            it('should return project by id', async () => {
+                const mockProject = {
+                    id: 1,
+                    name: 'Test Project',
+                    description: 'Test Description',
+                }
+
+                mockPrisma.project.findUnique.mockResolvedValue(mockProject)
+
+                const result = await resolvers.Query.project({}, { id: '1' })
+
+                expect(result).toEqual(mockProject)
+                expect(mockPrisma.project.findUnique).toHaveBeenCalledWith({
+                    where: { id: 1 },
+                })
+            })
+
+            it('should return null for non-existent project', async () => {
+                mockPrisma.project.findUnique.mockResolvedValue(null)
+
+                const result = await resolvers.Query.project({}, { id: '999' })
+
+                expect(result).toBeNull()
+                expect(mockPrisma.project.findUnique).toHaveBeenCalledWith({
+                    where: { id: 999 },
+                })
+            })
+        })
+
+        describe('projectSummary', () => {
+            it('should return project summaries with issue counts', async () => {
+                const mockProjects = [
+                    { id: 1, name: 'Project 1' },
+                    { id: 2, name: 'Project 2' },
+                ]
+
+                mockPrisma.project.findMany.mockResolvedValue(mockProjects)
+                mockPrisma.issue.count
+                    .mockResolvedValueOnce(5) // Project 1
+                    .mockResolvedValueOnce(3) // Project 2
+
+                const result = await resolvers.Query.projectSummary()
+
+                expect(result).toEqual([
+                    { id: '1', name: 'Project 1', issueCount: 5 },
+                    { id: '2', name: 'Project 2', issueCount: 3 },
+                ])
+
+                expect(mockPrisma.project.findMany).toHaveBeenCalledWith({
+                    orderBy: { name: 'asc' },
+                })
+                expect(mockPrisma.issue.count).toHaveBeenCalledTimes(2)
             })
         })
     })
@@ -295,6 +411,10 @@ describe('GraphQL Resolvers', () => {
                         title: 'New Issue',
                         description: 'New Description',
                         issueType: 'GENERAL',
+                    },
+                    include: {
+                        assignedToUser: true,
+                        project: true,
                     },
                 })
             })
@@ -351,6 +471,10 @@ describe('GraphQL Resolvers', () => {
                 expect(mockPrisma.issue.update).toHaveBeenCalledWith({
                     where: { id: 1 },
                     data: input,
+                    include: {
+                        assignedToUser: true,
+                        project: true,
+                    },
                 })
             })
 
@@ -445,6 +569,10 @@ describe('GraphQL Resolvers', () => {
                 expect(mockPrisma.issue.update).toHaveBeenCalledWith({
                     where: { id: 1 },
                     data: input,
+                    include: {
+                        assignedToUser: true,
+                        project: true,
+                    },
                 })
             })
         })
@@ -478,6 +606,10 @@ describe('GraphQL Resolvers', () => {
                 expect(mockPrisma.issue.update).toHaveBeenCalledWith({
                     where: { id: 1 },
                     data: input,
+                    include: {
+                        assignedToUser: true,
+                        project: true,
+                    },
                 })
             })
 
@@ -514,57 +646,229 @@ describe('GraphQL Resolvers', () => {
                 })
                 expect(mockPrisma.issue.update).not.toHaveBeenCalled()
             })
+        })
 
-            it('should validate assignedToUserId if provided', async () => {
+        describe('createProject', () => {
+            it('should create project with valid input', async () => {
                 const input = {
-                    title: 'Updated Issue',
-                    assignedToUserId: 'user1',
+                    name: 'New Project',
+                    description: 'New Description',
                 }
-                const mockIssue = { id: 1, title: 'Original Issue' }
-                const mockUser = { id: 'user1', name: 'John Doe' }
-                const mockUpdatedIssue = { ...mockIssue, ...input }
+                const mockCreatedProject = {
+                    id: 1,
+                    name: 'New Project',
+                    description: 'New Description',
+                }
 
-                ;(updateIssueSchema.safeParse as any).mockReturnValue({
+                ;(createProjectSchema.safeParse as any).mockReturnValue({
                     success: true,
                     data: input,
                 })
-                mockPrisma.issue.findUnique.mockResolvedValue(mockIssue)
-                mockPrisma.user.findUnique.mockResolvedValue(mockUser)
-                mockPrisma.issue.update.mockResolvedValue(mockUpdatedIssue)
+                mockPrisma.project.create.mockResolvedValue(mockCreatedProject)
 
-                const result = await resolvers.Mutation.updateIssue(
+                const result = await resolvers.Mutation.createProject(
+                    {},
+                    { input }
+                )
+
+                expect(result).toEqual(mockCreatedProject)
+                expect(createProjectSchema.safeParse).toHaveBeenCalledWith(
+                    input
+                )
+                expect(mockPrisma.project.create).toHaveBeenCalledWith({
+                    data: {
+                        name: 'New Project',
+                        description: 'New Description',
+                    },
+                })
+            })
+
+            it('should throw error for empty project name', async () => {
+                const input = { name: '', description: 'Description' }
+
+                ;(createProjectSchema.safeParse as any).mockReturnValue({
+                    success: false,
+                })
+
+                await expect(
+                    resolvers.Mutation.createProject({}, { input })
+                ).rejects.toThrow('Invalid project data')
+
+                expect(createProjectSchema.safeParse).toHaveBeenCalledWith(
+                    input
+                )
+                expect(mockPrisma.project.create).not.toHaveBeenCalled()
+            })
+
+            it('should create project with null description', async () => {
+                const input = { name: 'New Project' }
+                const mockCreatedProject = {
+                    id: 1,
+                    name: 'New Project',
+                    description: null,
+                }
+
+                ;(createProjectSchema.safeParse as any).mockReturnValue({
+                    success: true,
+                    data: input,
+                })
+                mockPrisma.project.create.mockResolvedValue(mockCreatedProject)
+
+                const result = await resolvers.Mutation.createProject(
+                    {},
+                    { input }
+                )
+
+                expect(result).toEqual(mockCreatedProject)
+                expect(createProjectSchema.safeParse).toHaveBeenCalledWith(
+                    input
+                )
+                expect(mockPrisma.project.create).toHaveBeenCalledWith({
+                    data: {
+                        name: 'New Project',
+                        description: null,
+                    },
+                })
+            })
+        })
+
+        describe('updateProject', () => {
+            it('should update project with valid input', async () => {
+                const input = {
+                    name: 'Updated Project',
+                    description: 'Updated Description',
+                }
+                const mockProject = { id: 1, name: 'Original Project' }
+                const mockUpdatedProject = { ...mockProject, ...input }
+
+                ;(updateProjectSchema.safeParse as any).mockReturnValue({
+                    success: true,
+                    data: input,
+                })
+                mockPrisma.project.findUnique.mockResolvedValue(mockProject)
+                mockPrisma.project.update.mockResolvedValue(mockUpdatedProject)
+
+                const result = await resolvers.Mutation.updateProject(
                     {},
                     { id: '1', input }
                 )
 
-                expect(result).toEqual(mockUpdatedIssue)
-                expect(mockPrisma.user.findUnique).toHaveBeenCalledWith({
-                    where: { id: 'user1' },
+                expect(result).toEqual(mockUpdatedProject)
+                expect(updateProjectSchema.safeParse).toHaveBeenCalledWith(
+                    input
+                )
+                expect(mockPrisma.project.findUnique).toHaveBeenCalledWith({
+                    where: { id: 1 },
+                })
+                expect(mockPrisma.project.update).toHaveBeenCalledWith({
+                    where: { id: 1 },
+                    data: {
+                        name: 'Updated Project',
+                        description: 'Updated Description',
+                    },
                 })
             })
 
-            it('should throw error for invalid assignedToUserId', async () => {
-                const input = {
-                    title: 'Updated Issue',
-                    assignedToUserId: 'invalid-user',
-                }
-                const mockIssue = { id: 1, title: 'Original Issue' }
+            it('should throw error for non-existent project', async () => {
+                const input = { name: 'Updated Project' }
 
-                ;(updateIssueSchema.safeParse as any).mockReturnValue({
+                ;(updateProjectSchema.safeParse as any).mockReturnValue({
                     success: true,
                     data: input,
                 })
-                mockPrisma.issue.findUnique.mockResolvedValue(mockIssue)
-                mockPrisma.user.findUnique.mockResolvedValue(null)
+                mockPrisma.project.findUnique.mockResolvedValue(null)
 
                 await expect(
-                    resolvers.Mutation.updateIssue({}, { id: '1', input })
-                ).rejects.toThrow('Invalid assignedToUserId')
+                    resolvers.Mutation.updateProject({}, { id: '999', input })
+                ).rejects.toThrow('Project not found')
 
-                expect(mockPrisma.user.findUnique).toHaveBeenCalledWith({
-                    where: { id: 'invalid-user' },
+                expect(updateProjectSchema.safeParse).toHaveBeenCalledWith(
+                    input
+                )
+                expect(mockPrisma.project.findUnique).toHaveBeenCalledWith({
+                    where: { id: 999 },
                 })
-                expect(mockPrisma.issue.update).not.toHaveBeenCalled()
+                expect(mockPrisma.project.update).not.toHaveBeenCalled()
+            })
+
+            it('should throw error for empty project name', async () => {
+                const input = { name: '' }
+                const mockProject = { id: 1, name: 'Original Project' }
+
+                ;(updateProjectSchema.safeParse as any).mockReturnValue({
+                    success: false,
+                })
+
+                mockPrisma.project.findUnique.mockResolvedValue(mockProject)
+
+                await expect(
+                    resolvers.Mutation.updateProject({}, { id: '1', input })
+                ).rejects.toThrow('Invalid project data')
+
+                expect(updateProjectSchema.safeParse).toHaveBeenCalledWith(
+                    input
+                )
+                expect(mockPrisma.project.update).not.toHaveBeenCalled()
+            })
+        })
+
+        describe('deleteProject', () => {
+            it('should delete project with no assigned issues', async () => {
+                const mockProject = { id: 1, name: 'Test Project' }
+
+                mockPrisma.project.findUnique.mockResolvedValue(mockProject)
+                mockPrisma.issue.count.mockResolvedValue(0)
+                mockPrisma.project.delete.mockResolvedValue(mockProject)
+
+                const result = await resolvers.Mutation.deleteProject(
+                    {},
+                    { id: '1' }
+                )
+
+                expect(result).toBe(true)
+                expect(mockPrisma.project.findUnique).toHaveBeenCalledWith({
+                    where: { id: 1 },
+                })
+                expect(mockPrisma.issue.count).toHaveBeenCalledWith({
+                    where: { projectId: 1 },
+                })
+                expect(mockPrisma.project.delete).toHaveBeenCalledWith({
+                    where: { id: 1 },
+                })
+            })
+
+            it('should throw error for non-existent project', async () => {
+                mockPrisma.project.findUnique.mockResolvedValue(null)
+
+                await expect(
+                    resolvers.Mutation.deleteProject({}, { id: '999' })
+                ).rejects.toThrow('Project not found')
+
+                expect(mockPrisma.project.findUnique).toHaveBeenCalledWith({
+                    where: { id: 999 },
+                })
+                expect(mockPrisma.project.delete).not.toHaveBeenCalled()
+            })
+
+            it('should throw error when project has assigned issues', async () => {
+                const mockProject = { id: 1, name: 'Test Project' }
+
+                mockPrisma.project.findUnique.mockResolvedValue(mockProject)
+                mockPrisma.issue.count.mockResolvedValue(5)
+
+                await expect(
+                    resolvers.Mutation.deleteProject({}, { id: '1' })
+                ).rejects.toThrow(
+                    'Cannot delete project. It has 5 assigned issue(s). Please reassign issues to another project first.'
+                )
+
+                expect(mockPrisma.project.findUnique).toHaveBeenCalledWith({
+                    where: { id: 1 },
+                })
+                expect(mockPrisma.issue.count).toHaveBeenCalledWith({
+                    where: { projectId: 1 },
+                })
+                expect(mockPrisma.project.delete).not.toHaveBeenCalled()
             })
         })
 
@@ -694,6 +998,10 @@ describe('GraphQL Resolvers', () => {
                 orderBy: undefined,
                 skip: 0,
                 take: 10,
+                include: {
+                    assignedToUser: true,
+                    project: true,
+                },
             })
 
             expect(result).toEqual(mockIssues)
@@ -716,6 +1024,10 @@ describe('GraphQL Resolvers', () => {
                 orderBy: undefined,
                 skip: 0,
                 take: 10,
+                include: {
+                    assignedToUser: true,
+                    project: true,
+                },
             })
 
             expect(result).toEqual(mockIssues)
@@ -747,6 +1059,10 @@ describe('GraphQL Resolvers', () => {
                 orderBy: undefined,
                 skip: 0,
                 take: 10,
+                include: {
+                    assignedToUser: true,
+                    project: true,
+                },
             })
 
             expect(result).toEqual(mockIssues)

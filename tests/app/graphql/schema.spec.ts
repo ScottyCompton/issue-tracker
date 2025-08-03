@@ -289,7 +289,9 @@ describe('GraphQL Schema', () => {
 
         describe('latestIssues query', () => {
             it('should define latestIssues query', () => {
-                expect(schemaString).toContain('latestIssues: [Issue!]!')
+                expect(schemaString).toContain(
+                    'latestIssues(projectId: String): [Issue!]!'
+                )
             })
         })
 
