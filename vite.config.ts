@@ -14,6 +14,7 @@ const exclusions = [
     '.vscode',
     'tests/utils/test-utils.tsx',
     'html/*',
+    'scripts/**',
     '',
 ]
 

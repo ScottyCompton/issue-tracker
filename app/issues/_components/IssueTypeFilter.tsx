@@ -1,15 +1,15 @@
 'use client'
 
-import { IssueType } from '@/app/generated/prisma'
+import { IssueType } from '@/prisma/client'
 import { Select } from '@radix-ui/themes'
 import { useRouter, useSearchParams } from 'next/navigation'
 
 const issueTypeArray: { label: string; value: IssueType }[] = [
-    { label: 'General', value: IssueType.GENERAL },
-    { label: 'Bug', value: IssueType.BUG },
-    { label: 'Spike', value: IssueType.SPIKE },
-    { label: 'Task', value: IssueType.TASK },
-    { label: 'Subtask', value: IssueType.SUBTASK },
+    { label: 'General', value: 'GENERAL' },
+    { label: 'Bug', value: 'BUG' },
+    { label: 'Spike', value: 'SPIKE' },
+    { label: 'Task', value: 'TASK' },
+    { label: 'Subtask', value: 'SUBTASK' },
 ]
 
 interface Props {
