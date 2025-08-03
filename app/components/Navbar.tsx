@@ -15,6 +15,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import React from 'react'
 import { BsBugFill } from 'react-icons/bs'
+import ProjectSelector from './ProjectSelector'
 import ThemeToggle from './ThemeToggle'
 
 const Navbar: React.FC = () => {
@@ -55,7 +56,7 @@ const NavLinks = () => {
     }
 
     return (
-        <Flex gap="6">
+        <Flex gap="6" align="center">
             <Link href="/">
                 <BsBugFill size={24} />
             </Link>
@@ -80,6 +81,7 @@ const NavLinks = () => {
                     )
                 })}
             </ul>
+            <ProjectSelector />
         </Flex>
     )
 }

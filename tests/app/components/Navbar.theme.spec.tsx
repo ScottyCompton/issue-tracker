@@ -1,5 +1,8 @@
 import Navbar from '@/app/components/Navbar'
+import { ProjectProvider } from '@/app/contexts/ProjectContext'
 import { ThemeProvider } from '@/app/contexts/ThemeContext'
+import { GET_PROJECTS_QUERY } from '@/app/graphql/queries'
+import { MockedProvider } from '@apollo/client/testing'
 import { Theme } from '@radix-ui/themes'
 import { render, screen } from '@testing-library/react'
 import React from 'react'
@@ -73,11 +76,28 @@ Object.defineProperty(window, 'matchMedia', {
     })),
 })
 
+const mocks = [
+    {
+        request: {
+            query: GET_PROJECTS_QUERY,
+        },
+        result: {
+            data: {
+                projects: [],
+            },
+        },
+    },
+]
+
 const renderWithTheme = (component: React.ReactElement) => {
     return render(
-        <ThemeProvider>
-            <Theme appearance="light">{component}</Theme>
-        </ThemeProvider>
+        <MockedProvider mocks={mocks} addTypename={false}>
+            <ThemeProvider>
+                <ProjectProvider>
+                    <Theme appearance="light">{component}</Theme>
+                </ProjectProvider>
+            </ThemeProvider>
+        </MockedProvider>
     )
 }
 

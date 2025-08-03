@@ -5,6 +5,7 @@ import { Status } from '@/prisma/client'
 import { Avatar, Card, Flex, Heading, Tooltip } from '@radix-ui/themes'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
+import { useProject } from '../contexts/ProjectContext'
 import { GET_LATEST_ISSUES_QUERY } from '../graphql/queries'
 import IssueStatusBadge from './IssueStatusBadge'
 import LatestIssuesSkeleton from './LatestIssuesSkeleton'
@@ -20,6 +21,12 @@ interface LatestIssue {
     id: string
     title: string
     status: Status
+    issueType: string
+    projectId?: string
+    project?: {
+        id: string
+        name: string
+    }
     assignedToUser: AssignedToUser
 }
 
@@ -28,6 +35,7 @@ interface LatestIssues {
 }
 
 const LatestIssues = () => {
+    const { selectedProjectId } = useProject()
     const [latestIssues, setLatestIssues] = useState<LatestIssue[]>([])
     const [loading, setLoading] = useState(true)
 
@@ -39,6 +47,9 @@ const LatestIssues = () => {
 
                 const { data } = await graphqlClient.query<LatestIssues>({
                     query: GET_LATEST_ISSUES_QUERY,
+                    variables: {
+                        projectId: selectedProjectId,
+                    },
                     fetchPolicy: 'network-only', // Always fetch fresh data
                 })
 
@@ -51,7 +62,7 @@ const LatestIssues = () => {
         }
 
         fetchData()
-    }, [])
+    }, [selectedProjectId])
 
     if (loading) {
         return <LatestIssuesSkeleton />

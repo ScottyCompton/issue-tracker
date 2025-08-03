@@ -1,3 +1,4 @@
+import { ProjectProvider } from '@/app/contexts/ProjectContext'
 import { render, screen } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -144,7 +145,11 @@ describe('IssueSummary', () => {
             '@/app/components/IssueSummary'
         )
 
-        render(<IssueSummary />)
+        render(
+            <ProjectProvider>
+                <IssueSummary />
+            </ProjectProvider>
+        )
 
         // Should show skeleton initially
         expect(screen.getAllByTestId('skeleton')).toHaveLength(7)
@@ -167,7 +172,11 @@ describe('IssueSummary', () => {
             '@/app/components/IssueSummary'
         )
 
-        render(<IssueSummary />)
+        render(
+            <ProjectProvider>
+                <IssueSummary />
+            </ProjectProvider>
+        )
 
         // Advance timers to complete the artificial delay
         await vi.advanceTimersByTimeAsync(1000)
@@ -177,6 +186,7 @@ describe('IssueSummary', () => {
             query: 'GET_ISSUES_STATUS_COUNT_QUERY',
             variables: {
                 includeAll: true,
+                projectId: null,
             },
             fetchPolicy: 'network-only',
         })
