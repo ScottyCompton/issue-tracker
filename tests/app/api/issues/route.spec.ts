@@ -82,7 +82,10 @@ describe('POST /api/issues', () => {
         })
 
         // Mock project validation
-        mockPrisma.project.findUnique.mockResolvedValue({ id: 1, name: 'Test Project' })
+        mockPrisma.project.findUnique.mockResolvedValue({
+            id: 1,
+            name: 'Test Project',
+        })
 
         // Mock successful database creation
         mockPrisma.issue.create.mockResolvedValue(mockCreatedIssue)
@@ -103,6 +106,7 @@ describe('POST /api/issues', () => {
                 title: mockValidIssue.title,
                 description: mockValidIssue.description,
                 projectId: 1,
+                updatedAt: expect.any(Date),
             },
         })
     })
@@ -201,7 +205,10 @@ describe('POST /api/issues', () => {
         })
 
         // Mock default project assignment
-        mockPrisma.project.findFirst.mockResolvedValue({ id: 1, name: 'Default Project' })
+        mockPrisma.project.findFirst.mockResolvedValue({
+            id: 1,
+            name: 'Default Project',
+        })
 
         // Mock successful database creation
         mockPrisma.issue.create.mockResolvedValue({
@@ -223,6 +230,7 @@ describe('POST /api/issues', () => {
                 title: issueWithoutProject.title,
                 description: issueWithoutProject.description,
                 projectId: 1,
+                updatedAt: expect.any(Date),
             },
         })
     })
@@ -260,7 +268,10 @@ describe('POST /api/issues', () => {
         })
 
         // Mock default project assignment
-        mockPrisma.project.findFirst.mockResolvedValue({ id: 1, name: 'Default Project' })
+        mockPrisma.project.findFirst.mockResolvedValue({
+            id: 1,
+            name: 'Default Project',
+        })
 
         // Mock successful database creation
         const minimalIssue = {
@@ -295,7 +306,10 @@ describe('POST /api/issues', () => {
         })
 
         // Mock project validation
-        mockPrisma.project.findUnique.mockResolvedValue({ id: 1, name: 'Test Project' })
+        mockPrisma.project.findUnique.mockResolvedValue({
+            id: 1,
+            name: 'Test Project',
+        })
 
         // Mock successful database creation
         mockPrisma.issue.create.mockResolvedValue(mockCreatedIssue)
@@ -310,6 +324,7 @@ describe('POST /api/issues', () => {
                 title: mockValidIssue.title,
                 description: mockValidIssue.description,
                 projectId: 1,
+                updatedAt: expect.any(Date),
             },
         })
     })

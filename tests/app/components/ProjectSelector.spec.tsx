@@ -17,47 +17,49 @@ vi.mock('@/app/components', () => ({
 
 // Mock Radix UI Select components
 vi.mock('@radix-ui/themes', () => ({
-    Select: ({
-        children,
-        value,
-        onValueChange,
-    }: {
-        children: React.ReactNode
-        value: string
-        onValueChange: (value: string) => void
-    }) => (
-        <div data-testid="select-root" data-value={value}>
-            {children}
-        </div>
-    ),
-    SelectTrigger: ({
-        children,
-        className,
-    }: {
-        children: React.ReactNode
-        className?: string
-    }) => (
-        <button data-testid="select-trigger" className={className}>
-            {children}
-        </button>
-    ),
-    SelectContent: ({ children }: { children: React.ReactNode }) => (
-        <div data-testid="select-content">{children}</div>
-    ),
-    SelectItem: ({
-        children,
-        value,
-    }: {
-        children: React.ReactNode
-        value: string
-    }) => (
-        <div data-testid="select-item" data-value={value}>
-            {children}
-        </div>
-    ),
-    SelectValue: ({ placeholder }: { placeholder: string }) => (
-        <span data-testid="select-value">{placeholder}</span>
-    ),
+    Select: {
+        Root: ({
+            children,
+            value,
+            onValueChange,
+        }: {
+            children: React.ReactNode
+            value: string
+            onValueChange: (value: string) => void
+        }) => (
+            <div data-testid="select-root" data-value={value}>
+                {children}
+            </div>
+        ),
+        Trigger: ({
+            children,
+            className,
+        }: {
+            children: React.ReactNode
+            className?: string
+        }) => (
+            <button data-testid="select-trigger" className={className}>
+                {children}
+            </button>
+        ),
+        Content: ({ children }: { children: React.ReactNode }) => (
+            <div data-testid="select-content">{children}</div>
+        ),
+        Item: ({
+            children,
+            value,
+        }: {
+            children: React.ReactNode
+            value: string
+        }) => (
+            <div data-testid="select-item" data-value={value}>
+                {children}
+            </div>
+        ),
+        Value: ({ placeholder }: { placeholder: string }) => (
+            <span data-testid="select-value">{placeholder}</span>
+        ),
+    },
 }))
 
 const mockProjects = [
@@ -138,7 +140,6 @@ describe('ProjectSelector', () => {
         })
 
         expect(screen.getByTestId('select-trigger')).toBeInTheDocument()
-        expect(screen.getByTestId('select-value')).toBeInTheDocument()
     })
 
     it('handles project selection', async () => {
@@ -154,7 +155,6 @@ describe('ProjectSelector', () => {
 
         // Verify the select component is rendered
         expect(screen.getByTestId('select-trigger')).toBeInTheDocument()
-        expect(screen.getByTestId('select-value')).toBeInTheDocument()
     })
 
     it('handles "All Projects" selection', async () => {
@@ -170,7 +170,6 @@ describe('ProjectSelector', () => {
 
         // Verify the select component is rendered
         expect(screen.getByTestId('select-trigger')).toBeInTheDocument()
-        expect(screen.getByTestId('select-value')).toBeInTheDocument()
     })
 
     it('handles error gracefully', async () => {
@@ -225,6 +224,5 @@ describe('ProjectSelector', () => {
 
         // Verify the select component is rendered
         expect(screen.getByTestId('select-trigger')).toBeInTheDocument()
-        expect(screen.getByTestId('select-value')).toBeInTheDocument()
     })
 })

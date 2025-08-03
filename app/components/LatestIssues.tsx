@@ -53,9 +53,6 @@ const LatestIssues = () => {
                     fetchPolicy: 'network-only', // Always fetch fresh data
                 })
 
-                console.log('LatestIssues data:', data)
-                console.log('Selected project ID:', selectedProjectId)
-
                 setLatestIssues(data?.latestIssues ?? [])
             } catch (error) {
                 console.error('Error fetching latest issues:', error)

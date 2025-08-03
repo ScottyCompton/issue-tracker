@@ -1,15 +1,14 @@
-import { User } from '@/app/generated/prisma'
-import { IssueType, Status } from '@/prisma/client'
+import { issue_issueType, issue_status, user } from '@/app/generated/prisma'
 
 export interface Issue {
     id: number
     title: string
-    status: Status
-    issueType: IssueType
+    status: issue_status
+    issueType: issue_issueType
     createdAt: Date
     updatedAt: Date
     assignedToUserId?: String
-    assignedToUser?: User
+    assignedToUser?: user
     projectId?: number | null
     project?: {
         id: number

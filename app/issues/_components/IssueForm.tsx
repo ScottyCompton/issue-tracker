@@ -1,6 +1,6 @@
 'use client'
 import ErrorMessage from '@/app/components/ErrorMessage'
-import { Issue } from '@/app/generated/prisma'
+import { issue } from '@/app/generated/prisma'
 import {
     CREATE_ISSUE_MUTATION,
     UPDATE_ISSUE_MUTATION,
@@ -25,7 +25,7 @@ const SimpleMDE = dynamic(() => import('react-simplemde-editor'), {
 type IssueFormData = z.infer<typeof issueSchema>
 
 interface Props {
-    issue?: Issue
+    issue?: issue
 }
 
 const IssueForm: React.FC<Props> = ({ issue }: Props) => {

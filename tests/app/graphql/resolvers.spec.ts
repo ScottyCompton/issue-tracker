@@ -90,7 +90,7 @@ describe('GraphQL Resolvers', () => {
                     skip: 0,
                     take: 10,
                     include: {
-                        assignedToUser: true,
+                        user: true,
                         project: true,
                     },
                 })
@@ -118,7 +118,7 @@ describe('GraphQL Resolvers', () => {
                     skip: 0,
                     take: 10,
                     include: {
-                        assignedToUser: true,
+                        user: true,
                         project: true,
                     },
                 })
@@ -156,7 +156,7 @@ describe('GraphQL Resolvers', () => {
                     orderBy: { createdAt: 'desc' },
                     take: 5,
                     include: {
-                        assignedToUser: true,
+                        user: true,
                         project: true,
                     },
                 })
@@ -251,7 +251,7 @@ describe('GraphQL Resolvers', () => {
                 expect(mockPrisma.issue.findUnique).toHaveBeenCalledWith({
                     where: { id: 1 },
                     include: {
-                        assignedToUser: true,
+                        user: true,
                         project: true,
                     },
                 })
@@ -266,7 +266,7 @@ describe('GraphQL Resolvers', () => {
                 expect(mockPrisma.issue.findUnique).toHaveBeenCalledWith({
                     where: { id: 999 },
                     include: {
-                        assignedToUser: true,
+                        user: true,
                         project: true,
                     },
                 })
@@ -399,7 +399,9 @@ describe('GraphQL Resolvers', () => {
                     success: true,
                     data: input,
                 })
-                mockPrisma.project.findFirst.mockResolvedValue(mockDefaultProject)
+                mockPrisma.project.findFirst.mockResolvedValue(
+                    mockDefaultProject
+                )
                 mockPrisma.issue.create.mockResolvedValue(mockCreatedIssue)
 
                 const result = await resolvers.Mutation.createIssue(
@@ -420,7 +422,7 @@ describe('GraphQL Resolvers', () => {
                         projectId: 1,
                     },
                     include: {
-                        assignedToUser: true,
+                        user: true,
                         project: true,
                     },
                 })
@@ -479,7 +481,7 @@ describe('GraphQL Resolvers', () => {
                     where: { id: 1 },
                     data: input,
                     include: {
-                        assignedToUser: true,
+                        user: true,
                         project: true,
                     },
                 })
@@ -577,7 +579,7 @@ describe('GraphQL Resolvers', () => {
                     where: { id: 1 },
                     data: input,
                     include: {
-                        assignedToUser: true,
+                        user: true,
                         project: true,
                     },
                 })
@@ -614,7 +616,7 @@ describe('GraphQL Resolvers', () => {
                     where: { id: 1 },
                     data: input,
                     include: {
-                        assignedToUser: true,
+                        user: true,
                         project: true,
                     },
                 })
@@ -692,6 +694,7 @@ describe('GraphQL Resolvers', () => {
                     data: {
                         name: 'New Project',
                         description: 'New Description',
+                        updatedAt: expect.any(Date),
                     },
                 })
             })
@@ -746,6 +749,7 @@ describe('GraphQL Resolvers', () => {
                     data: {
                         name: 'New Project',
                         description: null,
+                        updatedAt: expect.any(Date),
                     },
                 })
             })
@@ -969,7 +973,10 @@ describe('GraphQL Resolvers', () => {
                 success: true,
                 data: input,
             })
-            mockPrisma.project.findFirst.mockResolvedValue({ id: 1, name: 'Default Project' })
+            mockPrisma.project.findFirst.mockResolvedValue({
+                id: 1,
+                name: 'Default Project',
+            })
             mockPrisma.issue.create.mockResolvedValue({ id: 1, ...input })
 
             const result = await resolvers.Mutation.createIssue({}, { input })
@@ -1028,7 +1035,7 @@ describe('GraphQL Resolvers', () => {
                 skip: 0,
                 take: 10,
                 include: {
-                    assignedToUser: true,
+                    user: true,
                     project: true,
                 },
             })
@@ -1054,7 +1061,7 @@ describe('GraphQL Resolvers', () => {
                 skip: 0,
                 take: 10,
                 include: {
-                    assignedToUser: true,
+                    user: true,
                     project: true,
                 },
             })
@@ -1089,7 +1096,7 @@ describe('GraphQL Resolvers', () => {
                 skip: 0,
                 take: 10,
                 include: {
-                    assignedToUser: true,
+                    user: true,
                     project: true,
                 },
             })

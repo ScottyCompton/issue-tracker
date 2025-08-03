@@ -36,7 +36,6 @@ export const handleSelect = (
         params.append('userId', searchParams.get('userId')!)
 
     const query = params.size ? '?' + params.toString() : ''
-    console.log(query)
     router.push(`/issues/list${query}`)
 }
 

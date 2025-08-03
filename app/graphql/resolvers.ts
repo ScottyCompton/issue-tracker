@@ -50,9 +50,6 @@ export const resolvers = {
                 where.projectId = parseInt(args.projectId)
             }
 
-            console.log('latestIssues resolver - args:', args)
-            console.log('latestIssues resolver - where clause:', where)
-
             const result = await prisma.issue.findMany({
                 where,
                 orderBy: { createdAt: 'desc' },
@@ -62,8 +59,6 @@ export const resolvers = {
                     project: true,
                 },
             })
-
-            console.log('latestIssues resolver - result:', result)
             return result
         },
 
@@ -90,8 +85,6 @@ export const resolvers = {
             const aryOut: { label: string; status: string; count: number }[] =
                 []
             let issuesCount
-
-            console.log('args.includeAll =', args.includeAll)
 
             const where: any = {}
             if (args.projectId) {
@@ -377,6 +370,7 @@ export const resolvers = {
                 data: {
                     name: input.name.trim(),
                     description: input.description?.trim() || null,
+                    updatedAt: new Date(),
                 },
             })
         },

@@ -85,8 +85,8 @@ describe('GET /api/projects', () => {
         expect(responseData).toEqual(mockProjects)
         expect(mockPrisma.project.findMany).toHaveBeenCalledWith({
             orderBy: {
-                name: 'asc'
-            }
+                name: 'asc',
+            },
         })
     })
 
@@ -169,6 +169,7 @@ describe('POST /api/projects', () => {
             data: {
                 name: mockValidProject.name,
                 description: mockValidProject.description,
+                updatedAt: expect.any(Date),
             },
         })
     })
@@ -247,7 +248,8 @@ describe('POST /api/projects', () => {
             data: {
                 name: projectWithoutDescription.name,
                 description: null,
+                updatedAt: expect.any(Date),
             },
         })
     })
-}) 
+})

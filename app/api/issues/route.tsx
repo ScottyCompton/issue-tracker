@@ -1,8 +1,8 @@
-import { NextRequest, NextResponse } from 'next/server'
-import prisma from '@/prisma/client'
-import { issueSchema } from '../../schemas/validationSchemas'
-import { getServerSession } from 'next-auth'
 import authOptions from '@/app/auth/authOptions'
+import prisma from '@/prisma/client'
+import { getServerSession } from 'next-auth'
+import { NextRequest, NextResponse } from 'next/server'
+import { issueSchema } from '../../schemas/validationSchemas'
 
 export async function POST(request: NextRequest) {
     const session = await getServerSession(authOptions)
@@ -25,7 +25,10 @@ export async function POST(request: NextRequest) {
             where: { id: parseInt(body.projectId) },
         })
         if (!project) {
-            return NextResponse.json({ error: 'Invalid projectId' }, { status: 400 })
+            return NextResponse.json(
+                { error: 'Invalid projectId' },
+                { status: 400 }
+            )
         }
         projectId = parseInt(body.projectId)
     } else {
@@ -44,6 +47,7 @@ export async function POST(request: NextRequest) {
             title: body.title,
             description: body.description,
             projectId: projectId,
+            updatedAt: new Date(),
         },
     })
 

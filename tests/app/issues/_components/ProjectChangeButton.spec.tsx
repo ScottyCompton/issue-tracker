@@ -1,3 +1,4 @@
+import { ProjectProvider } from '@/app/contexts/ProjectContext'
 import {
     GET_PROJECTS_QUERY,
     UPDATE_ISSUE_MUTATION,
@@ -6,6 +7,13 @@ import ProjectChangeButton from '@/app/issues/_components/ProjectChangeButton'
 import { MockedProvider } from '@apollo/client/testing'
 import { render, screen, waitFor } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+
+// Mock Next.js router
+vi.mock('next/navigation', () => ({
+    useRouter: () => ({
+        refresh: vi.fn(),
+    }),
+}))
 
 const mockProjects = [
     { id: '1', name: 'Project 1', description: 'Description 1' },
@@ -62,11 +70,13 @@ describe('ProjectChangeButton', () => {
     it('renders change project button initially', async () => {
         render(
             <MockedProvider mocks={mocks} addTypename={false}>
-                <ProjectChangeButton
-                    issueId="1"
-                    currentProjectId="1"
-                    currentProjectName="Project 1"
-                />
+                <ProjectProvider>
+                    <ProjectChangeButton
+                        issueId="1"
+                        currentProjectId="1"
+                        currentProjectName="Project 1"
+                    />
+                </ProjectProvider>
             </MockedProvider>
         )
 
@@ -78,11 +88,13 @@ describe('ProjectChangeButton', () => {
     it('shows loading state when projects are loading', () => {
         render(
             <MockedProvider mocks={[]} addTypename={false}>
-                <ProjectChangeButton
-                    issueId="1"
-                    currentProjectId="1"
-                    currentProjectName="Project 1"
-                />
+                <ProjectProvider>
+                    <ProjectChangeButton
+                        issueId="1"
+                        currentProjectId="1"
+                        currentProjectName="Project 1"
+                    />
+                </ProjectProvider>
             </MockedProvider>
         )
 

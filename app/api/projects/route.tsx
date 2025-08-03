@@ -1,8 +1,8 @@
-import { NextRequest, NextResponse } from 'next/server'
-import prisma from '@/prisma/client'
-import { createProjectSchema } from '../../schemas/validationSchemas'
-import { getServerSession } from 'next-auth'
 import authOptions from '@/app/auth/authOptions'
+import prisma from '@/prisma/client'
+import { getServerSession } from 'next-auth'
+import { NextRequest, NextResponse } from 'next/server'
+import { createProjectSchema } from '../../schemas/validationSchemas'
 
 export async function GET(request: NextRequest) {
     const session = await getServerSession(authOptions)
@@ -13,8 +13,8 @@ export async function GET(request: NextRequest) {
 
     const projects = await prisma.project.findMany({
         orderBy: {
-            name: 'asc'
-        }
+            name: 'asc',
+        },
     })
 
     return NextResponse.json(projects)
@@ -43,7 +43,9 @@ export async function POST(request: NextRequest) {
 
     if (existingProject) {
         return NextResponse.json(
-            { error: `A project with the name "${body.name.trim()}" already exists` },
+            {
+                error: `A project with the name "${body.name.trim()}" already exists`,
+            },
             { status: 400 }
         )
     }
@@ -52,8 +54,9 @@ export async function POST(request: NextRequest) {
         data: {
             name: body.name.trim(),
             description: body.description?.trim() || null,
+            updatedAt: new Date(),
         },
     })
 
     return NextResponse.json(newProject, { status: 201 })
-} 
+}
