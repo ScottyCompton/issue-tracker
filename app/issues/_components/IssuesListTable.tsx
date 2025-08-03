@@ -1,4 +1,4 @@
-import { IssueStatusBadge, Link } from '@/app/components'
+import { IssueStatusBadge, Link, ProjectBadge } from '@/app/components'
 import { Issue } from '@/app/lib/interfaces'
 import { formatDate } from '@/app/lib/utils'
 import { Status } from '@/prisma/client'
@@ -101,6 +101,7 @@ const IssuesListTable: React.FC<Props> = ({
                                 </Link>
                                 <div className="block md:hidden">
                                     <IssueStatusBadge status={issue.status} />
+                                    <ProjectBadge project={issue.project} variant="compact" />
                                 </div>
                             </Table.Cell>
                             <Table.Cell className="hidden md:table-cell">
@@ -111,6 +112,9 @@ const IssuesListTable: React.FC<Props> = ({
                             </Table.Cell>
                             <Table.Cell className="hidden md:table-cell">
                                 {formatDate(issue.createdAt)}
+                            </Table.Cell>
+                            <Table.Cell className="hidden lg:table-cell">
+                                <ProjectBadge project={issue.project} variant="compact" />
                             </Table.Cell>
                         </Table.Row>
                     ))}

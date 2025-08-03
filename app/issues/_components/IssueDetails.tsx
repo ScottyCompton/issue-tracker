@@ -1,6 +1,7 @@
 'use client'
 
 import { IssueStatusBadge } from '@/app/components'
+import ProjectBadge from '@/app/components/ProjectBadge'
 import { Status } from '@/app/generated/prisma'
 import { formatDate } from '@/app/lib/utils'
 import { Card, Flex, Heading, Text } from '@radix-ui/themes'
@@ -16,6 +17,12 @@ interface GraphQLIssue {
     createdAt: string
     updatedAt: string
     assignedToUserId: string | null
+    projectId: string | null
+    project: {
+        id: string
+        name: string
+        description: string | null
+    } | null
 }
 
 interface Props {
@@ -41,6 +48,7 @@ const IssueDetails: React.FC<Props> = ({ issue }: Props) => {
             </Flex>
             <Flex className="space-x-3" my="2">
                 <IssueStatusBadge status={currentStatus} />
+                <ProjectBadge project={issue.project} />
                 <Text>{formatDate(issue.createdAt)}</Text>
             </Flex>
             <Card mt="4">

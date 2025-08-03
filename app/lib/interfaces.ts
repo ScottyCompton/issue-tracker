@@ -10,4 +10,10 @@ export interface Issue {
     updatedAt: Date
     assignedToUserId?: String
     assignedToUser?: User
+    projectId?: number | null
+    project?: {
+        id: number
+        name: string
+        description?: string | null
+    } | null
 }
