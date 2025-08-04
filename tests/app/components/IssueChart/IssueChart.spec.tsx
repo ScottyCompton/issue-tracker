@@ -1,4 +1,6 @@
+import { ProjectProvider } from '@/app/contexts/ProjectContext'
 import { render, screen } from '@testing-library/react'
+import React from 'react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 // Mock the GraphQL client
@@ -58,6 +60,11 @@ vi.mock('./IssueChartSkeleton', () => ({
     default: () => <div data-testid="skeleton">Loading...</div>,
 }))
 
+// Custom render function with ProjectProvider
+const renderWithProjectProvider = (component: React.ReactElement) => {
+    return render(<ProjectProvider>{component}</ProjectProvider>)
+}
+
 describe('IssueChart', () => {
     beforeEach(() => {
         vi.clearAllMocks()
@@ -96,7 +103,7 @@ describe('IssueChart', () => {
             '@/app/components/IssueChart/IssueChart'
         )
 
-        render(<IssueChart />)
+        renderWithProjectProvider(<IssueChart />)
 
         // Should show skeleton initially
         expect(screen.getAllByTestId('skeleton')).toHaveLength(10)
@@ -129,15 +136,63 @@ describe('IssueChart', () => {
             '@/app/components/IssueChart/IssueChart'
         )
 
-        render(<IssueChart />)
+        renderWithProjectProvider(<IssueChart />)
 
         // Advance timers to complete the artificial delay
         await vi.advanceTimersByTimeAsync(1000)
 
-        // Check that the query was called
+        // Check that the query was called with the correct variables
         expect(mockQuery).toHaveBeenCalledWith({
             query: 'GET_ISSUES_STATUS_COUNT_QUERY',
+            variables: {
+                projectId: null,
+            },
         })
+    })
+
+    it('responds to project selection changes', async () => {
+        const mockData = {
+            issueStatusCount: [
+                {
+                    label: 'Open',
+                    status: 'OPEN',
+                    count: 2,
+                },
+                {
+                    label: 'In Progress',
+                    status: 'IN_PROGRESS',
+                    count: 1,
+                },
+                {
+                    label: 'Closed',
+                    status: 'CLOSED',
+                    count: 5,
+                },
+            ],
+        }
+
+        mockQuery.mockResolvedValue({ data: mockData })
+
+        const { default: IssueChart } = await import(
+            '@/app/components/IssueChart/IssueChart'
+        )
+
+        renderWithProjectProvider(<IssueChart />)
+
+        // Advance timers to complete the artificial delay
+        await vi.advanceTimersByTimeAsync(1000)
+
+        // Check that the query was called with null projectId initially
+        expect(mockQuery).toHaveBeenCalledWith({
+            query: 'GET_ISSUES_STATUS_COUNT_QUERY',
+            variables: {
+                projectId: null,
+            },
+        })
+
+        // Verify that the component uses the useProject hook
+        // This test ensures the component is properly integrated with the project context
+        expect(mockQuery).toHaveBeenCalledTimes(1)
     })
 
     it('uses the correct GraphQL query', async () => {

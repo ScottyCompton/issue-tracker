@@ -1,7 +1,7 @@
 'use client'
 
 import { IssueType } from '@/prisma/client'
-import { Select } from '@radix-ui/themes'
+import { Select, Text } from '@radix-ui/themes'
 import { useRouter, useSearchParams } from 'next/navigation'
 
 const issueTypeArray: { label: string; value: IssueType }[] = [
@@ -46,26 +46,34 @@ const IssueTypeFilter: React.FC<Props> = ({ currIssueType }: Props) => {
     const searchParams = useSearchParams()
 
     return (
-        <Select.Root
-            onValueChange={(value) =>
-                handleSelect(value as IssueType, searchParams, router)
-            }
-            defaultValue={currIssueType}
-        >
-            <Select.Trigger placeholder="Filter by type..." className="w-50" />
-            <Select.Content className="w-50">
-                <Select.Group>
-                    <Select.Item key="-1" value="-1">
-                        All
-                    </Select.Item>
-                    {issueTypeArray.map((t) => (
-                        <Select.Item key={t.value} value={t.value + ''}>
-                            {t.label}
+        <div>
+            <Text as="label" size="1" weight="light" className="block mb-2">
+                Filter by Type
+            </Text>
+            <Select.Root
+                onValueChange={(value) =>
+                    handleSelect(value as IssueType, searchParams, router)
+                }
+                defaultValue={currIssueType}
+            >
+                <Select.Trigger
+                    placeholder="Filter by type..."
+                    style={{ width: '150px' }}
+                />
+                <Select.Content style={{ width: '150px' }}>
+                    <Select.Group>
+                        <Select.Item key="-1" value="-1">
+                            All
                         </Select.Item>
-                    ))}
-                </Select.Group>
-            </Select.Content>
-        </Select.Root>
+                        {issueTypeArray.map((t) => (
+                            <Select.Item key={t.value} value={t.value + ''}>
+                                {t.label}
+                            </Select.Item>
+                        ))}
+                    </Select.Group>
+                </Select.Content>
+            </Select.Root>
+        </div>
     )
 }
 

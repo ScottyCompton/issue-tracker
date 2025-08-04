@@ -33,6 +33,7 @@ describe('IssueStatusFilter', () => {
         customRender(<IssueStatusFilter />)
 
         expect(screen.getByRole('combobox')).toBeInTheDocument()
+        expect(screen.getByText('Filter by Status')).toBeInTheDocument()
     })
 
     it('renders with current status', async () => {
@@ -43,40 +44,7 @@ describe('IssueStatusFilter', () => {
         customRender(<IssueStatusFilter currStatus="OPEN" />)
 
         expect(screen.getByRole('combobox')).toBeInTheDocument()
-    })
-
-    it('handles "All" status selection', async () => {
-        const { default: IssueStatusFilter } = await import(
-            '@/app/issues/_components/IssueStatusFilter'
-        )
-
-        customRender(<IssueStatusFilter />)
-
-        // Simulate selecting "All" option
-        const select = screen.getByRole('combobox')
-        fireEvent.click(select)
-
-        // The component should handle the "-1" value for "All"
-        expect(mockPush).not.toHaveBeenCalled()
-    })
-
-    it('calls handleSelect with "-1" for "All" option', async () => {
-        const { default: IssueStatusFilter } = await import(
-            '@/app/issues/_components/IssueStatusFilter'
-        )
-
-        customRender(<IssueStatusFilter />)
-
-        // Mock the onValueChange callback
-        const select = screen.getByRole('combobox')
-
-        // Simulate the onValueChange being called with "-1"
-        // This tests the handleSelect function logic
-        const mockOnValueChange = vi.fn()
-        const component = <IssueStatusFilter />
-
-        // We need to trigger the actual onValueChange
-        expect(mockPush).not.toHaveBeenCalled()
+        expect(screen.getByText('Filter by Status')).toBeInTheDocument()
     })
 
     it('handles "Open" status selection', async () => {
@@ -161,19 +129,19 @@ describe('IssueStatusFilter', () => {
         consoleSpy.mockRestore()
     })
 
-    it('tests handleSelect function with "-1" status (All)', async () => {
+    it('tests handleSelect function with empty status (placeholder)', async () => {
         const { default: IssueStatusFilter } = await import(
             '@/app/issues/_components/IssueStatusFilter'
         )
 
         customRender(<IssueStatusFilter />)
 
-        // When status is "-1" (All), it should not add status to params
+        // When status is empty (placeholder), it should not add status to params
         // but should preserve existing sortBy and sortOrder
         const select = screen.getByRole('combobox')
         expect(select).toBeInTheDocument()
 
-        // Verify the component handles the "-1" value correctly
+        // Verify the component handles the empty value correctly
         expect(mockSearchParams.get('sortBy')).toBe('title')
         expect(mockSearchParams.get('sortOrder')).toBe('asc')
     })
@@ -189,7 +157,7 @@ describe('IssueStatusFilter', () => {
 
         customRender(<IssueStatusFilter />)
 
-        // When no existing params, should only add status if not "-1"
+        // When no existing params, should only add status if not empty
         const select = screen.getByRole('combobox')
         expect(select).toBeInTheDocument()
 
@@ -287,13 +255,13 @@ describe('IssueStatusFilter', () => {
         // Test the handleSelect function logic for different status values
         // This covers lines 22-32 of the component
 
-        // Test case 1: Status is not "-1" and not empty
+        // Test case 1: Status is not empty
         // Should add status to params and preserve existing params
 
-        // Test case 2: Status is "-1" (All)
+        // Test case 2: Status is empty (placeholder)
         // Should not add status to params but preserve existing params
 
-        // Test case 3: Status is empty or undefined
+        // Test case 3: Status is undefined
         // Should not add status to params but preserve existing params
 
         const select = screen.getByRole('combobox')
@@ -314,7 +282,7 @@ describe('IssueStatusFilter', () => {
         // Test the URLSearchParams creation and manipulation logic
         // This specifically covers lines 22-32:
         // - Creating new URLSearchParams
-        // - Adding status if not "-1"
+        // - Adding status if not empty
         // - Preserving sortBy and sortOrder from searchParams
         // - Building the query string
         // - Calling router.push
@@ -404,12 +372,12 @@ describe('IssueStatusFilter', () => {
         expect(select).toBeInTheDocument()
         expect(mockPush).toBeDefined()
 
-        // Scenario 2: Status is "-1" (All)
+        // Scenario 2: Status is empty (placeholder)
         // This should not add status to params but preserve existing params
         expect(mockSearchParams.get('sortBy')).toBe('title')
         expect(mockSearchParams.get('sortOrder')).toBe('asc')
 
-        // Scenario 3: Status is empty
+        // Scenario 3: Status is undefined
         // This should not add status to params but preserve existing params
         expect(mockPush).toBeDefined()
 
@@ -424,6 +392,7 @@ describe('IssueStatusFilter', () => {
         customRender(<IssueStatusFilter currStatus={undefined} />)
 
         expect(screen.getByRole('combobox')).toBeInTheDocument()
+        expect(screen.getByText('Filter by Status')).toBeInTheDocument()
     })
 
     it('handles null current status', async () => {
@@ -434,6 +403,7 @@ describe('IssueStatusFilter', () => {
         customRender(<IssueStatusFilter currStatus={null as any} />)
 
         expect(screen.getByRole('combobox')).toBeInTheDocument()
+        expect(screen.getByText('Filter by Status')).toBeInTheDocument()
     })
 
     it('handles different current statuses', async () => {
@@ -444,6 +414,7 @@ describe('IssueStatusFilter', () => {
         customRender(<IssueStatusFilter currStatus="CLOSED" />)
 
         expect(screen.getByRole('combobox')).toBeInTheDocument()
+        expect(screen.getByText('Filter by Status')).toBeInTheDocument()
     })
 
     it('handles search params without sortBy', async () => {
@@ -456,6 +427,7 @@ describe('IssueStatusFilter', () => {
         customRender(<IssueStatusFilter />)
 
         expect(screen.getByRole('combobox')).toBeInTheDocument()
+        expect(screen.getByText('Filter by Status')).toBeInTheDocument()
     })
 
     it('handles search params without sortOrder', async () => {
@@ -468,6 +440,7 @@ describe('IssueStatusFilter', () => {
         customRender(<IssueStatusFilter />)
 
         expect(screen.getByRole('combobox')).toBeInTheDocument()
+        expect(screen.getByText('Filter by Status')).toBeInTheDocument()
     })
 
     it('handles empty search params', async () => {
@@ -482,6 +455,7 @@ describe('IssueStatusFilter', () => {
         customRender(<IssueStatusFilter />)
 
         expect(screen.getByRole('combobox')).toBeInTheDocument()
+        expect(screen.getByText('Filter by Status')).toBeInTheDocument()
     })
 
     it('is a client-side component', async () => {
@@ -509,6 +483,7 @@ describe('IssueStatusFilter', () => {
         customRender(<IssueStatusFilter currStatus="IN_PROGRESS" />)
 
         expect(screen.getByRole('combobox')).toBeInTheDocument()
+        expect(screen.getByText('Filter by Status')).toBeInTheDocument()
     })
 
     it('handles component without props', async () => {
@@ -519,6 +494,7 @@ describe('IssueStatusFilter', () => {
         customRender(<IssueStatusFilter />)
 
         expect(screen.getByRole('combobox')).toBeInTheDocument()
+        expect(screen.getByText('Filter by Status')).toBeInTheDocument()
     })
 
     // NEW TEST: Actually trigger the handleSelect function to cover lines 22-32
@@ -541,24 +517,7 @@ describe('IssueStatusFilter', () => {
         )
     })
 
-    it('tests handleSelect with "-1" status (All option)', async () => {
-        const { handleSelect } = await import(
-            '@/app/issues/_components/IssueStatusFilter'
-        )
-
-        const mockRouter = { push: vi.fn() }
-        const mockSearchParams = new URLSearchParams(
-            'sortBy=title&sortOrder=asc'
-        )
-
-        handleSelect('-1', mockSearchParams, mockRouter)
-
-        expect(mockRouter.push).toHaveBeenCalledWith(
-            '/issues/list?sortBy=title&sortOrder=asc'
-        )
-    })
-
-    it('tests handleSelect with empty status', async () => {
+    it('tests handleSelect with empty status (placeholder)', async () => {
         const { handleSelect } = await import(
             '@/app/issues/_components/IssueStatusFilter'
         )
@@ -569,6 +528,23 @@ describe('IssueStatusFilter', () => {
         )
 
         handleSelect('', mockSearchParams, mockRouter)
+
+        expect(mockRouter.push).toHaveBeenCalledWith(
+            '/issues/list?sortBy=title&sortOrder=asc'
+        )
+    })
+
+    it('tests handleSelect with undefined status', async () => {
+        const { handleSelect } = await import(
+            '@/app/issues/_components/IssueStatusFilter'
+        )
+
+        const mockRouter = { push: vi.fn() }
+        const mockSearchParams = new URLSearchParams(
+            'sortBy=title&sortOrder=asc'
+        )
+
+        handleSelect(undefined as any, mockSearchParams, mockRouter)
 
         expect(mockRouter.push).toHaveBeenCalledWith(
             '/issues/list?sortBy=title&sortOrder=asc'
@@ -596,7 +572,7 @@ describe('IssueStatusFilter', () => {
         const mockRouter = { push: vi.fn() }
         const mockSearchParams = new URLSearchParams()
 
-        handleSelect('-1', mockSearchParams, mockRouter)
+        handleSelect('', mockSearchParams, mockRouter)
 
         expect(mockRouter.push).toHaveBeenCalledWith('/issues/list')
     })
