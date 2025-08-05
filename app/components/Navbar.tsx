@@ -15,6 +15,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import React from 'react'
 import { BsBugFill } from 'react-icons/bs'
+import ProjectSelector from './ProjectSelector'
 import ThemeToggle from './ThemeToggle'
 
 const Navbar: React.FC = () => {
@@ -54,8 +55,13 @@ const NavLinks = () => {
         return false
     }
 
+    // Check if we're on edit issue page or issue details page
+    const isEditIssuePage = currentPath.startsWith('/issues/edit/')
+    const isIssueDetailsPage = currentPath.match(/^\/issues\/\d+$/) !== null
+    const shouldDisableProjectSelector = isEditIssuePage || isIssueDetailsPage
+
     return (
-        <Flex gap="6">
+        <Flex gap="6" align="center">
             <Link href="/">
                 <BsBugFill size={24} />
             </Link>
@@ -80,6 +86,7 @@ const NavLinks = () => {
                     )
                 })}
             </ul>
+            <ProjectSelector disabled={shouldDisableProjectSelector} />
         </Flex>
     )
 }

@@ -114,6 +114,35 @@ describe('validationSchemas', () => {
             const result = issueSchema.safeParse(validIssue)
             expect(result.success).toBe(true)
         })
+
+        it('should accept issue with projectId', () => {
+            const validIssue = {
+                title: 'Test Issue',
+                description: 'This is a test issue description',
+                issueType: 'GENERAL',
+                projectId: '1',
+            }
+
+            const result = issueSchema.safeParse(validIssue)
+            expect(result.success).toBe(true)
+            if (result.success) {
+                expect(result.data).toEqual(validIssue)
+            }
+        })
+
+        it('should accept issue without projectId', () => {
+            const validIssue = {
+                title: 'Test Issue',
+                description: 'This is a test issue description',
+                issueType: 'GENERAL',
+            }
+
+            const result = issueSchema.safeParse(validIssue)
+            expect(result.success).toBe(true)
+            if (result.success) {
+                expect(result.data).toEqual(validIssue)
+            }
+        })
     })
 
     describe('updateIssueSchema', () => {
@@ -158,6 +187,31 @@ describe('validationSchemas', () => {
         it('should validate a valid update with only assignedToUserId', () => {
             const validUpdate = {
                 assignedToUserId: 'user123',
+            }
+
+            const result = updateIssueSchema.safeParse(validUpdate)
+            expect(result.success).toBe(true)
+            if (result.success) {
+                expect(result.data).toEqual(validUpdate)
+            }
+        })
+
+        it('should validate a valid update with projectId', () => {
+            const validUpdate = {
+                title: 'Updated Issue',
+                projectId: '2',
+            }
+
+            const result = updateIssueSchema.safeParse(validUpdate)
+            expect(result.success).toBe(true)
+            if (result.success) {
+                expect(result.data).toEqual(validUpdate)
+            }
+        })
+
+        it('should validate a valid update with only projectId', () => {
+            const validUpdate = {
+                projectId: '3',
             }
 
             const result = updateIssueSchema.safeParse(validUpdate)

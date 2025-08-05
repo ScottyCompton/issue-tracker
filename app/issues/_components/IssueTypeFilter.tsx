@@ -1,15 +1,15 @@
 'use client'
 
-import { IssueType } from '@/app/generated/prisma'
-import { Select } from '@radix-ui/themes'
+import { IssueType } from '@/prisma/client'
+import { Select, Text } from '@radix-ui/themes'
 import { useRouter, useSearchParams } from 'next/navigation'
 
 const issueTypeArray: { label: string; value: IssueType }[] = [
-    { label: 'General', value: IssueType.GENERAL },
-    { label: 'Bug', value: IssueType.BUG },
-    { label: 'Spike', value: IssueType.SPIKE },
-    { label: 'Task', value: IssueType.TASK },
-    { label: 'Subtask', value: IssueType.SUBTASK },
+    { label: 'General', value: 'GENERAL' },
+    { label: 'Bug', value: 'BUG' },
+    { label: 'Spike', value: 'SPIKE' },
+    { label: 'Task', value: 'TASK' },
+    { label: 'Subtask', value: 'SUBTASK' },
 ]
 
 interface Props {
@@ -38,7 +38,6 @@ export const handleSelect = (
         params.append('userId', searchParams.get('userId')!)
 
     const query = params.size ? '?' + params.toString() : ''
-    console.log(query)
     router.push(`/issues/list${query}`)
 }
 
@@ -47,26 +46,34 @@ const IssueTypeFilter: React.FC<Props> = ({ currIssueType }: Props) => {
     const searchParams = useSearchParams()
 
     return (
-        <Select.Root
-            onValueChange={(value) =>
-                handleSelect(value as IssueType, searchParams, router)
-            }
-            defaultValue={currIssueType}
-        >
-            <Select.Trigger placeholder="Filter by type..." className="w-50" />
-            <Select.Content className="w-50">
-                <Select.Group>
-                    <Select.Item key="-1" value="-1">
-                        All
-                    </Select.Item>
-                    {issueTypeArray.map((t) => (
-                        <Select.Item key={t.value} value={t.value + ''}>
-                            {t.label}
+        <div>
+            <Text as="label" size="1" weight="light" className="block mb-2">
+                Filter by Type
+            </Text>
+            <Select.Root
+                onValueChange={(value) =>
+                    handleSelect(value as IssueType, searchParams, router)
+                }
+                defaultValue={currIssueType}
+            >
+                <Select.Trigger
+                    placeholder="Filter by type..."
+                    style={{ width: '150px' }}
+                />
+                <Select.Content style={{ width: '150px' }}>
+                    <Select.Group>
+                        <Select.Item key="-1" value="-1">
+                            All
                         </Select.Item>
-                    ))}
-                </Select.Group>
-            </Select.Content>
-        </Select.Root>
+                        {issueTypeArray.map((t) => (
+                            <Select.Item key={t.value} value={t.value + ''}>
+                                {t.label}
+                            </Select.Item>
+                        ))}
+                    </Select.Group>
+                </Select.Content>
+            </Select.Root>
+        </div>
     )
 }
 

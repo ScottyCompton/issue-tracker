@@ -7,7 +7,7 @@ describe('IssueStatusBadge', () => {
         render(<IssueStatusBadge status="OPEN" />)
         const badge = screen.getByText('Open')
         expect(badge).toBeInTheDocument()
-        expect(badge).toHaveAttribute('data-accent-color', 'red')
+        expect(badge).toHaveClass('bg-red-100', 'text-red-800')
     })
 
     it('renders IN_PROGRESS status correctly', () => {
@@ -15,7 +15,7 @@ describe('IssueStatusBadge', () => {
 
         const badge = screen.getByText('In-progress')
         expect(badge).toBeInTheDocument()
-        expect(badge).toHaveAttribute('data-accent-color', 'violet')
+        expect(badge).toHaveClass('bg-violet-100', 'text-violet-800')
     })
 
     it('renders CLOSED status correctly', () => {
@@ -23,7 +23,7 @@ describe('IssueStatusBadge', () => {
 
         const badge = screen.getByText('Closed')
         expect(badge).toBeInTheDocument()
-        expect(badge).toHaveAttribute('data-accent-color', 'green')
+        expect(badge).toHaveClass('bg-green-100', 'text-green-800')
     })
 
     it('displays correct labels for each status', () => {
@@ -46,24 +46,24 @@ describe('IssueStatusBadge', () => {
 
         // Test OPEN status (red)
         let badge = screen.getByText('Open')
-        expect(badge).toHaveAttribute('data-accent-color', 'red')
+        expect(badge).toHaveClass('bg-red-100', 'text-red-800')
 
         // Test IN_PROGRESS status (violet)
         rerender(<IssueStatusBadge status="IN_PROGRESS" />)
         badge = screen.getByText('In-progress')
-        expect(badge).toHaveAttribute('data-accent-color', 'violet')
+        expect(badge).toHaveClass('bg-violet-100', 'text-violet-800')
 
         // Test CLOSED status (green)
         rerender(<IssueStatusBadge status="CLOSED" />)
         badge = screen.getByText('Closed')
-        expect(badge).toHaveAttribute('data-accent-color', 'green')
+        expect(badge).toHaveClass('bg-green-100', 'text-green-800')
     })
 
-    it('renders as a Badge component', () => {
+    it('renders as a Text component', () => {
         render(<IssueStatusBadge status="OPEN" />)
 
         const badge = screen.getByText('Open')
         expect(badge.tagName).toBe('SPAN')
-        expect(badge).toHaveClass('rt-Badge')
+        expect(badge).toHaveClass('rt-Text')
     })
 })

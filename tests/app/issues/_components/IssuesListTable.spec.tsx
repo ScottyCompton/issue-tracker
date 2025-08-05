@@ -81,12 +81,6 @@ const columns: IssueListTableColumn[] = [
         className: 'hidden md:table-cell',
         width: '20%',
     },
-    {
-        label: 'Created',
-        value: 'createdAt',
-        className: 'hidden md:table-cell',
-        width: '20%',
-    },
 ]
 
 const mockIssues = [
@@ -155,7 +149,7 @@ describe('IssuesListTable', () => {
         expect(screen.getByTestId('table-header')).toBeInTheDocument()
         expect(screen.getByTestId('table-body')).toBeInTheDocument()
         expect(screen.getAllByTestId('table-row').length).toBeGreaterThan(0)
-        expect(screen.getAllByTestId('table-column-header')).toHaveLength(4)
+        expect(screen.getAllByTestId('table-column-header')).toHaveLength(3)
         expect(screen.getAllByRole('link')).toHaveLength(2)
         expect(screen.getAllByTestId('status-badge')).toHaveLength(4)
     })

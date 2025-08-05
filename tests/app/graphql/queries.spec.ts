@@ -84,9 +84,9 @@ describe('GraphQL Queries', () => {
             expect(queryString).toContain('status')
         })
 
-        it('should include assignedToUser with nested fields', () => {
+        it('should include user with nested fields', () => {
             const queryString = GET_LATEST_ISSUES_QUERY.loc?.source.body || ''
-            expect(queryString).toContain('assignedToUser')
+            expect(queryString).toContain('user')
             expect(queryString).toContain('name')
             expect(queryString).toContain('email')
             expect(queryString).toContain('image')

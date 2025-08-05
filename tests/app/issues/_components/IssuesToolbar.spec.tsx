@@ -118,7 +118,7 @@ describe('IssuesToolbar', () => {
 
         const comboboxes = screen.getAllByRole('combobox')
         expect(comboboxes).toHaveLength(2)
-        expect(screen.getByText('Filter by status...')).toBeInTheDocument()
+        expect(screen.getByText('Filter by Status')).toBeInTheDocument()
     })
 
     it('renders with loading state disabled', async () => {
@@ -197,7 +197,7 @@ describe('IssuesToolbar', () => {
 
         const comboboxes = screen.getAllByRole('combobox')
         expect(comboboxes).toHaveLength(2)
-        expect(screen.getByText('Filter by status...')).toBeInTheDocument()
+        expect(screen.getByText('Filter by Status')).toBeInTheDocument()
     })
 
     it('renders with IN_PROGRESS status', async () => {

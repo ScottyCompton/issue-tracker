@@ -194,20 +194,13 @@ describe('IssuesList', () => {
                 className: 'hidden md:table-cell',
                 width: '20%',
             },
-            {
-                label: 'Created',
-                value: 'createdAt',
-                className: 'hidden md:table-cell',
-                width: '20%',
-            },
         ]
 
-        expect(columns).toHaveLength(4)
+        expect(columns).toHaveLength(3)
         expect(columns[0].label).toBe('Issue')
         expect(columns[0].value).toBe('title')
         expect(columns[1].label).toBe('Status')
         expect(columns[2].label).toBe('Type')
-        expect(columns[3].label).toBe('Created')
     })
 
     it('formats issue types correctly', async () => {

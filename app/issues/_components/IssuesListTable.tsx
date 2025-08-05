@@ -116,7 +116,7 @@ const IssuesListTable: React.FC<Props> = ({
                     ))}
                 {issues.length === 0 && (
                     <Table.Row>
-                        <Table.Cell colSpan={4} className="py-30 text-center">
+                        <Table.Cell colSpan={3} className="py-30 text-center">
                             {userId && currentUser ? (
                                 <>
                                     <strong>{currentUser.name}</strong>{' '}

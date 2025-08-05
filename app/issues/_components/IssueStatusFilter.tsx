@@ -1,13 +1,13 @@
 'use client'
 
-import { Status } from '@/app/generated/prisma'
-import { Select } from '@radix-ui/themes'
+import { Status } from '@/prisma/client'
+import { Select, Text } from '@radix-ui/themes'
 import { useRouter, useSearchParams } from 'next/navigation'
 
 const statusArray: { label: string; value: Status }[] = [
-    { label: 'Open', value: Status.OPEN },
-    { label: 'In-Progress', value: Status.IN_PROGRESS },
-    { label: 'Closed', value: Status.CLOSED },
+    { label: 'Open', value: 'OPEN' },
+    { label: 'In-Progress', value: 'IN_PROGRESS' },
+    { label: 'Closed', value: 'CLOSED' },
 ]
 
 interface Props {
@@ -36,7 +36,6 @@ export const handleSelect = (
         params.append('userId', searchParams.get('userId')!)
 
     const query = params.size ? '?' + params.toString() : ''
-    console.log(query)
     router.push(`/issues/list${query}`)
 }
 
@@ -45,29 +44,34 @@ const IssueStatusFilter: React.FC<Props> = ({ currStatus }: Props) => {
     const searchParams = useSearchParams()
 
     return (
-        <Select.Root
-            onValueChange={(value) =>
-                handleSelect(value as Status, searchParams, router)
-            }
-            defaultValue={currStatus}
-        >
-            <Select.Trigger
-                placeholder="Filter by status..."
-                className="w-50"
-            />
-            <Select.Content className="w-50">
-                <Select.Group>
-                    <Select.Item key="-1" value="-1">
-                        All
-                    </Select.Item>
-                    {statusArray.map((s) => (
-                        <Select.Item key={s.value} value={s.value + ''}>
-                            {s.label}
+        <div>
+            <Text as="label" size="1" weight="light" className="block mb-2">
+                Filter by Status
+            </Text>
+            <Select.Root
+                onValueChange={(value) =>
+                    handleSelect(value as Status, searchParams, router)
+                }
+                defaultValue={currStatus}
+            >
+                <Select.Trigger
+                    placeholder="Select Status..."
+                    style={{ width: '150px' }}
+                />
+                <Select.Content style={{ width: '150px' }}>
+                    <Select.Group>
+                        <Select.Item key="-1" value="-1">
+                            All
                         </Select.Item>
-                    ))}
-                </Select.Group>
-            </Select.Content>
-        </Select.Root>
+                        {statusArray.map((s) => (
+                            <Select.Item key={s.value} value={s.value + ''}>
+                                {s.label}
+                            </Select.Item>
+                        ))}
+                    </Select.Group>
+                </Select.Content>
+            </Select.Root>
+        </div>
     )
 }
 

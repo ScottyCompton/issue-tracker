@@ -2,9 +2,10 @@
 
 import { client as graphqlClient } from '@/app/lib/graphql-client'
 import { Status } from '@/prisma/client'
-import { Avatar, Card, Flex, Heading, Tooltip } from '@radix-ui/themes'
+import { Avatar, Card, Flex, Heading, Text, Tooltip } from '@radix-ui/themes'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
+import { useProject } from '../contexts/ProjectContext'
 import { GET_LATEST_ISSUES_QUERY } from '../graphql/queries'
 import IssueStatusBadge from './IssueStatusBadge'
 import LatestIssuesSkeleton from './LatestIssuesSkeleton'
@@ -20,7 +21,13 @@ interface LatestIssue {
     id: string
     title: string
     status: Status
-    assignedToUser: AssignedToUser
+    issueType: string
+    projectId?: string
+    project?: {
+        id: string
+        name: string
+    }
+    user?: AssignedToUser | null
 }
 
 interface LatestIssues {
@@ -28,6 +35,7 @@ interface LatestIssues {
 }
 
 const LatestIssues = () => {
+    const { selectedProjectId } = useProject()
     const [latestIssues, setLatestIssues] = useState<LatestIssue[]>([])
     const [loading, setLoading] = useState(true)
 
@@ -39,19 +47,23 @@ const LatestIssues = () => {
 
                 const { data } = await graphqlClient.query<LatestIssues>({
                     query: GET_LATEST_ISSUES_QUERY,
+                    variables: {
+                        projectId: selectedProjectId,
+                    },
                     fetchPolicy: 'network-only', // Always fetch fresh data
                 })
 
-                setLatestIssues(data.latestIssues)
+                setLatestIssues(data?.latestIssues ?? [])
             } catch (error) {
                 console.error('Error fetching latest issues:', error)
+                setLatestIssues([])
             } finally {
                 setLoading(false)
             }
         }
 
         fetchData()
-    }, [])
+    }, [selectedProjectId])
 
     if (loading) {
         return <LatestIssuesSkeleton />
@@ -64,7 +76,7 @@ const LatestIssues = () => {
             </Heading>
             <Card>
                 <Flex direction="column" className="w-full">
-                    {latestIssues &&
+                    {latestIssues && latestIssues.length > 0 ? (
                         latestIssues.map(
                             (issue: LatestIssue, index: number) => (
                                 <Flex
@@ -93,14 +105,10 @@ const LatestIssues = () => {
                                             status={issue.status}
                                         />
                                     </Flex>
-                                    {issue.assignedToUser && (
-                                        <Tooltip
-                                            content={issue.assignedToUser.name}
-                                        >
+                                    {issue.user && (
+                                        <Tooltip content={issue.user.name}>
                                             <Avatar
-                                                src={
-                                                    issue.assignedToUser.image!
-                                                }
+                                                src={issue.user.image!}
                                                 fallback="?"
                                                 size="2"
                                                 radius="full"
@@ -109,7 +117,16 @@ const LatestIssues = () => {
                                     )}
                                 </Flex>
                             )
-                        )}
+                        )
+                    ) : (
+                        <Flex justify="center" align="center" className="p-8">
+                            <Text color="gray">
+                                {selectedProjectId
+                                    ? 'No issues found for the selected project.'
+                                    : 'No issues found.'}
+                            </Text>
+                        </Flex>
+                    )}
                 </Flex>
             </Card>
         </Flex>

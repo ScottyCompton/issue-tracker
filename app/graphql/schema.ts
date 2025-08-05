@@ -20,6 +20,20 @@ export const typeDefs = gql`
         desc
     }
 
+    type Project {
+        id: ID!
+        name: String!
+        description: String
+        createdAt: String!
+        updatedAt: String!
+    }
+
+    type ProjectSummary {
+        id: ID!
+        name: String!
+        issueCount: Int!
+    }
+
     type Issue {
         id: ID!
         title: String!
@@ -29,7 +43,9 @@ export const typeDefs = gql`
         createdAt: String!
         updatedAt: String!
         assignedToUserId: String
-        assignedToUser: User
+        user: User
+        projectId: String
+        project: Project
     }
 
     type IssueStatusCount {
@@ -56,35 +72,32 @@ export const typeDefs = gql`
             status: Status
             issueType: IssueType
             assignedToUserId: String
+            projectId: String
             paging: IssuePaging
         ): [Issue!]!
-        issueStatusCount(includeAll: Boolean = false): [IssueStatusCount!]!
+        issueStatusCount(
+            includeAll: Boolean = false
+            projectId: String
+        ): [IssueStatusCount!]!
         issuesCount(
             status: Status
             issueType: IssueType
             assignedToUserId: String
+            projectId: String
         ): Int!
-        latestIssues: [Issue!]!
+        latestIssues(projectId: String): [Issue!]!
         issue(id: ID!): Issue
         users: [User!]!
+        projects: [Project!]!
+        project(id: ID!): Project
+        projectSummary: [ProjectSummary!]!
     }
 
     input CreateIssueInput {
         title: String!
         description: String!
         issueType: IssueType
-    }
-
-    input IssueOrderBy {
-        title: SortOrder
-        status: SortOrder
-        createdAt: SortOrder
-        issueType: SortOrder
-    }
-
-    input IssuePaging {
-        skip: Int
-        take: Int
+        projectId: String
     }
 
     input UpdateIssueInput {
@@ -93,19 +106,40 @@ export const typeDefs = gql`
         status: Status
         issueType: IssueType
         assignedToUserId: String
+        projectId: String
     }
 
-    input UpdateIssueAssigneeInput {
-        assignedToUserId: String
+    input CreateProjectInput {
+        name: String!
+        description: String
+    }
+
+    input UpdateProjectInput {
+        name: String
+        description: String
+    }
+
+    input IssueOrderBy {
+        field: String!
+        order: SortOrder!
+    }
+
+    input IssuePaging {
+        skip: Int!
+        take: Int!
     }
 
     type Mutation {
         createIssue(input: CreateIssueInput!): Issue!
         updateIssue(id: ID!, input: UpdateIssueInput!): Issue!
-        updateIssueAssignee(
-            id: ID!
-            input: UpdateIssueAssigneeInput!
-        ): IssueAssignee!
         deleteIssue(id: ID!): Boolean!
+        updateIssueAssignee(id: ID!, input: UpdateIssueAssigneeInput!): Issue!
+        createProject(input: CreateProjectInput!): Project!
+        updateProject(id: ID!, input: UpdateProjectInput!): Project!
+        deleteProject(id: ID!): Boolean!
+    }
+
+    input UpdateIssueAssigneeInput {
+        assignedToUserId: String
     }
 `

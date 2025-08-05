@@ -12,6 +12,10 @@ const mockPrisma = {
     issue: {
         create: vi.fn(),
     },
+    project: {
+        findUnique: vi.fn(),
+        findFirst: vi.fn(),
+    },
 }
 vi.mock('@/prisma/client', () => ({
     default: mockPrisma,
@@ -49,6 +53,7 @@ describe('POST /api/issues', () => {
     const mockValidIssue = {
         title: 'Test Issue',
         description: 'Test description',
+        projectId: '1',
     }
 
     const mockCreatedIssue = {
@@ -76,6 +81,12 @@ describe('POST /api/issues', () => {
             data: mockValidIssue,
         })
 
+        // Mock project validation
+        mockPrisma.project.findUnique.mockResolvedValue({
+            id: 1,
+            name: 'Test Project',
+        })
+
         // Mock successful database creation
         mockPrisma.issue.create.mockResolvedValue(mockCreatedIssue)
 
@@ -87,6 +98,17 @@ describe('POST /api/issues', () => {
 
         const responseData = await response.json()
         expect(responseData).toEqual(mockCreatedIssue)
+        expect(mockPrisma.project.findUnique).toHaveBeenCalledWith({
+            where: { id: 1 },
+        })
+        expect(mockPrisma.issue.create).toHaveBeenCalledWith({
+            data: {
+                title: mockValidIssue.title,
+                description: mockValidIssue.description,
+                projectId: 1,
+                updatedAt: expect.any(Date),
+            },
+        })
     })
 
     it('returns 401 when user is not authenticated', async () => {
@@ -167,6 +189,52 @@ describe('POST /api/issues', () => {
         expect(responseData).toEqual(validationErrors)
     })
 
+    it('creates issue without projectId', async () => {
+        // Mock successful authentication
+        mockGetServerSession.mockResolvedValue({ user: { id: '1' } })
+
+        const issueWithoutProject = {
+            title: 'Test Issue',
+            description: 'Test description',
+        }
+
+        // Mock successful validation
+        mockIssueSchema.safeParse.mockReturnValue({
+            success: true,
+            data: issueWithoutProject,
+        })
+
+        // Mock default project assignment
+        mockPrisma.project.findFirst.mockResolvedValue({
+            id: 1,
+            name: 'Default Project',
+        })
+
+        // Mock successful database creation
+        mockPrisma.issue.create.mockResolvedValue({
+            ...mockCreatedIssue,
+            projectId: 1,
+        })
+
+        const request = mockRequest(issueWithoutProject)
+        const response = await POST(request)
+
+        expect(response).toBeInstanceOf(NextResponse)
+        expect(response.status).toBe(201)
+
+        expect(mockPrisma.project.findFirst).toHaveBeenCalledWith({
+            orderBy: { id: 'asc' },
+        })
+        expect(mockPrisma.issue.create).toHaveBeenCalledWith({
+            data: {
+                title: issueWithoutProject.title,
+                description: issueWithoutProject.description,
+                projectId: 1,
+                updatedAt: expect.any(Date),
+            },
+        })
+    })
+
     it('handles empty request body', async () => {
         // Mock successful authentication
         mockGetServerSession.mockResolvedValue({ user: { id: '1' } })
@@ -199,6 +267,12 @@ describe('POST /api/issues', () => {
             data: { title: 'Minimal Issue' },
         })
 
+        // Mock default project assignment
+        mockPrisma.project.findFirst.mockResolvedValue({
+            id: 1,
+            name: 'Default Project',
+        })
+
         // Mock successful database creation
         const minimalIssue = {
             id: 2,
@@ -208,6 +282,7 @@ describe('POST /api/issues', () => {
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString(),
             assignedToUserId: null,
+            projectId: 1,
         }
         mockPrisma.issue.create.mockResolvedValue(minimalIssue)
 
@@ -230,16 +305,26 @@ describe('POST /api/issues', () => {
             data: mockValidIssue,
         })
 
+        // Mock project validation
+        mockPrisma.project.findUnique.mockResolvedValue({
+            id: 1,
+            name: 'Test Project',
+        })
+
         // Mock successful database creation
         mockPrisma.issue.create.mockResolvedValue(mockCreatedIssue)
 
         const request = mockRequest(mockValidIssue)
-        await POST(request)
+        const response = await POST(request)
+
+        expect(response.status).toBe(201)
 
         expect(mockPrisma.issue.create).toHaveBeenCalledWith({
             data: {
                 title: mockValidIssue.title,
                 description: mockValidIssue.description,
+                projectId: 1,
+                updatedAt: expect.any(Date),
             },
         })
     })
