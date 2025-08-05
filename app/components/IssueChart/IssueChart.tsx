@@ -1,5 +1,6 @@
 'use client'
 
+import { useProject } from '@/app/contexts/ProjectContext'
 import { client as graphqlClient } from '@/app/lib/graphql-client'
 import { Card } from '@radix-ui/themes'
 import { useEffect, useState } from 'react'
@@ -18,15 +19,20 @@ const IssueChart = () => {
         IssueStatusCount[]
     >([])
     const [loading, setLoading] = useState(true)
+    const { selectedProjectId } = useProject()
 
     useEffect(() => {
         const fetchData = async () => {
             try {
+                setLoading(true)
                 // Add artificial delay to see the skeleton
                 await new Promise((resolve) => setTimeout(resolve, 1000))
 
                 const { data } = await graphqlClient.query({
                     query: GET_ISSUES_STATUS_COUNT_QUERY,
+                    variables: {
+                        projectId: selectedProjectId,
+                    },
                 })
 
                 setIssueStatusCount(data.issueStatusCount)
@@ -38,7 +44,7 @@ const IssueChart = () => {
         }
 
         fetchData()
-    }, [])
+    }, [selectedProjectId])
 
     if (loading) {
         return <IssueChartSkeleton />
