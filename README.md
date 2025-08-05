@@ -11,7 +11,8 @@ The Issue Tracker is a simple project management tool designed to help teams eff
 This application serves as a centralized platform for:
 
 - **Issue Management**: Create, edit, and track project issues with detailed descriptions and status updates
-- **Team Collaboration**: Assign issues to team members and track progress
+- **Project Management**: Organize issues into projects with full CRUD operations and project-specific workflows
+- **Team Collaboration**: Assign issues to team members and track progress with user management
 - **Project Analytics**: Visualize issue distribution and project health through interactive charts and dashboards
 - **Workflow Optimization**: Streamline development processes with status-based filtering and sorting
 - **Dashboard Overview**: Monitor project status with comprehensive issue summaries and real-time data
@@ -22,12 +23,23 @@ This application serves as a centralized platform for:
 ### Core Functionality
 
 - **Issue Creation & Management**: Create, edit, and delete issues with rich text descriptions
+- **Project Management**: Full CRUD operations for projects with issue organization
+- **Issue Types**: Support for multiple issue types (General, Bug, Spike, Task, Subtask)
 - **Status Tracking**: Monitor issues through OPEN, IN_PROGRESS, and CLOSED statuses
-- **User Assignment**: Assign issues to team members for accountability
+- **User Assignment**: Assign issues to team members for accountability and tracking
 - **Real-time Dashboard**: View project overview with issue summaries and interactive charts
-- **Advanced Filtering**: Filter issues by status, assignee, and date ranges
-- **Pagination**: Handle large issue lists with efficient pagination
+- **Advanced Filtering**: Filter issues by status, assignee, issue type, and date ranges
+- **Pagination**: Handle large issue lists with efficient pagination controls
 - **Interactive Analytics**: Clickable charts that navigate to filtered issue lists
+
+### Project Management
+
+- **Project Creation**: Create new projects with names and descriptions
+- **Project Organization**: Organize issues by projects for better workflow management
+- **Project Editing**: Update project details and descriptions
+- **Project Deletion**: Remove projects with safety checks for assigned issues
+- **Project Context**: Maintain selected project state across the application
+- **Project Filtering**: Filter issues by specific projects
 
 ### Dashboard & Analytics
 
@@ -41,6 +53,7 @@ This application serves as a centralized platform for:
 
 - **Responsive Design**: Works seamlessly on desktop, tablet, and mobile devices
 - **Modern UI**: Clean, intuitive interface built with Radix UI components
+- **Theme Switching**: Dark/light mode support with system preference detection
 - **Loading States**: Smooth loading animations and skeleton screens for all components
 - **Error Handling**: Comprehensive error boundaries and user-friendly error messages
 - **Form Validation**: Client and server-side validation with helpful feedback
@@ -54,6 +67,7 @@ This application serves as a centralized platform for:
 - **Environment Configuration**: Flexible deployment with environment variables
 - **Comprehensive Testing**: Extensive test suite with Vitest and React Testing Library
 - **Advanced GraphQL Schema**: Enhanced schema with issue status counts and latest issues queries
+- **Context Management**: React contexts for theme and project state management
 
 ## 🛠️ Technology Stack
 
@@ -198,6 +212,7 @@ npm test -- tests/app/components/Navbar.spec.tsx
 - **API Route Testing**: Complete coverage of REST and GraphQL endpoints
 - **Form Validation Testing**: Client and server-side validation testing
 - **Error Boundary Testing**: Comprehensive error handling tests
+- **Theme Switching Tests**: End-to-end tests for dark/light mode functionality
 
 ## 📦 Available Scripts
 
@@ -233,9 +248,13 @@ npx prisma studio        # Open Prisma Studio
 issue-tracker/
 ├── app/                    # Next.js App Router
 │   ├── api/               # API routes
+│   │   ├── projects/      # Project management endpoints
+│   │   ├── issues/        # Issue management endpoints
+│   │   └── graphql/       # GraphQL API
 │   ├── components/        # Shared components
 │   │   ├── IssueChart/   # Interactive analytics components
 │   │   └── ...           # Other UI components
+│   ├── contexts/          # React contexts (Theme, Project)
 │   ├── issues/           # Issue management pages
 │   ├── graphql/          # GraphQL schema and resolvers
 │   ├── lib/              # Utility functions
@@ -263,6 +282,16 @@ Configure authentication providers in `app/auth/authOptions.ts`. The application
 ### Environment Configuration
 
 The application uses environment variables for flexible deployment. The `APP_PUBLIC_URL` variable controls the API endpoint, making it easy to deploy to different environments.
+
+### Theme Configuration
+
+The application supports theme switching with three modes:
+
+- **Light Mode**: Traditional light theme
+- **Dark Mode**: Dark theme for reduced eye strain
+- **System**: Automatically follows system preferences
+
+Theme preferences are persisted in localStorage and automatically applied on page load.
 
 ## 🚀 Deployment
 
